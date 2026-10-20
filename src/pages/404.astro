@@ -1,0 +1,65 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { siteConfig } from "../data/site";
+---
+
+<BaseLayout
+  title="Page Not Found (404) | Renol Foods"
+  description="The requested page could not be located. Explore our industrial food powder portfolio or contact our sales desk in Bavla, Ahmedabad."
+  noindex={true}
+>
+  <section class="relative min-h-[75svh] flex items-center justify-center py-20 px-6 border-b border-white/10 overflow-hidden">
+    <!-- Ambient Radial Glow -->
+    <div
+      class="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] rounded-full blur-[140px] opacity-20"
+      style="background: radial-gradient(circle, #f59e0b 0%, transparent 70%);"
+      aria-hidden="true"
+    ></div>
+
+    <div class="relative z-10 max-w-xl mx-auto text-center font-body">
+      <!-- Official Client Logo (no fake RF box) -->
+      <a href="/" class="inline-block mb-8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 rounded-xl p-1">
+        <img
+          src="/images/Logo.png"
+          alt={`${siteConfig.name}`}
+          width="218"
+          height="100"
+          decoding="async"
+          class="h-14 w-auto mx-auto object-contain"
+        />
+      </a>
+
+      <div class="inline-flex items-center gap-2 px-3 py-1 mb-4 text-xs font-semibold tracking-widest uppercase rounded-full bg-white/10 border border-white/15 text-white/80 font-mono">
+        Error 404 &bull; Page Not Found
+      </div>
+
+      <h1 class="font-display text-4xl sm:text-5xl font-extrabold text-white tracking-tight mb-4 leading-tight">
+        Page Not Found
+      </h1>
+
+      <p class="text-white/70 text-base sm:text-lg mb-8 leading-relaxed">
+        The specification page or catalog resource you requested could not be found. You can browse our product powders below or contact our sales desk.
+      </p>
+
+      <div class="flex flex-wrap items-center justify-center gap-3">
+        <a href="/" class="btn-primary min-h-[44px]">
+          Return to Homepage
+        </a>
+        <a href="/products" class="btn-secondary min-h-[44px]">
+          Explore Products
+        </a>
+        <a href="/contact#sample-quote" class="btn-secondary min-h-[44px]">
+          Request a Sample
+        </a>
+      </div>
+
+      <!-- Quick Directory Links -->
+      <div class="mt-12 pt-8 border-t border-white/10 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs text-white/60">
+        <a href="/manufacturing" class="hover:text-white transition-colors py-1 min-h-[32px] inline-flex items-center justify-center">Manufacturing</a>
+        <a href="/quality" class="hover:text-white transition-colors py-1 min-h-[32px] inline-flex items-center justify-center">Quality & Specs</a>
+        <a href="/industries" class="hover:text-white transition-colors py-1 min-h-[32px] inline-flex items-center justify-center">Industries</a>
+        <a href="/contact" class="hover:text-white transition-colors py-1 min-h-[32px] inline-flex items-center justify-center">Contact Desk</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

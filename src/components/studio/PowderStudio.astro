@@ -126,14 +126,16 @@ import { products } from "../../data/products";
 
   <!-- Studio Top Navigation Header -->
   <header class="top z-20">
-    <div class="logo font-display font-bold tracking-tight text-white flex items-center gap-2.5" aria-label="Renol Foods">
-      <svg class="w-8 h-8 flex-none" viewBox="0 0 32 32" aria-hidden="true">
-        <circle cx="16" cy="16" r="15" fill="#fff" fill-opacity=".1" stroke="#fff" stroke-opacity=".4" />
-        <path d="M9 21 C9 12 16 8 23 8 C23 16 19 23 11 23Z" fill="#6ee08a" />
-        <path d="M10 22 L19 13" stroke="#0b0b0d" stroke-width="1.6" stroke-linecap="round" />
-      </svg>
-      <span>Renol Foods</span>
-    </div>
+    <a href="/" class="logo flex items-center" aria-label="Renol Foods">
+      <img
+        src="/images/Logo.png"
+        alt="Renol Foods"
+        width="180"
+        height="82"
+        decoding="async"
+        class="h-9 sm:h-10 w-auto object-contain"
+      />
+    </a>
 
     <div class="flex items-center gap-3">
       <button class="pill back" id="back" type="button" aria-label="Back to carousel">

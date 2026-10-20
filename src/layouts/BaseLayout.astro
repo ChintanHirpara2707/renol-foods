@@ -18,12 +18,37 @@ interface Props {
 const {
   title = `${siteConfig.name} | Industrial Food Powder Manufacturer, Bavla, Gujarat`,
   description = siteConfig.description,
-  ogImage = "/og-preview.png",
+  ogImage = "/images/Logo.png",
   canonicalUrl = Astro.url.href,
   noindex = false,
 } = Astro.props;
 
 const siteTitle = title.includes(siteConfig.name) ? title : `${title} | ${siteConfig.name}`;
+const logoFullUrl = new URL("/images/Logo.png", Astro.site || Astro.url.origin).href;
+
+const orgSchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: siteConfig.name,
+  legalName: siteConfig.legalName,
+  url: new URL("/", Astro.site || Astro.url.origin).href,
+  logo: logoFullUrl,
+  description: siteConfig.description,
+  foundingDate: "2021",
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: "Plot No. 616, Kerala GIDC",
+    addressLocality: "Bavla, Ahmedabad",
+    addressRegion: "Gujarat",
+    addressCountry: "IN",
+  },
+  contactPoint: {
+    "@type": "ContactPoint",
+    telephone: siteConfig.contact.phones[0] || "+919979977396",
+    contactType: "sales",
+    areaServed: "Global",
+  },
+};
 ---
 
 <!doctype html>
@@ -31,7 +56,13 @@ const siteTitle = title.includes(siteConfig.name) ? title : `${title} | ${siteCo
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- Favicon & Touch Icons -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    
     <meta name="generator" content={Astro.generator} />
 
     <!-- Primary Meta Tags -->
@@ -55,6 +86,9 @@ const siteTitle = title.includes(siteConfig.name) ? title : `${title} | ${siteCo
     <meta property="twitter:title" content={siteTitle} />
     <meta property="twitter:description" content={description} />
     <meta property="twitter:image" content={new URL(ogImage, Astro.site || Astro.url.origin)} />
+
+    <!-- Organization Structured Data -->
+    <script type="application/ld+json" set:html={JSON.stringify(orgSchema)} />
 
     <!-- Preconnect to static assets -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />

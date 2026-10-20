@@ -4,12 +4,14 @@ import { siteConfig } from "../data/site";
 const currentPath = Astro.url.pathname;
 ---
 
+<!-- Sticky Header (z-index 50 per Rule 7) -->
 <header
-  class="sticky top-0 z-40 w-full bg-[#0b0b0d]/90 backdrop-blur-md border-b border-white/10 text-white transition-all duration-300"
+  class="sticky top-0 z-50 w-full bg-[#0b0b0d]/90 backdrop-blur-md border-b border-white/10 text-white transition-all duration-300"
 >
   <div class="section-container">
     <div class="flex items-center justify-between h-20">
-      <!-- Logo & Brand Identity -->
+      
+      <!-- Logo & Brand Identity (Real Logo image, no fake RF box) -->
       <a
         href="/"
         class="flex items-center group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 rounded-lg p-1"
@@ -17,15 +19,15 @@ const currentPath = Astro.url.pathname;
         <img
           src="/images/Logo.png"
           alt={`${siteConfig.name} home`}
-          width="250"
-          height="70"
+          width="218"
+          height="100"
           decoding="async"
           fetchpriority="high"
-          class="h-13 w-auto max-w-[250px] object-contain transition-transform duration-300 group-hover:scale-105"
+          class="h-12 w-auto max-w-[218px] object-contain transition-transform duration-300 group-hover:scale-105"
         />
       </a>
 
-      <!-- Desktop Navigation -->
+      <!-- Desktop Navigation (Visible >= 1024px) -->
       <nav
         class="hidden lg:flex items-center gap-8"
         aria-label="Main Navigation"
@@ -42,7 +44,7 @@ const currentPath = Astro.url.pathname;
                   <a
                     href={item.href}
                     class:list={[
-                      "px-3.5 py-2 rounded-full text-sm font-medium transition-colors duration-200",
+                      "px-3.5 py-2 rounded-full text-sm font-medium transition-colors duration-200 inline-block min-h-[36px]",
                       isActive
                         ? "text-white font-semibold bg-white/15"
                         : "text-white/70 hover:text-white hover:bg-white/10",
@@ -71,17 +73,19 @@ const currentPath = Astro.url.pathname;
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
+            aria-hidden="true"
           >
             <path
               stroke-linecap="round"
               stroke-linejoin="round"
               stroke-width="2"
-              d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+              d="M14 5l7 7m0 0l-7 7m7-7H3"
+            />
           </svg>
         </a>
       </div>
 
-      <!-- Mobile Menu Toggle (< 1024px per Rule 5, min 44px tap target) -->
+      <!-- Mobile Menu Toggle (< 1024px per Rule 1 & Rule 5, min 44px tap target) -->
       <div class="flex lg:hidden items-center gap-2">
         <button
           type="button"
@@ -89,7 +93,7 @@ const currentPath = Astro.url.pathname;
           aria-expanded="false"
           aria-controls="mobile-menu-drawer"
           aria-label="Open mobile navigation menu"
-          class="min-w-[44px] min-h-[44px] p-2.5 rounded-lg text-white hover:bg-white/10 transition-colors flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
+          class="min-w-[44px] min-h-[44px] p-2.5 rounded-xl text-white hover:bg-white/10 transition-colors flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
         >
           <svg
             id="hamburger-icon"
@@ -97,12 +101,14 @@ const currentPath = Astro.url.pathname;
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
+            aria-hidden="true"
           >
             <path
               stroke-linecap="round"
               stroke-linejoin="round"
               stroke-width="2"
-              d="M4 6h16M4 12h16M4 18h16"></path>
+              d="M4 6h16M4 12h16M4 18h16"
+            />
           </svg>
           <svg
             id="close-icon"
@@ -110,153 +116,165 @@ const currentPath = Astro.url.pathname;
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
+            aria-hidden="true"
           >
             <path
               stroke-linecap="round"
               stroke-linejoin="round"
               stroke-width="2"
-              d="M6 18L18 6M6 6l12 12"></path>
+              d="M6 18L18 6M6 6l12 12"
+            />
           </svg>
         </button>
       </div>
+
     </div>
   </div>
+</header>
 
-  <!-- Mobile Slide-In Drawer Backdrop -->
+<!-- Mobile Slide-In Backdrop (SIBLING of <header> so backdrop-filter does NOT trap fixed position, z-index 100) -->
+<div
+  id="mobile-menu-backdrop"
+  class="fixed inset-0 bg-black/75 backdrop-blur-sm z-[100] opacity-0 pointer-events-none transition-opacity duration-300 lg:hidden"
+  aria-hidden="true"
+>
+</div>
+
+<!-- Mobile Slide-In Drawer Panel (SIBLING of <header>, width min(85vw, 24rem), height 100dvh, z-index 100) -->
+<aside
+  id="mobile-menu-drawer"
+  class="fixed top-0 right-0 w-[min(85vw,24rem)] h-[100dvh] bg-[#121214] text-white z-[100] transform translate-x-full transition-transform duration-300 ease-out lg:hidden flex flex-col shadow-2xl border-l border-white/10 overflow-y-auto pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))]"
+  aria-label="Mobile Navigation"
+  aria-hidden="true"
+  data-lenis-prevent
+>
+  <!-- Drawer Header with real Logo (no fake RF box) and Close button -->
   <div
-    id="mobile-menu-backdrop"
-    class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 opacity-0 pointer-events-none transition-opacity duration-300 lg:hidden"
-    aria-hidden="true"
+    class="p-5 flex items-center justify-between border-b border-white/10 bg-[#16161a] shrink-0"
   >
+    <a href="/" class="flex items-center p-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 rounded-lg">
+      <img
+        src="/images/Logo.png"
+        alt={`${siteConfig.name}`}
+        width="180"
+        height="82"
+        decoding="async"
+        class="h-10 w-auto max-w-[170px] object-contain"
+      />
+    </a>
+    <button
+      type="button"
+      id="mobile-menu-close"
+      aria-label="Close mobile navigation menu"
+      class="min-w-[44px] min-h-[44px] p-2 rounded-xl text-white/70 hover:text-white hover:bg-white/10 transition-colors flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
+    >
+      <svg
+        class="w-6 h-6"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        aria-hidden="true"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M6 18L18 6M6 6l12 12"
+        />
+      </svg>
+    </button>
   </div>
 
-  <!-- Mobile Slide-In Drawer Panel -->
-  <aside
-    id="mobile-menu-drawer"
-    class="fixed top-0 right-0 bottom-0 w-[85%] max-w-sm bg-[#121214] text-white z-50 transform translate-x-full transition-transform duration-300 ease-in-out lg:hidden flex flex-col shadow-2xl border-l border-white/10"
-    aria-label="Mobile Navigation"
+  <!-- Drawer Navigation Links -->
+  <nav
+    class="flex-grow px-5 py-6 space-y-1 font-body"
+    aria-label="Mobile Menu Links"
   >
-    <!-- Drawer Header -->
-    <div
-      class="p-6 flex items-center justify-between border-b border-white/10 bg-[#16161a]"
-    >
-      <div class="flex items-center gap-2">
-        <div
-          class="w-8 h-8 rounded-lg bg-white/10 text-white border border-white/15 flex items-center justify-center font-display text-sm font-bold"
-        >
-          <span class="text-amber-400">R</span>F
-        </div>
-        <span class="font-display font-bold text-lg text-white"
-          >{siteConfig.name}</span
-        >
-      </div>
-      <button
-        type="button"
-        id="mobile-menu-close"
-        aria-label="Close mobile menu"
-        class="min-w-[44px] min-h-[44px] p-2 rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-colors flex items-center justify-center"
+    <ul class="flex flex-col gap-1.5">
+      {
+        siteConfig.navigation.map((item) => {
+          const isActive =
+            item.href === "/"
+              ? currentPath === "/"
+              : currentPath.startsWith(item.href);
+          return (
+            <li>
+              <a
+                href={item.href}
+                class:list={[
+                  "mobile-nav-link flex items-center justify-between px-4 py-3 min-h-[44px] rounded-xl text-base font-medium transition-all duration-200",
+                  isActive
+                    ? "text-white font-bold bg-white/15"
+                    : "text-white/70 hover:text-white hover:bg-white/10",
+                ]}
+                aria-current={isActive ? "page" : undefined}
+              >
+                <span>{item.label}</span>
+                <svg
+                  class="w-4 h-4 text-white/40"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+              </a>
+            </li>
+          );
+        })
+      }
+    </ul>
+
+    <!-- One Primary "Request a Sample" CTA Button inside Mobile Drawer -->
+    <div class="mt-8 pt-6 border-t border-white/10 flex flex-col gap-3">
+      <a
+        href="/contact#sample-quote"
+        class="mobile-nav-link btn-accent w-full text-center py-3.5 min-h-[44px] rounded-full flex items-center justify-center gap-2 font-bold shadow-lg"
       >
+        <span>Request a Sample</span>
         <svg
-          class="w-6 h-6"
+          class="w-4 h-4"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
+          aria-hidden="true"
         >
           <path
             stroke-linecap="round"
             stroke-linejoin="round"
             stroke-width="2"
-            d="M6 18L18 6M6 6l12 12"></path>
+            d="M14 5l7 7m0 0l-7 7m7-7H3"
+          />
         </svg>
-      </button>
-    </div>
+      </a>
 
-    <!-- Drawer Links -->
-    <nav
-      class="flex-grow overflow-y-auto px-6 py-6"
-      aria-label="Mobile Menu Links"
-    >
-      <ul class="flex flex-col gap-2">
-        {
-          siteConfig.navigation.map((item) => {
-            const isActive =
-              item.href === "/"
-                ? currentPath === "/"
-                : currentPath.startsWith(item.href);
-            return (
-              <li>
-                <a
-                  href={item.href}
-                  class:list={[
-                    "flex items-center justify-between px-4 py-3 min-h-[44px] rounded-xl text-base font-medium transition-all duration-200",
-                    isActive
-                      ? "text-white font-bold bg-white/15"
-                      : "text-white/70 hover:text-white hover:bg-white/10",
-                  ]}
-                >
-                  <span>{item.label}</span>
-                  <svg
-                    class="w-4 h-4 text-white/40"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M9 5l7 7-7 7"
-                    />
-                  </svg>
-                </a>
-              </li>
-            );
-          })
-        }
-      </ul>
-
-      <!-- Primary Action inside Drawer -->
-      <div class="mt-8 pt-6 border-t border-green-black/10 flex flex-col gap-3">
-        <a
-          href="/contact#sample-quote"
-          class="btn-accent w-full text-center py-3.5 shadow-md flex items-center justify-center gap-2"
-        >
-          <span>Request a Sample</span>
-          <svg
-            class="w-4 h-4"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
-          </svg>
-        </a>
-
-        <div
-          class="mt-4 p-4 rounded-xl bg-white/5 border border-white/10 text-xs text-white/70 space-y-1.5 font-body"
-        >
-          <p
-            class="font-semibold text-white uppercase tracking-wider text-[11px]"
-          >
-            Factory Sales Desk
-          </p>
-          <p class="flex items-center gap-2">
-            <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
-            <span>Plot 616, Kerala GIDC, Bavla</span>
-          </p>
-          <p class="flex items-center gap-2">
-            <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
-            <span>{siteConfig.contact.displayPhones[0]}</span>
-          </p>
-        </div>
+      <!-- Quick Facility Contact Info -->
+      <div
+        class="mt-4 p-4 rounded-2xl bg-white/5 border border-white/10 text-xs text-white/70 space-y-2 font-body"
+      >
+        <p class="font-semibold text-white uppercase tracking-wider text-[11px] font-mono">
+          Bavla Manufacturing Plant
+        </p>
+        <p class="flex items-center gap-2">
+          <span class="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0"></span>
+          <span>Plot 616, Kerala GIDC, Bavla, Gujarat</span>
+        </p>
+        <p class="flex items-center gap-2">
+          <span class="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0"></span>
+          <a href={`tel:${siteConfig.contact.phones[0]}`} class="hover:text-white underline">
+            {siteConfig.contact.displayPhones[0]}
+          </a>
+        </p>
       </div>
-    </nav>
-  </aside>
-</header>
+    </div>
+  </nav>
+</aside>
 
 <script>
   function setupMobileMenu() {
@@ -266,57 +284,74 @@ const currentPath = Astro.url.pathname;
     const backdrop = document.getElementById("mobile-menu-backdrop");
     const hamburgerIcon = document.getElementById("hamburger-icon");
     const closeIcon = document.getElementById("close-icon");
+    const navLinks = document.querySelectorAll(".mobile-nav-link");
 
     if (!toggleBtn || !drawer || !backdrop) return;
 
+    // Guard against duplicate binding across Astro transitions
+    if ((toggleBtn as any).__menuBound) {
+      // Ensure scroll lock is cleared if transitioning pages
+      document.documentElement.classList.remove("menu-open");
+      (window as any).lenis?.start();
+      return;
+    }
+    (toggleBtn as any).__menuBound = true;
+
     let previousActiveElement: HTMLElement | null = null;
 
-    function getFocusableElements(): HTMLElement[] {
-      if (!drawer) return [];
-      return Array.from(
-        drawer.querySelectorAll<HTMLElement>(
-          'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
-        ),
-      ).filter((el) => el.offsetParent !== null);
-    }
-
     function openMenu() {
-      previousActiveElement = document.activeElement as HTMLElement | null;
-      drawer?.classList.remove("translate-x-full");
-      drawer?.classList.add("translate-x-0");
-      backdrop?.classList.remove("opacity-0", "pointer-events-none");
-      backdrop?.classList.add("opacity-100", "pointer-events-auto");
-      document.body.style.overflow = "hidden";
-      toggleBtn?.setAttribute("aria-expanded", "true");
+      previousActiveElement = document.activeElement as HTMLElement;
+
+      drawer.classList.remove("translate-x-full");
+      drawer.classList.add("translate-x-0");
+      drawer.setAttribute("aria-hidden", "false");
+
+      backdrop.classList.remove("opacity-0", "pointer-events-none");
+      backdrop.classList.add("opacity-100", "pointer-events-auto");
+      backdrop.setAttribute("aria-hidden", "false");
+
+      toggleBtn.setAttribute("aria-expanded", "true");
       hamburgerIcon?.classList.add("hidden");
       closeIcon?.classList.remove("hidden");
 
+      // Lock page scroll and stop Lenis (Rule 5)
+      document.documentElement.classList.add("menu-open");
+      (window as any).lenis?.stop();
+
+      // Move focus into panel (Rule 4)
       setTimeout(() => {
         closeBtn?.focus();
       }, 50);
     }
 
     function closeMenu() {
-      drawer?.classList.remove("translate-x-0");
-      drawer?.classList.add("translate-x-full");
-      backdrop?.classList.remove("opacity-100", "pointer-events-auto");
-      backdrop?.classList.add("opacity-0", "pointer-events-none");
-      document.body.style.overflow = "";
-      toggleBtn?.setAttribute("aria-expanded", "false");
+      drawer.classList.remove("translate-x-0");
+      drawer.classList.add("translate-x-full");
+      drawer.setAttribute("aria-hidden", "true");
+
+      backdrop.classList.remove("opacity-100", "pointer-events-auto");
+      backdrop.classList.add("opacity-0", "pointer-events-none");
+      backdrop.setAttribute("aria-hidden", "true");
+
+      toggleBtn.setAttribute("aria-expanded", "false");
       hamburgerIcon?.classList.remove("hidden");
       closeIcon?.classList.add("hidden");
 
-      if (
-        previousActiveElement &&
-        typeof previousActiveElement.focus === "function"
-      ) {
+      // Unlock page scroll and resume Lenis (Rule 5)
+      document.documentElement.classList.remove("menu-open");
+      (window as any).lenis?.start();
+
+      // Return focus to toggle button (Rule 4)
+      if (previousActiveElement && typeof previousActiveElement.focus === "function") {
         previousActiveElement.focus();
+      } else {
+        toggleBtn.focus();
       }
     }
 
     toggleBtn.addEventListener("click", () => {
-      const isExpanded = toggleBtn.getAttribute("aria-expanded") === "true";
-      if (isExpanded) {
+      const isOpen = toggleBtn.getAttribute("aria-expanded") === "true";
+      if (isOpen) {
         closeMenu();
       } else {
         openMenu();
@@ -326,44 +361,38 @@ const currentPath = Astro.url.pathname;
     closeBtn?.addEventListener("click", closeMenu);
     backdrop.addEventListener("click", closeMenu);
 
-    // Keyboard accessibility: Escape to close and Tab focus trap
-    document.addEventListener("keydown", (e) => {
-      if (toggleBtn.getAttribute("aria-expanded") !== "true") return;
+    // Close on any mobile link click (Rule 3)
+    navLinks.forEach((link) => {
+      link.addEventListener("click", closeMenu);
+    });
 
-      if (e.key === "Escape") {
+    // Close on Escape key (Rule 3)
+    document.addEventListener("keydown", (e: KeyboardEvent) => {
+      if (e.key === "Escape" && toggleBtn.getAttribute("aria-expanded") === "true") {
         closeMenu();
-        return;
-      }
-
-      if (e.key === "Tab") {
-        const focusables = getFocusableElements();
-        if (focusables.length === 0) return;
-
-        const first = focusables[0];
-        const last = focusables[focusables.length - 1];
-
-        if (e.shiftKey) {
-          if (document.activeElement === first) {
-            e.preventDefault();
-            last.focus();
-          }
-        } else {
-          if (document.activeElement === last) {
-            e.preventDefault();
-            first.focus();
-          }
-        }
       }
     });
 
-    // Close menu when navigating internally
-    const drawerLinks = drawer.querySelectorAll("a");
-    drawerLinks.forEach((link) => {
-      link.addEventListener("click", closeMenu);
+    // Close when viewport grows past 1024px (Rule 3)
+    const mql = window.matchMedia("(min-width: 1024px)");
+    mql.addEventListener("change", (e) => {
+      if (e.matches && toggleBtn.getAttribute("aria-expanded") === "true") {
+        closeMenu();
+      }
     });
   }
 
-  // Setup on initial load and after client navigation
-  setupMobileMenu();
-  document.addEventListener("astro:page-load", setupMobileMenu);
+  // Ensure menu is unlocked on page transitions (Rule 5 & 6)
+  function handlePageLoad() {
+    document.documentElement.classList.remove("menu-open");
+    (window as any).lenis?.start();
+    setupMobileMenu();
+  }
+
+  document.addEventListener("astro:page-load", handlePageLoad);
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", handlePageLoad);
+  } else {
+    handlePageLoad();
+  }
 </script>

@@ -1,30 +1,5 @@
 ---
-import BaseLayout from "../../layouts/BaseLayout.astro";
-import SectionHeading from "../../components/SectionHeading.astro";
-import { siteConfig } from "../../data/site";
+import PrivacyPage from "../privacy.astro";
 ---
 
-<BaseLayout
-  title="Privacy Policy | Renol Foods"
-  description="Privacy and data protection policy for Renol Foods B2B inquiries and sample requests."
->
-  <section class="py-16 lg:py-24 bg-cream">
-    <div class="section-container max-w-4xl">
-      <SectionHeading
-        eyebrow="Legal & Governance"
-        title="Privacy Policy"
-        subtitle="How Renol Foods handles commercial communications and sample dispatch data."
-        align="left"
-      />
-
-      <div class="mt-10 bg-cream-50 p-8 rounded-3xl border border-green-black/10 text-forest-800 space-y-4 text-sm leading-relaxed">
-        <p>
-          Renol Foods operates strictly as a Business-to-Business (B2B) food ingredient manufacturer. Information collected via this website (including names, corporate emails, phone numbers, and delivery addresses) is used solely for processing product sample shipments, generating commercial quotes, and technical follow-ups.
-        </p>
-        <p>
-          We do not sell, rent, or trade your corporate contact information to third parties. For any privacy queries or data removal requests, please reach our desk at {siteConfig.contact.displayPhones[0]}.
-        </p>
-      </div>
-    </div>
-  </section>
-</BaseLayout>
+<PrivacyPage />

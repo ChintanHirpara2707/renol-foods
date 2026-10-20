@@ -1,36 +1,5 @@
 ---
-import BaseLayout from "../../layouts/BaseLayout.astro";
-import SectionHeading from "../../components/SectionHeading.astro";
-import { siteConfig } from "../../data/site";
+import TermsPage from "../terms.astro";
 ---
 
-<BaseLayout
-  title="Terms of Supply | Renol Foods"
-  description="Commercial supply terms and order information for Renol Foods products."
->
-  <section class="py-16 lg:py-24 bg-cream">
-    <div class="section-container max-w-4xl">
-      <SectionHeading
-        eyebrow="Commercial Standards"
-        title="Terms of Supply & Commercial Orders"
-        subtitle="Standard operating guidelines for sample requests, quotes, and commercial order fulfillment."
-        align="left"
-      />
-
-      <div class="mt-10 bg-cream-50 p-8 rounded-3xl border border-green-black/10 text-forest-800 space-y-4 text-sm leading-relaxed">
-        <p>
-          <strong>1. Business-to-Business Supply:</strong> Renol Foods supplies products exclusively to businesses including food processors, ingredient blenders, bakeries, beverage companies, and export buyers.
-        </p>
-        <p>
-          <strong>2. Product Specifications:</strong> Technical specifications, parameter sheets, and batch documentation are provided upon request during sample and quote qualification.
-        </p>
-        <p>
-          <strong>3. Order Quantities:</strong> Commercial orders and custom manufacturing runs are subject to minimum order quantities determined by product category and packaging format.
-        </p>
-        <p>
-          For order inquiries or custom supply arrangements, contact our sales desk at {siteConfig.contact.displayPhones[0]}.
-        </p>
-      </div>
-    </div>
-  </section>
-</BaseLayout>
+<TermsPage />

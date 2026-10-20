@@ -68,7 +68,9 @@
     overflow-x: hidden;
   }
 
-  body.in-detail {
+  body.in-detail,
+  html.menu-open,
+  html.menu-open body {
     overflow: hidden !important;
   }
 
