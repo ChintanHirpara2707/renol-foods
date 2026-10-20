@@ -1,0 +1,1394 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Renol Foods · Powder Studio (prototype)</title>
+    <meta name="color-scheme" content="dark">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Instrument+Sans:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            color-scheme: dark;
+            --ink: #ffffff;
+            --ink-2: rgba(255, 255, 255, .7);
+            --ink-3: rgba(255, 255, 255, .46);
+            --line: rgba(255, 255, 255, .18);
+            --panel: #121214;
+            --accent: #ffb020;
+            --on: #140a00;
+            --display: 'Bricolage Grotesque', 'Arial Narrow', Impact, sans-serif;
+            --body: 'Instrument Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+            --cw: clamp(170px, min(52vw, 34vh), 340px);
+            box-sizing: border-box;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: inherit
+        }
+
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            background: #0b0b0d;
+            color: var(--ink);
+            font-family: var(--body);
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased
+        }
+
+        html {
+            scroll-padding-top: env(safe-area-inset-top, 0px)
+        }
+
+        button {
+            font: inherit;
+            color: inherit;
+            cursor: pointer
+        }
+
+        :focus-visible {
+            outline: 2px solid #fff;
+            outline-offset: 3px
+        }
+
+        /* backgrounds: one layer per product, cross-faded */
+        .bgs {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            background: #0b0b0d
+        }
+
+        .bg {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            transition: opacity .9s ease;
+            background: radial-gradient(62% 58% at 50% 44%, var(--glow) 0%, transparent 100%), var(--base)
+        }
+
+        .bg::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(120% 90% at 50% 50%, transparent 55%, rgba(0, 0, 0, .55) 100%)
+        }
+
+        .bg.on {
+            opacity: 1
+        }
+
+        /* top bar */
+        .top {
+            position: fixed;
+            left: 0;
+            right: 0;
+            top: 0;
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: calc(16px + env(safe-area-inset-top, 0px)) 24px 16px;
+            pointer-events: none
+        }
+
+        .top>* {
+            pointer-events: auto
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: var(--display);
+            font-weight: 800;
+            font-size: 20px;
+            letter-spacing: -.02em
+        }
+
+        .logo svg {
+            width: 26px;
+            height: 26px
+        }
+
+        .pill {
+            border: 1px solid var(--line);
+            background: rgba(255, 255, 255, .07);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 999px;
+            padding: 10px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background .2s, border-color .2s
+        }
+
+        .pill:hover {
+            background: rgba(255, 255, 255, .14);
+            border-color: rgba(255, 255, 255, .34)
+        }
+
+        .back {
+            display: none
+        }
+
+        body.in-detail .back {
+            display: inline-flex
+        }
+
+        body.in-detail .logo {
+            display: none
+        }
+
+        /* stage */
+        .stage {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+            touch-action: pan-y;
+            user-select: none;
+            -webkit-user-select: none;
+            cursor: grab
+        }
+
+        .stage:active {
+            cursor: grabbing
+        }
+
+        .ghost {
+            position: absolute;
+            left: 50%;
+            top: 46%;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+            white-space: nowrap;
+            pointer-events: none;
+            font-family: var(--display);
+            font-weight: 800;
+            font-size: clamp(80px, 19vw, 300px);
+            line-height: 1;
+            letter-spacing: -.04em;
+            color: transparent;
+            -webkit-text-stroke: 1.5px rgba(255, 255, 255, .15)
+        }
+
+        .ring {
+            position: absolute;
+            left: 50%;
+            top: 46%;
+            width: 0;
+            height: 0;
+            z-index: 3;
+            perspective: 1400px
+        }
+
+        .card {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: var(--cw);
+            height: calc(var(--cw)*1.2);
+            padding: 0;
+            border: 0;
+            background: none;
+            will-change: transform, opacity;
+            -webkit-tap-highlight-color: transparent;
+            filter: drop-shadow(0 28px 36px rgba(0, 0, 0, .45))
+        }
+
+        .card .fruit {
+            display: block;
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+            transform-origin: 50% 62%
+        }
+
+        .card:focus-visible {
+            outline: 2px solid #fff;
+            outline-offset: 10px;
+            border-radius: 28px
+        }
+
+        #fx {
+            position: fixed;
+            inset: 0;
+            z-index: 4;
+            pointer-events: none
+        }
+
+        .nameblock {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: calc(92px + env(safe-area-inset-bottom, 0px));
+            z-index: 6;
+            text-align: center;
+            pointer-events: none;
+            padding: 0 16px
+        }
+
+        .name {
+            margin: 0;
+            font-family: var(--display);
+            font-weight: 800;
+            font-size: clamp(44px, 7.5vw, 96px);
+            line-height: .95;
+            letter-spacing: -.035em
+        }
+
+        .sub {
+            margin: 10px 0 0;
+            font-size: 16px;
+            color: var(--ink-2)
+        }
+
+        .hint {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: calc(30px + env(safe-area-inset-bottom, 0px));
+            z-index: 6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: var(--ink-2);
+            pointer-events: none;
+            padding: 0 16px;
+            text-align: center
+        }
+
+        .hint i {
+            flex: none;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 0 0 0 var(--accent);
+            animation: ping 2s infinite
+        }
+
+        @keyframes ping {
+            0% {
+                box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 70%, transparent)
+            }
+
+            80%,
+            100% {
+                box-shadow: 0 0 0 12px transparent
+            }
+        }
+
+        .dots {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+            z-index: 7;
+            display: flex;
+            justify-content: center;
+            gap: 8px
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            padding: 0;
+            border: 0;
+            border-radius: 99px;
+            background: rgba(255, 255, 255, .3);
+            transition: width .35s, background .35s
+        }
+
+        .dot.on {
+            width: 30px;
+            background: var(--accent)
+        }
+
+        .arrow {
+            position: absolute;
+            top: 46%;
+            z-index: 8;
+            width: 48px;
+            height: 48px;
+            margin-top: -24px;
+            padding: 0;
+            display: grid;
+            place-items: center;
+            border: 1px solid var(--line);
+            border-radius: 50%;
+            background: rgba(255, 255, 255, .07);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px)
+        }
+
+        .arrow:hover {
+            background: rgba(255, 255, 255, .16)
+        }
+
+        .arrow.l {
+            left: 24px
+        }
+
+        .arrow.r {
+            right: 24px
+        }
+
+        .arrow svg {
+            width: 20px;
+            height: 20px
+        }
+
+        @media (max-width:700px) {
+            .arrow {
+                display: none
+            }
+
+            .top {
+                padding-left: 16px;
+                padding-right: 16px
+            }
+        }
+
+        /* detail */
+        .detail {
+            position: fixed;
+            inset: 0;
+            z-index: 30;
+            display: none;
+            overflow-y: auto;
+            overflow-x: hidden;
+            background: #0b0b0d
+        }
+
+        .dbgs {
+            position: fixed;
+            inset: 0;
+            z-index: 0
+        }
+
+        .dwrap {
+            position: relative;
+            z-index: 1;
+            min-height: 100%;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr)
+        }
+
+        .dvis {
+            position: relative;
+            display: grid;
+            place-items: center;
+            padding: clamp(88px, 13vh, 130px) 24px 56px
+        }
+
+        .pwrap {
+            position: relative;
+            width: min(360px, 72%)
+        }
+
+        .pouch {
+            display: block;
+            width: 100%;
+            height: auto;
+            filter: drop-shadow(0 36px 40px rgba(0, 0, 0, .5))
+        }
+
+        .pbody {
+            fill: var(--pouch)
+        }
+
+        .pcrimp {
+            fill: var(--pouch);
+            filter: brightness(.82)
+        }
+
+        .mound {
+            position: absolute;
+            left: -18%;
+            right: -18%;
+            bottom: -6%;
+            width: 136%;
+            height: auto;
+            pointer-events: none
+        }
+
+        .mound path.m {
+            fill: var(--powder)
+        }
+
+        .bigfruit {
+            position: absolute;
+            right: -34%;
+            bottom: 4%;
+            width: 56%;
+            height: auto;
+            transform: rotate(14deg);
+            filter: drop-shadow(0 18px 22px rgba(0, 0, 0, .45))
+        }
+
+        .dinfo {
+            align-self: center;
+            max-width: 640px;
+            padding: clamp(88px, 14vh, 140px) clamp(24px, 5vw, 72px) 72px
+        }
+
+        .chip {
+            display: inline-block;
+            padding: 6px 12px;
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            font-size: 13px;
+            color: var(--ink-2);
+            margin: 0 0 18px
+        }
+
+        .dname {
+            margin: 0;
+            font-family: var(--display);
+            font-weight: 800;
+            font-size: clamp(44px, 6vw, 84px);
+            line-height: .94;
+            letter-spacing: -.035em
+        }
+
+        .dblurb {
+            margin: 18px 0 0;
+            font-size: 18px;
+            line-height: 1.5;
+            color: var(--ink-2);
+            max-width: 46ch
+        }
+
+        .dinfo h3 {
+            margin: 34px 0 12px;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--ink)
+        }
+
+        .tags {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px
+        }
+
+        .tags li {
+            padding: 7px 13px;
+            border-radius: 999px;
+            font-size: 14px;
+            border: 1px solid var(--line)
+        }
+
+        .tags.use li {
+            border-color: transparent;
+            background: rgba(255, 255, 255, .12);
+            background: color-mix(in srgb, var(--accent) 20%, transparent)
+        }
+
+        .note {
+            margin: 10px 0 0;
+            font-size: 13px;
+            color: var(--ink-3);
+            line-height: 1.45
+        }
+
+        .specs {
+            margin: 0;
+            display: grid;
+            grid-template-columns: 140px 1fr
+        }
+
+        .specs dt,
+        .specs dd {
+            margin: 0;
+            padding: 11px 0;
+            border-top: 1px solid var(--line);
+            font-size: 14px
+        }
+
+        .specs dt {
+            color: var(--ink-2)
+        }
+
+        .specs dd {
+            color: var(--ink-3)
+        }
+
+        .cta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 36px
+        }
+
+        .btn {
+            border: 0;
+            border-radius: 999px;
+            padding: 14px 24px;
+            font-weight: 600;
+            font-size: 15px;
+            background: var(--accent);
+            color: var(--on);
+            transition: transform .2s, filter .2s
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.06)
+        }
+
+        .btn.ghost {
+            background: transparent;
+            color: var(--ink);
+            border: 1px solid var(--line)
+        }
+
+        .btn.ghost:hover {
+            background: rgba(255, 255, 255, .1)
+        }
+
+        .pn {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            margin-top: 44px;
+            padding-top: 20px;
+            border-top: 1px solid var(--line)
+        }
+
+        .pn button {
+            background: none;
+            border: 0;
+            padding: 6px 0;
+            font-size: 15px;
+            color: var(--ink-2)
+        }
+
+        .pn button:hover {
+            color: var(--ink)
+        }
+
+        @media (max-width:860px) {
+            .dwrap {
+                grid-template-columns: 1fr
+            }
+
+            .dvis {
+                padding-top: 96px;
+                padding-bottom: 24px
+            }
+
+            .pwrap {
+                width: min(230px, 58%)
+            }
+
+            .bigfruit {
+                right: -40%
+            }
+
+            .dinfo {
+                padding-top: 24px
+            }
+
+            .specs {
+                grid-template-columns: 110px 1fr
+            }
+        }
+
+        /* sample request dialog */
+        dialog {
+            width: min(460px, 92vw);
+            padding: 0;
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            background: var(--panel);
+            color: var(--ink)
+        }
+
+        dialog::backdrop {
+            background: rgba(0, 0, 0, .6);
+            backdrop-filter: blur(4px)
+        }
+
+        .dbody {
+            padding: 28px
+        }
+
+        .dbody h2 {
+            margin: 0 0 6px;
+            font-family: var(--display);
+            font-size: 28px;
+            letter-spacing: -.02em
+        }
+
+        .dbody p {
+            margin: 0 0 18px;
+            color: var(--ink-2);
+            font-size: 15px;
+            line-height: 1.45
+        }
+
+        .dbody label {
+            display: block;
+            margin: 0 0 14px;
+            font-size: 14px;
+            color: var(--ink-2)
+        }
+
+        .dbody input,
+        .dbody select {
+            display: block;
+            width: 100%;
+            margin-top: 6px;
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: 1px solid var(--line);
+            background: #1b1b1f;
+            color: var(--ink);
+            font: inherit
+        }
+
+        .dbody .row {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 8px
+        }
+
+        .demo {
+            font-size: 12px;
+            color: var(--ink-3);
+            margin-top: 14px
+        }
+
+        @media (prefers-reduced-motion:reduce) {
+            .bg {
+                transition-duration: .01s
+            }
+
+            .hint i {
+                animation: none
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- shared fruit artwork -->
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+        <defs>
+            <linearGradient id="g-mango" x1=".2" y1="0" x2=".8" y2="1">
+                <stop offset="0" stop-color="#ffe066" />
+                <stop offset=".45" stop-color="#ffa41b" />
+                <stop offset="1" stop-color="#ee4b2b" />
+            </linearGradient>
+            <radialGradient id="g-tomato" cx=".38" cy=".32" r=".8">
+                <stop offset="0" stop-color="#ff7a63" />
+                <stop offset=".55" stop-color="#e11d2a" />
+                <stop offset="1" stop-color="#8f0d1b" />
+            </radialGradient>
+            <radialGradient id="g-lemon" cx=".38" cy=".3" r=".85">
+                <stop offset="0" stop-color="#fff7a1" />
+                <stop offset=".5" stop-color="#ffd90f" />
+                <stop offset="1" stop-color="#d9a600" />
+            </radialGradient>
+            <linearGradient id="g-leaf" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#6ee08a" />
+                <stop offset="1" stop-color="#1c7a3a" />
+            </linearGradient>
+            <linearGradient id="g-ginger" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#efd0a0" />
+                <stop offset=".55" stop-color="#c99b5e" />
+                <stop offset="1" stop-color="#9a6d34" />
+            </linearGradient>
+            <g id="leaf">
+                <path d="M100 220 C58 196 50 120 100 30 C150 120 142 196 100 220Z" fill="url(#g-leaf)" />
+                <path d="M100 216 L100 50" stroke="#c8f7d0" stroke-opacity=".55" stroke-width="3" stroke-linecap="round"
+                    fill="none" />
+                <path d="M100 172 L74 148 M100 142 L126 114 M100 122 L76 100 M100 92 L120 74" stroke="#c8f7d0"
+                    stroke-opacity=".4" stroke-width="2" stroke-linecap="round" fill="none" />
+            </g>
+        </defs>
+
+        <symbol id="f-mango" viewBox="0 0 200 240">
+            <path d="M104 40 C158 34 190 90 184 146 C178 202 138 232 92 224 C44 216 14 174 22 120 C28 72 58 44 104 40Z"
+                fill="url(#g-mango)" />
+            <path d="M150 64 C176 92 180 150 150 196" fill="none" stroke="#ee4b2b" stroke-opacity=".35"
+                stroke-width="16" stroke-linecap="round" />
+            <ellipse cx="62" cy="104" rx="12" ry="32" fill="#fff" fill-opacity=".28" transform="rotate(14 62 104)" />
+            <path d="M104 42 C102 30 107 22 114 16" fill="none" stroke="#5a3a12" stroke-width="5"
+                stroke-linecap="round" />
+            <path d="M114 20 C138 6 166 12 178 28 C152 34 128 32 114 20Z" fill="url(#g-leaf)" />
+            <path d="M116 21 C136 20 156 24 170 28" fill="none" stroke="#c8f7d0" stroke-opacity=".6"
+                stroke-width="1.5" />
+        </symbol>
+
+        <symbol id="f-tomato" viewBox="0 0 200 240">
+            <path d="M100 56 C150 40 192 74 190 130 C188 188 148 226 100 226 C52 226 12 188 10 130 C8 74 50 40 100 56Z"
+                fill="url(#g-tomato)" />
+            <ellipse cx="58" cy="108" rx="16" ry="30" fill="#fff" fill-opacity=".26" transform="rotate(24 58 108)" />
+            <path d="M100 52 L100 30" stroke="#3b7d2a" stroke-width="8" stroke-linecap="round" />
+            <path d="M100 50 L113 66 L134 58 L126 78 L148 84 L127 95 L100 88 L73 95 L52 84 L74 78 L66 58 L87 66Z"
+                fill="#2f9e44" />
+        </symbol>
+
+        <symbol id="f-lemon" viewBox="0 0 200 240">
+            <image id="lemonSym" x="0" y="0" width="200" height="240" preserveAspectRatio="xMidYMid meet" />
+        </symbol>
+
+        <symbol id="f-spinach" viewBox="0 0 200 240">
+            <path d="M100 216 L100 236" stroke="#8bd69a" stroke-width="7" stroke-linecap="round" />
+            <g opacity=".92">
+                <use href="#leaf" transform="translate(100 222) rotate(-34) scale(.86) translate(-100 -222)" />
+            </g>
+            <g opacity=".92">
+                <use href="#leaf" transform="translate(100 222) rotate(34) scale(.86) translate(-100 -222)" />
+            </g>
+            <use href="#leaf" />
+        </symbol>
+
+        <symbol id="f-ginger" viewBox="0 0 200 240">
+            <path
+                d="M40 160 C18 130 36 104 64 108 C66 76 98 64 116 84 C126 52 164 56 166 90 C196 92 198 130 178 146 C192 168 170 198 146 190 C140 214 100 216 90 196 C66 208 36 192 40 160Z"
+                fill="url(#g-ginger)" />
+            <ellipse cx="146" cy="62" rx="15" ry="8" fill="#f3e3a8" />
+            <path d="M62 122 C74 128 84 128 94 122 M104 152 C118 160 132 160 146 152 M60 170 C72 178 84 178 96 172"
+                stroke="#7a5424" stroke-opacity=".4" stroke-width="3" fill="none" stroke-linecap="round" />
+            <ellipse cx="78" cy="138" rx="14" ry="22" fill="#fff" fill-opacity=".18" transform="rotate(20 78 138)" />
+        </symbol>
+
+        <symbol id="f-tamarind" viewBox="0 0 200 240">
+            <g fill="none" stroke-linecap="round">
+                <path d="M44 56 L30 46" stroke="#5a3a1a" stroke-width="6" />
+                <path d="M44 56 C118 36 176 108 142 196" stroke="#4a2a10" stroke-width="46" />
+                <path d="M44 56 C118 36 176 108 142 196" stroke="#a8683a" stroke-width="40" />
+                <path d="M44 56 C118 36 176 108 142 196" stroke="#4a2a10" stroke-opacity=".5" stroke-width="40"
+                    stroke-linecap="butt" stroke-dasharray="2 30" />
+                <path d="M38 48 C112 26 168 98 134 188" stroke="#d6a06a" stroke-opacity=".55" stroke-width="7" />
+            </g>
+        </symbol>
+    </svg>
+
+    <div class="bgs" id="bgs"></div>
+
+    <header class="top">
+        <div class="logo" aria-label="Renol Foods">
+            <svg viewBox="0 0 32 32" aria-hidden="true">
+                <circle cx="16" cy="16" r="15" fill="#fff" fill-opacity=".1" stroke="#fff" stroke-opacity=".5" />
+                <path d="M9 21 C9 12 16 8 23 8 C23 16 19 23 11 23Z" fill="#6ee08a" />
+                <path d="M10 22 L19 13" stroke="#0b0b0d" stroke-width="1.6" stroke-linecap="round" />
+            </svg>
+            Renol Foods
+        </div>
+        <button class="pill back" id="back" type="button">&larr; All powders</button>
+        <button class="pill" id="reqTop" type="button">Request a sample</button>
+    </header>
+
+    <main class="stage" id="stage"
+        aria-label="Powder carousel. Use arrow keys to browse, Enter to turn the fruit into powder." tabindex="-1">
+        <div class="ghost" id="ghost" aria-hidden="true"></div>
+        <div class="ring" id="ring"></div>
+        <canvas id="fx" aria-hidden="true"></canvas>
+
+        <button class="arrow l ui hudfade" id="prev" type="button" aria-label="Previous product"><svg
+                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M15 5l-7 7 7 7" />
+            </svg></button>
+        <button class="arrow r ui hudfade" id="next" type="button" aria-label="Next product"><svg viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 5l7 7-7 7" />
+            </svg></button>
+
+        <div class="nameblock" aria-live="polite">
+            <h1 class="name" id="name">Mango</h1>
+            <p class="sub" id="sub">Fruit powder</p>
+        </div>
+        <div class="dots ui hudfade" id="dots"></div>
+        <div class="hint hudfade" id="hint"><i></i><span id="hintTxt">Click the fruit to turn it into powder</span>
+        </div>
+    </main>
+
+    <section class="detail" id="detail" aria-label="Product details" inert>
+        <div class="dbgs" id="dbgs"></div>
+        <div class="dwrap">
+            <div class="dvis dswap">
+                <div class="pwrap" id="pwrap">
+                    <svg class="pouch" viewBox="0 0 240 340" role="img" aria-label="Powder pouch">
+                        <path class="pbody" d="M28 34 H212 L220 318 Q220 332 206 332 H34 Q20 332 20 318Z" />
+                        <path d="M28 34 H92 L84 332 H34 Q20 332 20 318Z" fill="#fff" fill-opacity=".1" />
+                        <rect class="pcrimp" x="28" y="14" width="184" height="32" rx="4" />
+                        <path d="M34 22 H206 M34 30 H206 M34 38 H206" stroke="#000" stroke-opacity=".2" />
+                        <text x="120" y="70" text-anchor="middle" font-size="12" font-weight="600" fill="#fff"
+                            fill-opacity=".9" style="font-family:var(--body);letter-spacing:.06em">Renol Foods</text>
+                        <rect x="44" y="86" width="152" height="204" rx="12" fill="#fff" fill-opacity=".95" />
+                        <svg x="70" y="100" width="100" height="120" viewBox="0 0 200 240">
+                            <use id="pouchFruit" href="#f-mango" />
+                        </svg>
+                        <text id="pouchName" x="120" y="248" text-anchor="middle" font-size="24" font-weight="800"
+                            fill="#17120b" style="font-family:var(--display);letter-spacing:-.02em">Mango</text>
+                        <text id="pouchSub" x="120" y="268" text-anchor="middle" font-size="12" fill="#17120b"
+                            fill-opacity=".65" style="font-family:var(--body)">Fruit powder</text>
+                    </svg>
+                    <svg class="bigfruit" viewBox="0 0 200 240" aria-hidden="true">
+                        <use id="bigFruit" href="#f-mango" />
+                    </svg>
+                    <svg class="mound" viewBox="0 0 420 130" aria-hidden="true">
+                        <path class="m"
+                            d="M4 128 C70 118 118 84 168 50 C190 36 230 36 252 50 C302 84 350 118 416 128Z" />
+                        <path d="M150 62 C180 42 240 42 270 62 C240 54 180 54 150 62Z" fill="#fff" fill-opacity=".28" />
+                        <g fill="#000" fill-opacity=".12">
+                            <circle cx="110" cy="108" r="2" />
+                            <circle cx="150" cy="96" r="1.6" />
+                            <circle cx="210" cy="72" r="1.6" />
+                            <circle cx="262" cy="92" r="2" />
+                            <circle cx="318" cy="110" r="1.8" />
+                            <circle cx="186" cy="110" r="1.6" />
+                            <circle cx="236" cy="108" r="1.8" />
+                        </g>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="dinfo dswap">
+                <p class="chip" id="dCat">Fruit powder</p>
+                <h2 class="dname" id="dName">Mango Powder</h2>
+                <p class="dblurb" id="dBlurb"></p>
+
+                <h3>What's inside</h3>
+                <ul class="tags" id="dInside"></ul>
+                <p class="note">Ingredients as listed on renolfoods.com. Confirm against the final label before launch.
+                </p>
+
+                <h3>Where it's used</h3>
+                <ul class="tags use" id="dUses"></ul>
+
+                <h3>Specifications</h3>
+                <dl class="specs">
+                    <dt>Moisture</dt>
+                    <dd>Add from lab report</dd>
+                    <dt>Particle size</dt>
+                    <dd>Add from lab report</dd>
+                    <dt>Shelf life</dt>
+                    <dd>Add from lab report</dd>
+                    <dt>Packing</dt>
+                    <dd>Add pack sizes</dd>
+                </dl>
+
+                <div class="cta">
+                    <button class="btn" id="reqDetail" type="button">Request a sample</button>
+                    <button class="btn ghost" id="toContact" type="button">Ask for a quote</button>
+                </div>
+
+                <div class="pn">
+                    <button id="dPrev" type="button">&larr; <span id="dPrevN"></span></button>
+                    <button id="dNext" type="button"><span id="dNextN"></span> &rarr;</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <dialog id="dlg" aria-labelledby="dlgTitle">
+        <div class="dbody">
+            <div id="fForm">
+                <h2 id="dlgTitle">Request a sample</h2>
+                <p>Tell us what you need and we will reply with sample details.</p>
+                <form id="sampleForm">
+                    <label>Your name<input name="n" required autocomplete="name"></label>
+                    <label>Work email<input name="e" type="email" required autocomplete="email"></label>
+                    <label>Product<select id="fProd" name="p"></select></label>
+                    <label>Quantity needed<input name="q" placeholder="For example, 500 g sample"></label>
+                    <div class="row">
+                        <button class="btn ghost" type="button" id="dlgCancel">Cancel</button>
+                        <button class="btn" type="submit">Send request</button>
+                    </div>
+                    <p class="demo">Prototype form: nothing is sent yet.</p>
+                </form>
+            </div>
+            <div id="fDone" hidden>
+                <h2>Request noted</h2>
+                <p id="fDoneTxt"></p>
+                <div class="row"><button class="btn" type="button" id="dlgClose">Done</button></div>
+            </div>
+        </div>
+    </dialog>
+
+    <script type="application/json"
+<!-- lemonFrames removed -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script>
+        (() => {
+            const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+            const $ = (s, r = document) => r.querySelector(s);
+            const mod = (a, b) => ((a % b) + b) % b;
+            const T = s => RM ? 0.01 : s;
+            const hasGsap = !!window.gsap;
+            if (!hasGsap) { document.body.insertAdjacentHTML('beforeend', '<p style="position:fixed;inset:auto 16px 16px;z-index:99">The animation library could not load. Please reload.</p>'); return; }
+
+            const data = [
+                {
+                    id: 'tomato', name: 'Tomato', cat: 'Vegetable', accent: '#ff5a4d', glow: '#d81a28', base: '#1c0507', pouch: '#b91c1c', powder: '#d94a36',
+                    particles: ['#ff6b57', '#e11d2a', '#c4162a', '#ff8a73'],
+                    blurb: 'Hot break and cold break tomato powder made with a low-temperature spray drying process.',
+                    inside: ['Tomatoes', 'Silicon dioxide'], uses: ['Soups', 'Sauces', 'Ready dishes', 'Seasoning blends']
+                },
+                {
+                    id: 'lemon', spin: true, name: 'Lemon', cat: 'Fruit', accent: '#ffe14a', glow: '#7d6200', base: '#1a1700', pouch: '#b58900', powder: '#f1e07a',
+                    particles: ['#fff176', '#ffd400', '#f2e27a', '#e9c600'],
+                    blurb: 'Spray-dried lemon juice with a concentrated citrus kick and no squeezing.',
+                    inside: ['Lemon juice concentrate', 'Corn syrup solids', 'Lemon oil'], uses: ['Fish', 'Chicken', 'Salads', 'Marinades', 'Baking', 'Beverages']
+                },
+                {
+                    id: 'mango', name: 'Mango', cat: 'Fruit', accent: '#ffb020', glow: '#f27a00', base: '#1c0d02', pouch: '#c2410c', powder: '#f3b94e',
+                    particles: ['#ffcf4a', '#ff9a1f', '#f2542d', '#f6c667'],
+                    blurb: 'A tangy-sweet fruit powder for North Indian chaats and chutneys, and for smoothies and baking.',
+                    inside: ['Mango', 'Sugar', 'Citric acid', 'Sulfur dioxide (preservative)', 'Sulfites'], uses: ['Chaats', 'Soups', 'Gravies', 'Pakoras', 'Chutneys', 'Smoothies', 'Baking']
+                },
+                {
+                    id: 'spinach', name: 'Spinach', cat: 'Vegetable', accent: '#4ade80', glow: '#128a3c', base: '#04150a', pouch: '#15803d', powder: '#5fa046',
+                    particles: ['#52c46a', '#2f9e44', '#1f7a3a', '#7ad08a'],
+                    blurb: 'Deep green spinach powder that adds colour and nutrition. Made to customer specifications.',
+                    inside: ['Organic spinach'], uses: ['Smoothies', 'Juices', 'Soups', 'Pasta sauces', 'Baked goods']
+                },
+                {
+                    id: 'ginger', name: 'Ginger', cat: 'Vegetable', accent: '#f0c48a', glow: '#a8702c', base: '#1a1007', pouch: '#92602b', powder: '#dcbf90',
+                    particles: ['#e8c58f', '#c79a5b', '#f3e3a8', '#a8773c'],
+                    blurb: 'Warm, bold ginger powder without the peeling and grating.',
+                    inside: ['Dried ginger'], uses: ['Curries', 'Stir-fries', 'Soups', 'Marinades', 'Baked goods', 'Beverages']
+                },
+                {
+                    id: 'tamarind', name: 'Tamarind', cat: 'Fruit', accent: '#d98b4e', glow: '#8f4a18', base: '#170a03', pouch: '#7c3f14', powder: '#9a6a42',
+                    particles: ['#a8683a', '#8b5a2b', '#c98f5b', '#6b3f1d'],
+                    blurb: 'Concentrated sweet-and-sour tamarind, ready to use with no sticky pods.',
+                    inside: ['Tamarind', 'Modified corn starch'], uses: ['Chutneys', 'Curries', 'Soups', 'Tamarind rice', 'Sauces', 'Desserts']
+                }
+            ];
+            const n = data.length;
+
+            /* ---------- elements ---------- */
+            const stage = $('#stage'), ring = $('#ring'), detail = $('#detail');
+            const nameEl = $('#name'), subEl = $('#sub'), ghost = $('#ghost'), hintTxt = $('#hintTxt');
+            const cv = $('#fx'), ctx = cv.getContext('2d');
+
+            function buildBgs(host) {
+                data.forEach(p => { const d = document.createElement('div'); d.className = 'bg'; d.style.setProperty('--glow', p.glow); d.style.setProperty('--base', p.base); host.appendChild(d); });
+                return [...host.children];
+            }
+            const bgMain = buildBgs($('#bgs')), bgDetail = buildBgs($('#dbgs'));
+
+            const cards = data.map((p, i) => {
+                const c = document.createElement('button');
+                c.type = 'button'; c.className = 'card'; c.setAttribute('aria-label', p.name + ' powder');
+                c.innerHTML = p.spin ? '<canvas class="fruit" width="400" height="480" aria-hidden="true"></canvas>'
+                    : '<svg class="fruit" viewBox="0 0 200 240" aria-hidden="true"><use href="#f-' + p.id + '"/></svg>';
+                c.addEventListener('click', e => { if (e.detail === 0) activateCard(i); });
+                ring.appendChild(c);
+                return c;
+            });
+
+
+            /* ---------- lemon: 36-frame 360 spin ---------- */
+            const lemonIdx = data.findIndex(p => p.spin);
+            const lemonCv = lemonIdx >= 0 ? cards[lemonIdx].querySelector('canvas.fruit') : null;
+            const lctx = lemonCv ? lemonCv.getContext('2d') : null;
+            const FN = 36, IDLE = 10;
+            const sp = { f: IDLE };
+            let frames = [];
+<!-- lemonFrames removed -->
+            function drawLemon() {
+                if (!lctx || !frames.length) return;
+                const f = sp.f, i0 = Math.floor(f), t = f - i0;
+                const a = frames[mod(i0, FN)], b = frames[mod(i0 + 1, FN)];
+                lctx.clearRect(0, 0, 400, 480);
+                if (a && a.complete) lctx.drawImage(a, 0, 0, 400, 480);
+                if (t > 0.03 && b && b.complete) { lctx.globalAlpha = t; lctx.drawImage(b, 0, 0, 400, 480); lctx.globalAlpha = 1; }
+            }
+            Promise.all(frames.map(im => im.decode ? im.decode().catch(() => { }) : null)).then(() => {
+                drawLemon();
+                const sym = $('#lemonSym'); if (sym && frames[IDLE]) sym.setAttribute('href', frames[IDLE].src);
+            });
+            let introDone = false;
+            function introSpin() {
+                if (introDone || RM || mode !== 'browse' || !data[active].spin) return;
+                introDone = true;
+                gsap.to(sp, { f: '+=36', duration: 2.8, ease: 'power2.inOut', overwrite: true, onUpdate: drawLemon });
+            }
+            // sample real pixels of the current lemon frame so the powder crumbles from its own silhouette and colours
+            function lemonSamples() {
+                const im = frames[mod(Math.round(sp.f), FN)];
+                if (!im || !im.complete) return null;
+                const W = 100, H = 120, oc = document.createElement('canvas'); oc.width = W; oc.height = H;
+                const o = oc.getContext('2d'); o.drawImage(im, 0, 0, W, H);
+                const d = o.getImageData(0, 0, W, H).data, list = [];
+                let u0 = 1, u1 = 0, v0 = 1, v1 = 0;
+                for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+                    const k = (y * W + x) * 4; if (d[k + 3] < 200) continue;
+                    const u = (x + 0.5) / W, v = (y + 0.5) / H, m = 0.3 + Math.random() * 0.3;
+                    u0 = Math.min(u0, u); u1 = Math.max(u1, u); v0 = Math.min(v0, v); v1 = Math.max(v1, v);
+                    list.push({ u, v, c: 'rgb(' + Math.round(d[k] + (248 - d[k]) * m) + ',' + Math.round(d[k + 1] + (236 - d[k + 1]) * m) + ',' + Math.round(d[k + 2] + (170 - d[k + 2]) * m) + ')' });
+                }
+                return list.length ? { list, u0, u1, v0, v1 } : null;
+            }
+
+            const dotsEl = $('#dots');
+            const dots = data.map((p, i) => {
+                const b = document.createElement('button');
+                b.type = 'button'; b.className = 'dot'; b.setAttribute('aria-label', 'Show ' + p.name);
+                b.addEventListener('click', () => { if (mode === 'browse') goTo(st.pos + offset(i)); });
+                dotsEl.appendChild(b); return b;
+            });
+
+            /* ---------- state ---------- */
+            const st = { pos: 2 };
+            let active = 2, mode = 'browse';
+            const offset = i => mod(i - st.pos + n / 2, n) - n / 2;
+            const spacing = () => cards[0].offsetWidth * (innerWidth < 700 ? 0.8 : 0.92);
+
+            function render() {
+                const S = spacing();
+                cards.forEach((c, i) => {
+                    const o = offset(i), a = Math.abs(o);
+                    const s = Math.max(0.34, 1 - a * 0.24);
+                    const op = a < 1 ? 1 - a * 0.45 : a < 2 ? 0.55 - (a - 1) * 0.33 : Math.max(0, 0.22 - (a - 2) * 0.22);
+                    const y = Math.pow(a, 1.6) * 20;
+                    c.style.transform = 'translate(-50%,-50%) translate3d(' + (o * S) + 'px,' + y + 'px,0) rotateY(' + (-o * 16) + 'deg) rotate(' + (o * 5) + 'deg) scale(' + s + ')';
+                    c.style.opacity = op;
+                    c.style.zIndex = Math.round(100 - a * 10);
+                    c.style.visibility = a > 3 ? 'hidden' : 'visible';
+                    c.tabIndex = a < 0.5 ? 0 : -1;
+                });
+            }
+
+            let firstTheme = true;
+            function applyTheme() {
+                const p = data[active];
+                const root = document.documentElement.style;
+                root.setProperty('--accent', p.accent);
+                root.setProperty('--on', '#140a00');
+                bgMain.forEach((b, k) => b.classList.toggle('on', k === active));
+                dots.forEach((d, k) => d.classList.toggle('on', k === active));
+                ghost.textContent = p.name.toUpperCase();
+                nameEl.textContent = p.name;
+                subEl.textContent = p.cat + ' powder';
+                hintTxt.textContent = p.spin ? 'Drag the lemon to spin it. Click it to turn it into powder' : 'Click or tap the ' + p.name.toLowerCase() + ' to turn it into powder';
+                if (p.spin) setTimeout(introSpin, 800);
+                if (!firstTheme && !RM) {
+                    gsap.fromTo([nameEl, subEl], { yPercent: 40, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.6, ease: 'power3.out', stagger: 0.05, overwrite: true });
+                    gsap.fromTo(ghost, { opacity: 0, scale: 0.96 }, { opacity: 1, scale: 1, duration: 0.8, ease: 'power3.out', overwrite: true });
+                }
+                firstTheme = false;
+            }
+
+            function sync() { const i = mod(Math.round(st.pos), n); if (i !== active) { active = i; applyTheme(); } }
+            function goTo(target) {
+                gsap.to(st, { pos: target, duration: T(0.9), ease: 'power3.out', overwrite: true, onUpdate() { render(); sync(); } });
+            }
+            const step = d => { if (mode === 'browse') goTo(Math.round(st.pos) + d); };
+
+            $('#prev').addEventListener('click', () => step(-1));
+            $('#next').addEventListener('click', () => step(1));
+
+            /* ---------- pointer / keys ---------- */
+            let drag = null, wl = 0;
+            stage.addEventListener('pointerdown', e => {
+                if (mode !== 'browse' || e.target.closest('.ui')) return;
+                gsap.killTweensOf(st);
+                let spin = false;
+                if (data[active].spin) {
+                    gsap.killTweensOf(sp);
+                    const rr = cards[active].getBoundingClientRect();
+                    spin = e.clientX >= rr.left && e.clientX <= rr.right && e.clientY >= rr.top && e.clientY <= rr.bottom;
+                }
+                drag = { x: e.clientX, y: e.clientY, p: st.pos, moved: false, lp: st.pos, lt: performance.now(), v: 0, spin, lx: e.clientX, ly: e.clientY, sv: 0 };
+                stage.setPointerCapture(e.pointerId);
+            });
+            stage.addEventListener('pointermove', e => {
+                if (!drag) return;
+                if (drag.spin) {
+                    if (Math.hypot(e.clientX - drag.x, e.clientY - drag.y) > 6) drag.moved = true;
+                    if (!drag.moved) return;
+                    const ddx = e.clientX - drag.lx, ddy = e.clientY - drag.ly;
+                    const dd = Math.abs(ddx) >= Math.abs(ddy) ? ddx : ddy;
+                    const now = performance.now(), dt = Math.max(1, now - drag.lt), df = dd / 11;
+                    sp.f += df;
+                    drag.sv = 0.8 * drag.sv + 0.2 * (df / dt * 1000);
+                    drag.lx = e.clientX; drag.ly = e.clientY; drag.lt = now;
+                    drawLemon(); return;
+                }
+                const dx = e.clientX - drag.x;
+                if (Math.abs(dx) > 6) drag.moved = true;
+                if (!drag.moved) return;
+                st.pos = drag.p - dx / spacing();
+                const now = performance.now(), dt = now - drag.lt;
+                if (dt > 0) { drag.v = (st.pos - drag.lp) / dt * 1000; drag.lp = st.pos; drag.lt = now; }
+                render(); sync();
+            });
+            const endDrag = e => {
+                if (!drag) return;
+                const d = drag; drag = null;
+                if (d.spin && d.moved) {
+                    gsap.to(sp, { f: sp.f + Math.max(-14, Math.min(14, d.sv * 0.35)), duration: T(1.1), ease: 'power3.out', overwrite: true, onUpdate: drawLemon });
+                    return;
+                }
+                if (!d.moved) {
+                    const el = document.elementFromPoint(e.clientX, e.clientY);
+                    const c = el && el.closest ? el.closest('.card') : null;
+                    if (c) activateCard(cards.indexOf(c));
+                    return;
+                }
+                const target = Math.round(st.pos + Math.max(-1.5, Math.min(1.5, d.v * 0.18)));
+                goTo(target);
+            };
+            stage.addEventListener('pointerup', endDrag);
+            stage.addEventListener('pointercancel', endDrag);
+            stage.addEventListener('wheel', e => {
+                if (mode !== 'browse') return;
+                const d = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+                if (Math.abs(d) < 12 || performance.now() - wl < 500) return;
+                wl = performance.now(); step(d > 0 ? 1 : -1);
+            }, { passive: true });
+            window.addEventListener('keydown', e => {
+                if ($('#dlg').open) return;
+                if (mode === 'browse') {
+                    if (e.key === 'ArrowRight') step(1);
+                    else if (e.key === 'ArrowLeft') step(-1);
+                    else if (e.key === 'Enter' && !(e.target.closest && e.target.closest('button'))) transform();
+                } else if (mode === 'detail' && e.key === 'Escape') closeDetail();
+            });
+
+            function activateCard(i) {
+                if (mode !== 'browse') return;
+                const o = offset(i);
+                if (Math.abs(o) < 0.5) transform(); else goTo(Math.round(st.pos + o));
+            }
+
+            /* ---------- powder effect ---------- */
+            let DPR = 1;
+            function sizeCanvas() {
+                DPR = Math.min(window.devicePixelRatio || 1, 2);
+                cv.width = innerWidth * DPR; cv.height = innerHeight * DPR;
+                cv.style.width = innerWidth + 'px'; cv.style.height = innerHeight + 'px';
+                ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+            }
+            let fx = null;
+            function stopFx() { if (fx) { cancelAnimationFrame(fx.raf); fx = null; } ctx.clearRect(0, 0, innerWidth, innerHeight); }
+
+            function startFx(r, p, smp) {
+                const bx0 = smp ? smp.u0 : 0, bx1 = smp ? smp.u1 : 1, by0 = smp ? smp.v0 : 0, by1 = smp ? smp.v1 : 1;
+                const bw = (bx1 - bx0) * r.width, bh = (by1 - by0) * r.height;
+                const cx = r.left + (bx0 + bx1) / 2 * r.width, cy = r.top + (by0 + by1) / 2 * r.height;
+                const colW = 3, R = (smp ? bw : r.width) * 0.62;
+                const left = cx - R, cols = Math.ceil(2 * R / colW), ground = r.top + by1 * r.height + 4, Hp = (smp ? bh : r.height) * 0.5;
+                const N = innerWidth < 700 ? 900 : 1500;
+                const inc = (R * Hp) / (N * colW);
+                const h = new Float32Array(cols);
+                const parts = Array.from({ length: N }, () => {
+                    let x, y, col;
+                    if (smp) {
+                        const q = smp.list[(Math.random() * smp.list.length) | 0];
+                        x = r.left + q.u * r.width; y = r.top + q.v * r.height; col = q.c;
+                    } else {
+                        const a = Math.random() * Math.PI * 2, rr = Math.sqrt(Math.random());
+                        x = cx + Math.cos(a) * rr * r.width * 0.38; y = cy + Math.sin(a) * rr * r.height * 0.4; col = p.particles[(Math.random() * 4) | 0];
+                    }
+                    const dx = x - cx, dy = y - cy, d = Math.hypot(dx, dy) || 1, speed = 0.4 + Math.random() * 2.2;
+                    return {
+                        x, y, vx: dx / d * speed * (0.6 + Math.random()), vy: dy / d * speed * 0.5 - Math.random() * 1.6,
+                        s: 1.3 + Math.random() * 2.2, c: col, delay: ((y - (cy - bh * 0.5)) / bh) * 420 + Math.random() * 160, rest: false
+                    };
+                });
+                fx = { t0: performance.now(), last: performance.now(), parts, h, cols, colW, left, ground, inc, Hp, p, raf: 0 };
+                const loop = now => {
+                    if (!fx) return;
+                    const k = Math.min(2.5, (now - fx.last) / 16.67); fx.last = now;
+                    const t = now - fx.t0;
+                    ctx.clearRect(0, 0, innerWidth, innerHeight);
+                    for (const q of fx.parts) {
+                        if (q.rest || t < q.delay) continue;
+                        q.vy += 0.22 * k; q.vx *= 0.992; q.vy *= 0.995;
+                        q.x += q.vx * k; q.y += q.vy * k;
+                        let c = Math.floor((q.x - fx.left) / fx.colW);
+                        c = Math.max(0, Math.min(fx.cols - 1, c));
+                        if (q.y >= fx.ground - fx.h[c]) {
+                            for (let m = 0; m < 12; m++) {
+                                const l = c > 0 ? fx.h[c - 1] : 1e9, rt = c < fx.cols - 1 ? fx.h[c + 1] : 1e9;
+                                if (fx.h[c] - l > fx.colW * 0.9 && l <= rt) c--;
+                                else if (fx.h[c] - rt > fx.colW * 0.9) c++;
+                                else break;
+                            }
+                            fx.h[c] += fx.inc; q.rest = true;
+                        }
+                    }
+                    // pile
+                    const hs = i => (fx.h[Math.max(0, i - 1)] + 2 * fx.h[i] + fx.h[Math.min(fx.cols - 1, i + 1)]) / 4;
+                    ctx.beginPath(); ctx.moveTo(fx.left, fx.ground + 2);
+                    for (let i = 0; i < fx.cols; i++) ctx.lineTo(fx.left + i * fx.colW, fx.ground - hs(i));
+                    ctx.lineTo(fx.left + fx.cols * fx.colW, fx.ground + 2); ctx.closePath();
+                    ctx.fillStyle = fx.p.powder; ctx.fill();
+                    const g = ctx.createLinearGradient(0, fx.ground - fx.Hp, 0, fx.ground);
+                    g.addColorStop(0, 'rgba(255,255,255,.3)'); g.addColorStop(1, 'rgba(0,0,0,.28)');
+                    ctx.fillStyle = g; ctx.fill();
+                    // flying grains
+                    for (const q of fx.parts) {
+                        if (q.rest || t < q.delay) continue;
+                        ctx.fillStyle = q.c; ctx.fillRect(q.x, q.y, q.s, q.s);
+                    }
+                    fx.raf = requestAnimationFrame(loop);
+                };
+                fx.raf = requestAnimationFrame(loop);
+                return { ground, Hp, cx };
+            }
+
+            /* ---------- fruit -> powder -> detail ---------- */
+            function transform() {
+                if (mode !== 'browse') return;
+                mode = 'transform';
+                gsap.killTweensOf(sp); sp.f = Math.round(sp.f); drawLemon();
+                const p = data[active], card = cards[active], fr = card.querySelector('.fruit');
+                const r = fr.getBoundingClientRect();
+                gsap.to('.hudfade', { opacity: 0, duration: 0.3, pointerEvents: 'none' });
+                gsap.to(cards.filter((_, k) => k !== active), { opacity: 0.1, duration: 0.5 });
+
+                if (RM) { openDetail(active, { x: r.left + r.width / 2, y: r.bottom }); return; }
+
+                const tl = gsap.timeline();
+                tl.to(fr, { rotation: -5, scale: 1.05, duration: 0.09, transformOrigin: '50% 62%' })
+                    .to(fr, { rotation: 5, duration: 0.12 })
+                    .to(fr, { rotation: -4, duration: 0.12 })
+                    .to(fr, { rotation: 0, duration: 0.1 });
+                let info;
+                tl.add(() => { info = startFx(r, p, p.spin ? lemonSamples() : null); }, 0.42);
+                tl.to(fr, { scale: 0.82, opacity: 0, filter: 'blur(8px)', duration: 0.9, ease: 'power2.in' }, 0.42);
+                tl.to([nameEl, subEl], { opacity: 0, duration: 0.2 }, 1.5);
+                tl.add(() => { nameEl.textContent = p.name + ' Powder'; subEl.textContent = 'Ready to use'; }, 1.7);
+                tl.to([nameEl, subEl], { opacity: 1, duration: 0.3 }, 1.7);
+                tl.add(() => { if (info) openDetail(active, { x: info.cx, y: info.ground - info.Hp * 0.5 }); }, 2.5);
+            }
+
+            const dbg = bgDetail;
+            function fillDetail(i) {
+                const p = data[i];
+                detail.style.setProperty('--accent', p.accent);
+                detail.style.setProperty('--on', '#140a00');
+                detail.style.setProperty('--pouch', p.pouch);
+                detail.style.setProperty('--powder', p.powder);
+                dbg.forEach((b, k) => b.classList.toggle('on', k === i));
+                $('#dName').textContent = p.name + ' Powder';
+                $('#dBlurb').textContent = p.blurb;
+                $('#dCat').textContent = p.cat + ' powder';
+                $('#dInside').innerHTML = p.inside.map(x => '<li>' + x + '</li>').join('');
+                $('#dUses').innerHTML = p.uses.map(x => '<li>' + x + '</li>').join('');
+                $('#pouchFruit').setAttribute('href', '#f-' + p.id);
+                $('#bigFruit').setAttribute('href', '#f-' + p.id);
+                $('#pouchName').textContent = p.name;
+                $('#pouchSub').textContent = p.cat + ' powder';
+                $('#dPrevN').textContent = data[mod(i - 1, n)].name;
+                $('#dNextN').textContent = data[mod(i + 1, n)].name;
+            }
+            const setHash = h => { try { history.replaceState(null, '', h ? '#' + h : location.pathname + location.search); } catch (e) { } };
+
+            function openDetail(i, o) {
+                mode = 'detail';
+                fillDetail(i);
+                document.body.classList.add('in-detail');
+                detail.style.display = 'block'; detail.inert = false; detail.scrollTop = 0;
+                const maxR = Math.hypot(Math.max(o.x, innerWidth - o.x), Math.max(o.y, innerHeight - o.y)) + 10;
+                gsap.set(detail, { clipPath: 'circle(0px at ' + o.x + 'px ' + o.y + 'px)' });
+                gsap.to(detail, {
+                    clipPath: 'circle(' + maxR + 'px at ' + o.x + 'px ' + o.y + 'px)', duration: T(1.0), ease: 'power2.inOut',
+                    onComplete() { detail.style.clipPath = 'none'; stage.style.visibility = 'hidden'; stage.inert = true; stopFx(); $('#back').focus({ preventScroll: true }); }
+                });
+                if (!RM) {
+                    gsap.from('#pwrap', { y: 90, opacity: 0, rotation: -4, duration: 0.9, delay: 0.45, ease: 'power3.out', clearProps: 'all' });
+                    gsap.from('.mound', { scaleX: 0.6, opacity: 0, transformOrigin: '50% 100%', duration: 0.8, delay: 0.5, ease: 'power3.out', clearProps: 'all' });
+                    gsap.from('.dinfo > *', { y: 22, opacity: 0, duration: 0.6, delay: 0.55, stagger: 0.05, ease: 'power3.out', clearProps: 'all' });
+                }
+                setHash(data[i].id);
+            }
+
+            function closeDetail() {
+                if (mode !== 'detail') return;
+                mode = 'closing';
+                stopFx();
+                stage.style.visibility = 'visible'; stage.inert = false;
+                cards.forEach(c => gsap.set(c.querySelector('.fruit'), { clearProps: 'all' }));
+                gsap.killTweensOf(cards); gsap.set('.hudfade', { clearProps: 'all' });
+                render(); applyTheme(); drawLemon();
+                const card = cards[active].getBoundingClientRect();
+                const ox = card.left + card.width / 2, oy = card.top + card.height / 2;
+                const maxR = Math.hypot(Math.max(ox, innerWidth - ox), Math.max(oy, innerHeight - oy)) + 10;
+                gsap.set(detail, { clipPath: 'circle(' + maxR + 'px at ' + ox + 'px ' + oy + 'px)' });
+                gsap.to(detail, {
+                    clipPath: 'circle(0px at ' + ox + 'px ' + oy + 'px)', duration: T(0.8), ease: 'power2.inOut',
+                    onComplete() { detail.style.display = 'none'; detail.inert = true; document.body.classList.remove('in-detail'); mode = 'browse'; }
+                });
+                setHash('');
+            }
+            $('#back').addEventListener('click', closeDetail);
+            window.addEventListener('popstate', () => { if (mode === 'detail' && !location.hash) closeDetail(); });
+
+            function swapDetail(dir) {
+                if (mode !== 'detail') return;
+                const j = mod(active + dir, n);
+                gsap.to('.dswap', {
+                    opacity: 0, y: 10, duration: T(0.22), onComplete() {
+                        active = j; st.pos = j + n * Math.round((st.pos - j) / n);
+                        render(); applyTheme(); fillDetail(j); detail.scrollTop = 0; setHash(data[j].id);
+                        gsap.to('.dswap', { opacity: 1, y: 0, duration: T(0.35), clearProps: 'all' });
+                    }
+                });
+            }
+            $('#dPrev').addEventListener('click', () => swapDetail(-1));
+            $('#dNext').addEventListener('click', () => swapDetail(1));
+
+            /* ---------- sample request ---------- */
+            const dlg = $('#dlg'), sel = $('#fProd');
+            sel.innerHTML = data.map(p => '<option value="' + p.id + '">' + p.name + ' powder</option>').join('');
+            function openDlg() {
+                sel.value = data[active].id; $('#fForm').hidden = false; $('#fDone').hidden = true; $('#sampleForm').reset(); sel.value = data[active].id;
+                dlg.showModal();
+            }
+            ['#reqTop', '#reqDetail', '#toContact'].forEach(id => $(id).addEventListener('click', openDlg));
+            $('#dlgCancel').addEventListener('click', () => dlg.close());
+            $('#dlgClose').addEventListener('click', () => dlg.close());
+            dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close(); });
+            $('#sampleForm').addEventListener('submit', e => {
+                e.preventDefault();
+                const f = new FormData(e.target), prod = data.find(p => p.id === f.get('p'));
+                $('#fDoneTxt').textContent = 'Thanks ' + f.get('n') + ', your ' + prod.name.toLowerCase() + ' powder sample request is noted. This is a prototype, so nothing was sent.';
+                $('#fForm').hidden = true; $('#fDone').hidden = false;
+            });
+
+            /* ---------- boot ---------- */
+            function resize() { sizeCanvas(); if (mode === 'browse') render(); }
+            window.addEventListener('resize', resize);
+            sizeCanvas(); render(); applyTheme();
+
+            const h = location.hash.slice(1), hi = data.findIndex(p => p.id === h);
+            if (hi >= 0) {
+                active = hi; st.pos = hi; render(); applyTheme();
+                mode = 'transform'; openDetail(hi, { x: innerWidth / 2, y: innerHeight / 2 });
+            } else if (!RM) {
+                gsap.from(cards.map(c => c.querySelector('.fruit')), { y: 90, opacity: 0, duration: 1.1, stagger: 0.07, ease: 'power3.out', delay: 0.15, clearProps: 'all' });
+                gsap.from([nameEl, subEl, ghost], { opacity: 0, y: 20, duration: 0.9, delay: 0.5, ease: 'power3.out', clearProps: 'all' });
+            }
+        })();
+    </script>
+</body>
+
+</html>

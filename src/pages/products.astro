@@ -1,0 +1,138 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SectionHeading from "../components/SectionHeading.astro";
+import { products } from "../data/products";
+---
+
+<BaseLayout
+  title="Industrial Food Powders Catalog | Renol Foods Bavla"
+  description="Explore Renol Foods' 8 commercial food powders: Tomato, Tamarind, Caramel, Lemon, Mango, Spinach, Ginger, and Apple powder."
+>
+  <!-- Hero Section -->
+  <section class="relative py-20 lg:py-28 border-b border-white/10 overflow-hidden">
+    <!-- Ambient Radial Glow -->
+    <div
+      class="pointer-events-none absolute left-1/2 top-10 -translate-x-1/2 w-[700px] h-[350px] rounded-full blur-[140px] opacity-20"
+      style="background: radial-gradient(circle, #ffe14a 0%, transparent 70%);"
+      aria-hidden="true"
+    ></div>
+
+    <div class="section-container relative z-10">
+      <SectionHeading
+        eyebrow="Commercial Product Portfolio"
+        title="Industrial Food Powders"
+        subtitle="Precision dehydrated and spray-dried fruit, vegetable, and culinary powders produced in Bavla for industrial food processing, seasoning blends, and export."
+      />
+
+      <!-- Hero Primary Action Button (1 per hero) -->
+      <div class="mt-8 flex justify-center">
+        <a href="/contact#sample-quote" class="btn-accent min-h-[44px]">
+          Request a Sample
+        </a>
+      </div>
+
+      <!-- Product Cards Grid: 2 columns on desktop/tablet, 1 on mobile -->
+      <div class="mt-16 grid grid-cols-1 md:grid-cols-2 gap-8">
+        {
+          products.map((product) => {
+            // Filter any specs that do not contain [ADD
+            const validSpecs = Object.entries(product.specs).filter(
+              ([_, val]) => val && !val.includes("[ADD")
+            );
+
+            return (
+              <div
+                id={product.slug}
+                class="group relative p-7 sm:p-9 rounded-3xl bg-[#121214] border border-white/10 hover:border-white/25 transition-all duration-300 flex flex-col justify-between overflow-hidden"
+              >
+                <!-- Subtle Accent Border Accent Glow -->
+                <div
+                  class="absolute top-0 left-0 bottom-0 w-1.5"
+                  style={{ backgroundColor: product.accentColor }}
+                ></div>
+
+                <div>
+                  <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+                    <h3 class="font-display text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+                      {product.name}
+                    </h3>
+                    <span
+                      class="px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider border border-white/15"
+                      style={{ color: product.accentColor, backgroundColor: "rgba(255,255,255,0.05)" }}
+                    >
+                      {product.cat} powder
+                    </span>
+                  </div>
+
+                  <p class="text-white/70 text-sm leading-relaxed font-body">
+                    {product.longDescription || product.blurb}
+                  </p>
+
+                  <!-- Applications snippet -->
+                  <div class="mt-5">
+                    <p class="text-xs font-bold text-white/50 uppercase tracking-wider mb-2 font-mono">
+                      Industrial Applications
+                    </p>
+                    <div class="flex flex-wrap gap-2">
+                      {product.applications.slice(0, 3).map((app) => (
+                        <span class="px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-xs text-white/80 font-body">
+                          {app}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <!-- Technical Specifications snippet (Hides [ADD] placeholders) -->
+                  <div class="mt-6 p-4 rounded-2xl bg-[#18181c] border border-white/10 text-xs font-mono">
+                    {validSpecs.length > 0 ? (
+                      <div class="grid grid-cols-2 gap-2 text-white/80">
+                        {validSpecs.slice(0, 4).map(([key, val]) => (
+                          <div class="truncate">
+                            <span class="text-white/40 capitalize">{key}:</span> {val}
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div class="flex items-center justify-between text-white/60">
+                        <span>Full specifications on request</span>
+                        <span class="text-white/40">COA provided</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <!-- Product card action: 1 text link per card ("View details →") -->
+                <div class="mt-8 pt-5 border-t border-white/10 flex items-center justify-between">
+                  <a
+                    href={`/products/${product.slug}`}
+                    class="text-sm font-semibold text-amber-400 hover:text-amber-300 transition-colors inline-flex items-center gap-1.5 min-h-[44px]"
+                  >
+                    <span>View details</span>
+                    <span aria-hidden="true">&rarr;</span>
+                  </a>
+                  <span class="text-xs text-white/40 font-mono">Standard Pack: {product.packagingSizes || "20 kg / 25 kg"}</span>
+                </div>
+              </div>
+            );
+          })
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- One Closing CTA Section Near the End of the Page -->
+  <section class="py-20 bg-[#0e0e12] text-white text-center border-t border-white/10">
+    <div class="section-container max-w-3xl">
+      <span class="text-xs uppercase font-bold tracking-widest text-white/40 block mb-3 font-mono">Formulation Inquiries</span>
+      <h2 class="font-display text-3xl sm:text-4xl font-extrabold mb-4 tracking-tight">
+        Need custom mesh sizing or evaluation trial samples?
+      </h2>
+      <p class="text-white/70 text-sm sm:text-base mb-8 max-w-xl mx-auto leading-relaxed font-body">
+        Tell us about your production application and target mesh requirements. We dispatch evaluation samples for qualified food processors.
+      </p>
+      <a href="/contact#sample-quote" class="btn-accent min-h-[44px]">
+        Request a Sample
+      </a>
+    </div>
+  </section>
+</BaseLayout>

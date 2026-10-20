@@ -1,0 +1,714 @@
+---
+/**
+ * Hero3DScene.astro
+ * Fixed background 3D canvas with procedural jar model, floating powder particles,
+ * and GSAP ScrollTrigger driven transformations and color shifts.
+ */
+---
+
+<!-- Fixed Background Canvas for Homepage 3D experience -->
+<div id="hero-3d-wrapper" class="fixed inset-0 w-full h-full pointer-events-none z-0 overflow-hidden" aria-hidden="true">
+  <!-- Dynamic Three.js Canvas -->
+  <canvas id="hero-3d-canvas" class="w-full h-full block opacity-0 transition-opacity duration-700"></canvas>
+
+  <!-- Static Fallback Visual for Mobile / Low-Power / Reduced-Motion / WebGL Unsupported -->
+  <div
+    id="hero-static-fallback"
+    class="hidden absolute inset-0 w-full h-full items-center justify-center p-6 lg:justify-end lg:pr-24"
+  >
+    <div class="relative w-64 sm:w-80 lg:w-96 aspect-[4/5] flex items-center justify-center">
+      <img
+        src="/images/jar-fallback.svg"
+        alt="Renol Foods Industrial Powder Jar"
+        class="w-full h-full object-contain filter drop-shadow-2xl"
+        loading="eager"
+      />
+    </div>
+  </div>
+
+  <!-- Subtle Dynamic Ambient Tint Layer -->
+  <div
+    id="hero-ambient-tint"
+    class="absolute inset-0 pointer-events-none opacity-20 transition-colors duration-700"
+    style="background: radial-gradient(circle at 65% 50%, var(--hero-accent-color, #D63A2A) 0%, transparent 60%);"
+  ></div>
+</div>
+
+<script>
+  import * as THREE from "three";
+  import { gsap } from "gsap";
+  import { ScrollTrigger } from "gsap/ScrollTrigger";
+  import { products } from "../../data/products";
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  // Global references for lifecycle management & Astro page transitions
+  let activeRenderer: THREE.WebGLRenderer | null = null;
+  let activeScene: THREE.Scene | null = null;
+  let activeCamera: THREE.PerspectiveCamera | null = null;
+  let activeScrollTimeline: gsap.core.Timeline | null = null;
+  let activeRafId: number | null = null;
+  let isSceneVisible = true;
+  let isDocumentVisible = true;
+  let resizeListener: (() => void) | null = null;
+  let visibilityListener: (() => void) | null = null;
+  let scrollTriggerInstance: ScrollTrigger | null = null;
+
+  /**
+   * Hardware & Preference Fallback Checks
+   */
+  function shouldUseFallback(): boolean {
+    // 1. Reduced motion preference
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      return true;
+    }
+
+    // 2. Small screen / mobile devices (prioritize mobile battery and performance)
+    if (window.innerWidth < 768) {
+      return true;
+    }
+
+    // 3. Low-power hardware check (cores <= 2)
+    if (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 2) {
+      return true;
+    }
+
+    // 4. WebGL support detection
+    try {
+      const testCanvas = document.createElement("canvas");
+      const gl = testCanvas.getContext("webgl2") || testCanvas.getContext("webgl");
+      if (!gl) return true;
+    } catch {
+      return true;
+    }
+
+    return false;
+  }
+
+  function activateStaticFallback() {
+    const canvas = document.getElementById("hero-3d-canvas");
+    const fallback = document.getElementById("hero-static-fallback");
+    if (canvas) canvas.style.display = "none";
+    if (fallback) {
+      fallback.classList.remove("hidden");
+      fallback.classList.add("flex");
+    }
+  }
+
+  /**
+   * Helper: Generate procedural label canvas texture
+   */
+  function createLabelTexture(productName = "TOMATO POWDER", colorHex = "#D63A2A"): THREE.CanvasTexture {
+    const labelCanvas = document.createElement("canvas");
+    labelCanvas.width = 1024;
+    labelCanvas.height = 512;
+    const ctx = labelCanvas.getContext("2d");
+    if (!ctx) return new THREE.CanvasTexture(labelCanvas);
+
+    // Warm cream label background
+    ctx.fillStyle = "#FBF7EF";
+    ctx.fillRect(0, 0, 1024, 512);
+
+    // Inner subtle border
+    ctx.strokeStyle = "rgba(20, 32, 26, 0.2)";
+    ctx.lineWidth = 4;
+    ctx.strokeRect(20, 20, 984, 472);
+
+    // Brand accent color banner
+    ctx.fillStyle = colorHex;
+    ctx.fillRect(20, 20, 984, 32);
+
+    // Brand Monogram Badge
+    ctx.fillStyle = "#14201A";
+    ctx.fillRect(452, 70, 120, 56);
+    ctx.fillStyle = "#FBF7EF";
+    ctx.font = "bold 32px serif";
+    ctx.textAlign = "center";
+    ctx.fillText("RF", 512, 110);
+
+    // Brand Name
+    ctx.fillStyle = "#14201A";
+    ctx.font = "bold 56px serif";
+    ctx.fillText("RENOL FOODS", 512, 190);
+
+    // Subtitle
+    ctx.fillStyle = colorHex;
+    ctx.font = "bold 36px sans-serif";
+    ctx.fillText(productName.toUpperCase(), 512, 245);
+
+    // Divider line
+    ctx.strokeStyle = "rgba(20, 32, 26, 0.3)";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(300, 275);
+    ctx.lineTo(724, 275);
+    ctx.stroke();
+
+    // Specification details
+    ctx.fillStyle = "#355042";
+    ctx.font = "24px sans-serif";
+    ctx.fillText("DEHYDRATED & SPRAY-DRIED • BAVLA", 512, 320);
+
+    ctx.font = "bold 20px sans-serif";
+    ctx.fillStyle = "#14201A";
+    ctx.fillText("FOOD POWDER • BAVLA, GUJARAT", 512, 365);
+
+    // Bottom accent band
+    ctx.fillStyle = colorHex;
+    ctx.fillRect(20, 460, 984, 32);
+
+    const texture = new THREE.CanvasTexture(labelCanvas);
+    texture.anisotropy = 4;
+    return texture;
+  }
+
+  /**
+   * Helper: Generate a soft-edged radial circle texture for powder particles
+   */
+  function createParticleTexture(): THREE.CanvasTexture {
+    const canvas = document.createElement("canvas");
+    canvas.width = 64;
+    canvas.height = 64;
+    const ctx = canvas.getContext("2d");
+    if (ctx) {
+      const gradient = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+      gradient.addColorStop(0, "rgba(255, 255, 255, 1)");
+      gradient.addColorStop(0.3, "rgba(255, 255, 255, 0.8)");
+      gradient.addColorStop(0.7, "rgba(255, 255, 255, 0.2)");
+      gradient.addColorStop(1, "rgba(255, 255, 255, 0)");
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, 64, 64);
+    }
+    const texture = new THREE.CanvasTexture(canvas);
+    return texture;
+  }
+
+  /**
+   * =========================================================================
+   * MODEL CREATION ARCHITECTURE (PROCEDURAL JAR OR GLTF SWAP)
+   * =========================================================================
+   * 
+   * TODO: SWAP WITH REAL GLTF (.glb) MODEL
+   * -------------------------------------------------------------------------
+   * When a custom 3D model (e.g. /public/models/jar.glb) is ready:
+   * 1. Place the file at: /public/models/jar.glb
+   * 2. Set USE_GLTF = true below.
+   * 3. Ensure the mesh material you want dynamically recolored is named or
+   *    found in child traversal (see loadGLTFModel implementation below).
+   */
+  const USE_GLTF = false;
+  const GLTF_MODEL_PATH = "/models/jar.glb";
+
+  interface JarModelContainer {
+    group: THREE.Group;
+    bodyMesh: THREE.Mesh;
+    bodyMaterial: THREE.MeshStandardMaterial;
+    lidMaterial: THREE.MeshStandardMaterial;
+    labelMaterial?: THREE.MeshStandardMaterial;
+    updateColor: (colorHex: string, productName?: string) => void;
+  }
+
+  /**
+   * Procedural Powder Jar generator
+   */
+  function createProceduralJar(): JarModelContainer {
+    const jarGroup = new THREE.Group();
+
+    // 1. Jar Body (Cylinder)
+    const bodyGeometry = new THREE.CylinderGeometry(1.15, 1.15, 2.4, 64);
+    const bodyMaterial = new THREE.MeshStandardMaterial({
+      color: new THREE.Color(products[0].accentColor), // Starts with Tomato
+      roughness: 0.38,
+      metalness: 0.08,
+      envMapIntensity: 0.8,
+    });
+    const bodyMesh = new THREE.Mesh(bodyGeometry, bodyMaterial);
+    bodyMesh.castShadow = true;
+    bodyMesh.receiveShadow = true;
+    jarGroup.add(bodyMesh);
+
+    // 2. Glass Jar Rim / Neck
+    const neckGeometry = new THREE.CylinderGeometry(0.95, 1.1, 0.25, 48);
+    const neckMaterial = new THREE.MeshStandardMaterial({
+      color: 0x14201a,
+      roughness: 0.2,
+      metalness: 0.6,
+    });
+    const neckMesh = new THREE.Mesh(neckGeometry, neckMaterial);
+    neckMesh.position.y = 1.3;
+    jarGroup.add(neckMesh);
+
+    // 3. Metallic Jar Lid
+    const lidGeometry = new THREE.CylinderGeometry(1.05, 1.05, 0.35, 64);
+    const lidMaterial = new THREE.MeshStandardMaterial({
+      color: 0x1B2B23, // Deep forest green metallic
+      roughness: 0.22,
+      metalness: 0.85,
+    });
+    const lidMesh = new THREE.Mesh(lidGeometry, lidMaterial);
+    lidMesh.position.y = 1.55;
+    lidMesh.castShadow = true;
+    jarGroup.add(lidMesh);
+
+    // 4. Label Surface Wrap (Slightly larger cylinder segment)
+    const labelTexture = createLabelTexture(products[0].name, products[0].accentColor);
+    const labelGeometry = new THREE.CylinderGeometry(
+      1.16,
+      1.16,
+      1.4,
+      48,
+      1,
+      true,
+      -Math.PI / 2.2,
+      Math.PI / 1.1
+    );
+    const labelMaterial = new THREE.MeshStandardMaterial({
+      map: labelTexture,
+      roughness: 0.85,
+      metalness: 0.0,
+      side: THREE.FrontSide,
+    });
+    const labelMesh = new THREE.Mesh(labelGeometry, labelMaterial);
+    labelMesh.position.y = -0.05;
+    jarGroup.add(labelMesh);
+
+    // Color updater method
+    function updateColor(colorHex: string, productName = "POWDER") {
+      gsap.to(bodyMaterial.color, {
+        r: new THREE.Color(colorHex).r,
+        g: new THREE.Color(colorHex).g,
+        b: new THREE.Color(colorHex).b,
+        duration: 0.6,
+        ease: "power2.out",
+      });
+
+      // Refresh label texture if product name changes
+      if (labelMaterial && labelMaterial.map) {
+        labelMaterial.map.dispose();
+        labelMaterial.map = createLabelTexture(productName, colorHex);
+        labelMaterial.needsUpdate = true;
+      }
+    }
+
+    return {
+      group: jarGroup,
+      bodyMesh,
+      bodyMaterial,
+      lidMaterial,
+      labelMaterial,
+      updateColor,
+    };
+  }
+
+  /**
+   * GLTF Loader implementation (Ready for /public/models/jar.glb)
+   */
+  async function loadGLTFModel(path: string): Promise<JarModelContainer | null> {
+    try {
+      // Dynamic import of GLTFLoader so it is bundled only when needed
+      const { GLTFLoader } = await import("three/examples/jsm/loaders/GLTFLoader.js");
+      const loader = new GLTFLoader();
+
+      return new Promise((resolve) => {
+        loader.load(
+          path,
+          (gltf) => {
+            const group = gltf.scene;
+            let targetMesh: THREE.Mesh | null = null;
+            let targetMaterial: THREE.MeshStandardMaterial | null = null;
+
+            group.traverse((child) => {
+              if ((child as THREE.Mesh).isMesh) {
+                const mesh = child as THREE.Mesh;
+                mesh.castShadow = true;
+                mesh.receiveShadow = true;
+                // Identify target powder / body mesh
+                if (!targetMesh) {
+                  targetMesh = mesh;
+                  if (Array.isArray(mesh.material)) {
+                    targetMaterial = mesh.material[0] as THREE.MeshStandardMaterial;
+                  } else {
+                    targetMaterial = mesh.material as THREE.MeshStandardMaterial;
+                  }
+                }
+              }
+            });
+
+            if (targetMesh && targetMaterial) {
+              const defaultLidMat = new THREE.MeshStandardMaterial({ color: 0x1b2b23 });
+              resolve({
+                group,
+                bodyMesh: targetMesh,
+                bodyMaterial: targetMaterial,
+                lidMaterial: defaultLidMat,
+                updateColor: (hex: string) => {
+                  if (targetMaterial) {
+                    gsap.to(targetMaterial.color, {
+                      r: new THREE.Color(hex).r,
+                      g: new THREE.Color(hex).g,
+                      b: new THREE.Color(hex).b,
+                      duration: 0.6,
+                    });
+                  }
+                },
+              });
+            } else {
+              resolve(null);
+            }
+          },
+          undefined,
+          (err) => {
+            console.warn("Could not load GLTF model from", path, err);
+            resolve(null);
+          }
+        );
+      });
+    } catch (e) {
+      console.warn("GLTFLoader failed:", e);
+      return null;
+    }
+  }
+
+  /**
+   * Initialize 3D Scene, Particle System, and ScrollTrigger Sync
+   */
+  async function initHero3D() {
+    // Check if we should fallback
+    if (shouldUseFallback()) {
+      activateStaticFallback();
+      return;
+    }
+
+    const canvas = document.getElementById("hero-3d-canvas") as HTMLCanvasElement | null;
+    if (!canvas) return;
+
+    // Clean up any existing instances first
+    cleanupHero3D();
+
+    // Scene & Camera
+    const scene = new THREE.Scene();
+    activeScene = scene;
+
+    const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 50);
+    camera.position.set(0, 0, 7.5);
+    activeCamera = camera;
+
+    // Renderer
+    let renderer: THREE.WebGLRenderer;
+    try {
+      renderer = new THREE.WebGLRenderer({
+        canvas,
+        alpha: true,
+        antialias: true,
+        powerPreference: "high-performance",
+      });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.1;
+      activeRenderer = renderer;
+    } catch (e) {
+      console.warn("WebGL initialization failed, falling back to static visual:", e);
+      activateStaticFallback();
+      return;
+    }
+
+    // Lighting setup
+    const keyLight = new THREE.DirectionalLight(0xfffdf7, 2.8);
+    keyLight.position.set(4, 5, 5);
+    scene.add(keyLight);
+
+    const fillLight = new THREE.DirectionalLight(0xe8f0eb, 1.4);
+    fillLight.position.set(-4, 2, 4);
+    scene.add(fillLight);
+
+    const rimLight = new THREE.DirectionalLight(0xffffff, 2.2);
+    rimLight.position.set(0, -3, -4);
+    scene.add(rimLight);
+
+    const ambientLight = new THREE.AmbientLight(0xfff8ee, 0.8);
+    scene.add(ambientLight);
+
+    // Initialize 3D Model (Procedural or GLTF)
+    let jarModel: JarModelContainer | null = null;
+    if (USE_GLTF) {
+      jarModel = await loadGLTFModel(GLTF_MODEL_PATH);
+    }
+    if (!jarModel) {
+      jarModel = createProceduralJar();
+    }
+
+    const jar = jarModel.group;
+    // Initial desktop placement: positioned gracefully to the right so left text is prominent
+    jar.position.set(1.5, -0.1, 0);
+    jar.rotation.set(0.1, -0.3, 0);
+    scene.add(jar);
+
+    // Floating Powder Particles
+    const particleCount = 650;
+    const particleGeometry = new THREE.BufferGeometry();
+    const positions = new Float32Array(particleCount * 3);
+    const particleSpeeds = new Float32Array(particleCount);
+    const particleOffsets = new Float32Array(particleCount);
+
+    for (let i = 0; i < particleCount; i++) {
+      // Swirl around the jar in a cylinder volume
+      const radius = 0.8 + Math.random() * 3.2;
+      const angle = Math.random() * Math.PI * 2;
+      positions[i * 3] = Math.cos(angle) * radius + (window.innerWidth > 1024 ? 1.5 : 0);
+      positions[i * 3 + 1] = (Math.random() - 0.5) * 6.5;
+      positions[i * 3 + 2] = Math.sin(angle) * radius + (Math.random() - 0.5) * 2;
+
+      particleSpeeds[i] = 0.003 + Math.random() * 0.007;
+      particleOffsets[i] = Math.random() * Math.PI * 2;
+    }
+
+    particleGeometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+
+    const particleTexture = createParticleTexture();
+    const particleMaterial = new THREE.PointsMaterial({
+      size: 0.075,
+      map: particleTexture,
+      transparent: true,
+      opacity: 0.65,
+      blending: THREE.NormalBlending,
+      depthWrite: false,
+      color: new THREE.Color(products[0].accentColor),
+    });
+
+    const particles = new THREE.Points(particleGeometry, particleMaterial);
+    scene.add(particles);
+
+    // Fade canvas in smoothly
+    canvas.style.opacity = "1";
+
+    // Track scroll velocity for particle reactivity
+    let lastScrollY = window.scrollY;
+    let scrollVelocity = 0;
+
+    // Render Animation Loop
+    let clock = new THREE.Clock();
+
+    function renderLoop() {
+      activeRafId = requestAnimationFrame(renderLoop);
+
+      // Only render if tab is visible and canvas is in viewport
+      if (!isDocumentVisible || !isSceneVisible) return;
+
+      const delta = clock.getDelta();
+      const elapsedTime = clock.getElapsedTime();
+
+      // Measure scroll velocity decay
+      const currentScrollY = window.scrollY;
+      const rawVelocity = Math.abs(currentScrollY - lastScrollY);
+      scrollVelocity += (rawVelocity - scrollVelocity) * 0.1;
+      lastScrollY = currentScrollY;
+
+      // Gentle continuous ambient drift on the jar
+      jar.rotation.y += 0.003;
+      jar.position.y += Math.sin(elapsedTime * 1.5) * 0.0006;
+
+      // Update particle positions
+      const posArray = particleGeometry.attributes.position.array as Float32Array;
+      const speedMultiplier = 1 + Math.min(scrollVelocity * 0.05, 4.0);
+
+      for (let i = 0; i < particleCount; i++) {
+        const i3 = i * 3;
+        // Float upward
+        posArray[i3 + 1] += particleSpeeds[i] * speedMultiplier;
+
+        // Subtle harmonic horizontal drift
+        posArray[i3] += Math.sin(elapsedTime * 0.8 + particleOffsets[i]) * 0.001;
+
+        // Wrap around vertically
+        if (posArray[i3 + 1] > 3.5) {
+          posArray[i3 + 1] = -3.5;
+        }
+      }
+      particleGeometry.attributes.position.needsUpdate = true;
+
+      renderer.render(scene, camera);
+    }
+
+    renderLoop();
+
+    // GSAP ScrollTrigger timeline: tie scroll to jar, camera, light, and product color shifts
+    const ambientTintElem = document.getElementById("hero-ambient-tint");
+
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: "body",
+        start: "top top",
+        end: "bottom bottom",
+        scrub: 1.2,
+      },
+    });
+
+    activeScrollTimeline = tl;
+
+    // Setup sequence across the 8 products
+    const productStages = products;
+    const stageDuration = 1 / Math.max(productStages.length, 1);
+
+    productStages.forEach((product, idx) => {
+      const stageStart = idx * stageDuration;
+      const targetColor = product.accentColor;
+
+      tl.to(
+        jar.rotation,
+        {
+          y: `+=${Math.PI * 0.8}`,
+          x: (idx % 2 === 0 ? 0.15 : -0.1),
+          ease: "none",
+        },
+        stageStart
+      )
+        .to(
+          jar.position,
+          {
+            x: idx === 0 ? (window.innerWidth > 1024 ? 1.5 : 0) : (idx % 2 === 0 ? 1.3 : 1.7),
+            y: idx === 0 ? -0.1 : (idx % 2 === 0 ? -0.3 : 0.2),
+            ease: "none",
+          },
+          stageStart
+        )
+        .to(
+          keyLight.position,
+          {
+            x: idx % 2 === 0 ? 4 : -4,
+            y: 4 + (idx % 3),
+            ease: "none",
+          },
+          stageStart
+        )
+        // Shift colors of jar and particles
+        .to(
+          particleMaterial.color,
+          {
+            r: new THREE.Color(targetColor).r,
+            g: new THREE.Color(targetColor).g,
+            b: new THREE.Color(targetColor).b,
+            ease: "none",
+            onUpdate: () => {
+              if (jarModel) {
+                jarModel.bodyMaterial.color.copy(particleMaterial.color);
+              }
+              if (ambientTintElem) {
+                ambientTintElem.style.setProperty("--hero-accent-color", targetColor);
+              }
+            },
+          },
+          stageStart
+        );
+    });
+
+    // Window Resize Handler
+    resizeListener = () => {
+      if (!activeCamera || !activeRenderer) return;
+      activeCamera.aspect = window.innerWidth / window.innerHeight;
+      activeCamera.updateProjectionMatrix();
+      activeRenderer.setSize(window.innerWidth, window.innerHeight);
+
+      // Adjust jar X on small screens
+      if (jar) {
+        jar.position.x = window.innerWidth > 1024 ? 1.5 : 0;
+      }
+    };
+    window.addEventListener("resize", resizeListener);
+
+    // Tab Visibility Handler (pause rendering when tab hidden)
+    visibilityListener = () => {
+      isDocumentVisible = !document.hidden;
+    };
+    document.addEventListener("visibilitychange", visibilityListener);
+
+    // Viewport IntersectionObserver (pause rendering when scrolled far off-screen)
+    const heroSection = document.getElementById("hero-section");
+    if (heroSection && "IntersectionObserver" in window) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            isSceneVisible = entry.isIntersecting;
+          });
+        },
+        { threshold: 0.05 }
+      );
+      observer.observe(heroSection);
+    }
+  }
+
+  /**
+   * Cleanup Three.js & GSAP resources to prevent memory leaks during Astro navigation
+   */
+  function cleanupHero3D() {
+    if (activeRafId !== null) {
+      cancelAnimationFrame(activeRafId);
+      activeRafId = null;
+    }
+
+    if (activeScrollTimeline) {
+      activeScrollTimeline.kill();
+      activeScrollTimeline = null;
+    }
+
+    if (scrollTriggerInstance) {
+      scrollTriggerInstance.kill();
+      scrollTriggerInstance = null;
+    }
+
+    if (resizeListener) {
+      window.removeEventListener("resize", resizeListener);
+      resizeListener = null;
+    }
+
+    if (visibilityListener) {
+      document.removeEventListener("visibilitychange", visibilityListener);
+      visibilityListener = null;
+    }
+
+    if (activeScene) {
+      activeScene.traverse((object) => {
+        if ((object as THREE.Mesh).isMesh) {
+          const mesh = object as THREE.Mesh;
+          mesh.geometry?.dispose();
+          if (Array.isArray(mesh.material)) {
+            mesh.material.forEach((mat) => mat.dispose());
+          } else if (mesh.material) {
+            mesh.material.dispose();
+          }
+        }
+      });
+      activeScene.clear();
+      activeScene = null;
+    }
+
+    if (activeRenderer) {
+      activeRenderer.dispose();
+      activeRenderer.forceContextLoss();
+      activeRenderer = null;
+    }
+  }
+
+  // Astro page lifecycle listeners
+  document.addEventListener("astro:page-load", () => {
+    // Only initialize on pages that have the hero canvas
+    if (document.getElementById("hero-3d-canvas")) {
+      initHero3D();
+    }
+  });
+
+  document.addEventListener("astro:before-swap", cleanupHero3D);
+
+  // Initial load
+  if (document.readyState === "complete" || document.readyState === "interactive") {
+    if (document.getElementById("hero-3d-canvas")) {
+      initHero3D();
+    }
+  } else {
+    document.addEventListener("DOMContentLoaded", () => {
+      if (document.getElementById("hero-3d-canvas")) {
+        initHero3D();
+      }
+    });
+  }
+</script>

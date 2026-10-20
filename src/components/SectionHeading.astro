@@ -1,0 +1,57 @@
+---
+interface Props {
+  eyebrow?: string;
+  title: string;
+  subtitle?: string;
+  align?: "left" | "center";
+  accentColor?: string;
+  class?: string;
+}
+
+const {
+  eyebrow,
+  title,
+  subtitle,
+  align = "center",
+  accentColor,
+  class: className = "",
+} = Astro.props;
+
+const isCenter = align === "center";
+---
+
+<div
+  class:list={[
+    "flex flex-col",
+    isCenter ? "items-center text-center mx-auto" : "items-start text-left",
+    "max-w-3xl",
+    className,
+  ]}
+>
+  {
+    eyebrow && (
+      <div class="inline-flex items-center gap-2 px-3 py-1 mb-3 text-xs font-semibold tracking-widest uppercase rounded-full bg-white/10 border border-white/15 text-white/90">
+        {accentColor && (
+          <span
+            class="w-2 h-2 rounded-full inline-block"
+            style={{ backgroundColor: accentColor }}
+            aria-hidden="true"
+          />
+        )}
+        <span>{eyebrow}</span>
+      </div>
+    )
+  }
+
+  <h2 class="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-[1.12]">
+    {title}
+  </h2>
+
+  {
+    subtitle && (
+      <p class="mt-4 text-base sm:text-lg text-white/70 leading-relaxed max-w-2xl font-body">
+        {subtitle}
+      </p>
+    )
+  }
+</div>

@@ -1,0 +1,1094 @@
+---
+import { products } from "../../data/products";
+---
+
+<section id="powder-studio" class="powder-studio relative w-full h-[100svh] min-h-[640px] overflow-hidden bg-[#0b0b0d] text-white select-none">
+  <!-- Shared fruit SVG artwork & symbols -->
+  <svg width="0" height="0" class="absolute pointer-events-none" aria-hidden="true" focusable="false">
+    <defs id="fruit-svg-defs">
+      <linearGradient id="g-mango" x1=".2" y1="0" x2=".8" y2="1">
+        <stop offset="0" stop-color="#ffe066" />
+        <stop offset=".45" stop-color="#ffa41b" />
+        <stop offset="1" stop-color="#ee4b2b" />
+      </linearGradient>
+      <radialGradient id="g-tomato" cx=".38" cy=".32" r=".8">
+        <stop offset="0" stop-color="#ff7a63" />
+        <stop offset=".55" stop-color="#e11d2a" />
+        <stop offset="1" stop-color="#8f0d1b" />
+      </radialGradient>
+      <radialGradient id="g-lemon" cx=".38" cy=".3" r=".85">
+        <stop offset="0" stop-color="#fff7a1" />
+        <stop offset=".5" stop-color="#ffd90f" />
+        <stop offset="1" stop-color="#d9a600" />
+      </radialGradient>
+      <linearGradient id="g-leaf" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#6ee08a" />
+        <stop offset="1" stop-color="#1c7a3a" />
+      </linearGradient>
+      <linearGradient id="g-ginger" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#efd0a0" />
+        <stop offset=".55" stop-color="#c99b5e" />
+        <stop offset="1" stop-color="#9a6d34" />
+      </linearGradient>
+      <linearGradient id="g-caramel" x1=".2" y1="0" x2=".8" y2="1">
+        <stop offset="0" stop-color="#fed7aa" />
+        <stop offset=".45" stop-color="#ea580c" />
+        <stop offset="1" stop-color="#7c2d12" />
+      </linearGradient>
+      <radialGradient id="g-apple" cx=".4" cy=".35" r=".8">
+        <stop offset="0" stop-color="#ff7675" />
+        <stop offset=".55" stop-color="#d63031" />
+        <stop offset="1" stop-color="#74121d" />
+      </radialGradient>
+      <g id="leaf">
+        <path d="M100 220 C58 196 50 120 100 30 C150 120 142 196 100 220Z" fill="url(#g-leaf)" />
+        <path d="M100 216 L100 50" stroke="#c8f7d0" stroke-opacity=".55" stroke-width="3" stroke-linecap="round" fill="none" />
+        <path d="M100 172 L74 148 M100 142 L126 114 M100 122 L76 100 M100 92 L120 74" stroke="#c8f7d0" stroke-opacity=".4" stroke-width="2" stroke-linecap="round" fill="none" />
+      </g>
+    </defs>
+
+    <!-- Tomato Symbol -->
+    <symbol id="f-tomato" viewBox="0 0 200 240">
+      <path d="M100 56 C150 40 192 74 190 130 C188 188 148 226 100 226 C52 226 12 188 10 130 C8 74 50 40 100 56Z" fill="url(#g-tomato)" />
+      <ellipse cx="58" cy="108" rx="16" ry="30" fill="#fff" fill-opacity=".26" transform="rotate(24 58 108)" />
+      <path d="M100 52 L100 30" stroke="#3b7d2a" stroke-width="8" stroke-linecap="round" />
+      <path d="M100 50 L113 66 L134 58 L126 78 L148 84 L127 95 L100 88 L73 95 L52 84 L74 78 L66 58 L87 66Z" fill="#2f9e44" />
+    </symbol>
+
+    <!-- Lemon Symbol (Poster / Fallback) -->
+    <symbol id="f-lemon" viewBox="0 0 200 240">
+      <image id="lemonSym" href="/frames/lemon/10.webp" x="0" y="0" width="200" height="240" preserveAspectRatio="xMidYMid meet" />
+    </symbol>
+
+    <!-- Mango Symbol -->
+    <symbol id="f-mango" viewBox="0 0 200 240">
+      <path d="M104 40 C158 34 190 90 184 146 C178 202 138 232 92 224 C44 216 14 174 22 120 C28 72 58 44 104 40Z" fill="url(#g-mango)" />
+      <path d="M150 64 C176 92 180 150 150 196" fill="none" stroke="#ee4b2b" stroke-opacity=".35" stroke-width="16" stroke-linecap="round" />
+      <ellipse cx="62" cy="104" rx="12" ry="32" fill="#fff" fill-opacity=".28" transform="rotate(14 62 104)" />
+      <path d="M104 42 C102 30 107 22 114 16" fill="none" stroke="#5a3a12" stroke-width="5" stroke-linecap="round" />
+      <path d="M114 20 C138 6 166 12 178 28 C152 34 128 32 114 20Z" fill="url(#g-leaf)" />
+      <path d="M116 21 C136 20 156 24 170 28" fill="none" stroke="#c8f7d0" stroke-opacity=".6" stroke-width="1.5" />
+    </symbol>
+
+    <!-- Spinach Symbol -->
+    <symbol id="f-spinach" viewBox="0 0 200 240">
+      <path d="M100 216 L100 236" stroke="#8bd69a" stroke-width="7" stroke-linecap="round" />
+      <g opacity=".92">
+        <use href="#leaf" transform="translate(100 222) rotate(-34) scale(.86) translate(-100 -222)" />
+      </g>
+      <g opacity=".92">
+        <use href="#leaf" transform="translate(100 222) rotate(34) scale(.86) translate(-100 -222)" />
+      </g>
+      <use href="#leaf" />
+    </symbol>
+
+    <!-- Ginger Symbol -->
+    <symbol id="f-ginger" viewBox="0 0 200 240">
+      <path d="M40 160 C18 130 36 104 64 108 C66 76 98 64 116 84 C126 52 164 56 166 90 C196 92 198 130 178 146 C192 168 170 198 146 190 C140 214 100 216 90 196 C66 208 36 192 40 160Z" fill="url(#g-ginger)" />
+      <ellipse cx="146" cy="62" rx="15" ry="8" fill="#f3e3a8" />
+      <path d="M62 122 C74 128 84 128 94 122 M104 152 C118 160 132 160 146 152 M60 170 C72 178 84 178 96 172" stroke="#7a5424" stroke-opacity=".4" stroke-width="3" fill="none" stroke-linecap="round" />
+      <ellipse cx="78" cy="138" rx="14" ry="22" fill="#fff" fill-opacity=".18" transform="rotate(20 78 138)" />
+    </symbol>
+
+    <!-- Tamarind Symbol -->
+    <symbol id="f-tamarind" viewBox="0 0 200 240">
+      <g fill="none" stroke-linecap="round">
+        <path d="M44 56 L30 46" stroke="#5a3a1a" stroke-width="6" />
+        <path d="M44 56 C118 36 176 108 142 196" stroke="#4a2a10" stroke-width="46" />
+        <path d="M44 56 C118 36 176 108 142 196" stroke="#a8683a" stroke-width="40" />
+        <path d="M44 56 C118 36 176 108 142 196" stroke="#4a2a10" stroke-opacity=".5" stroke-width="40" stroke-linecap="butt" stroke-dasharray="2 30" />
+        <path d="M38 48 C112 26 168 98 134 188" stroke="#d6a06a" stroke-opacity=".55" stroke-width="7" />
+      </g>
+    </symbol>
+
+    <!-- Caramel Symbol -->
+    <symbol id="f-caramel" viewBox="0 0 200 240">
+      <path d="M52 108 C50 72 82 48 116 48 C154 48 174 76 170 118 C166 160 146 200 102 204 C56 208 54 152 52 108Z" fill="url(#g-caramel)" />
+      <path d="M72 102 C78 74 128 68 148 98 C162 122 132 156 98 152 C72 148 68 122 72 102Z" fill="#b45309" fill-opacity=".6" />
+      <ellipse cx="92" cy="78" rx="20" ry="10" fill="#fff" fill-opacity=".32" transform="rotate(-18 92 78)" />
+      <path d="M122 122 C140 132 154 118 156 104" fill="none" stroke="#fef08a" stroke-width="4" stroke-linecap="round" stroke-opacity=".7" />
+      <circle cx="140" cy="180" r="14" fill="url(#g-caramel)" />
+      <circle cx="65" cy="170" r="10" fill="url(#g-caramel)" />
+    </symbol>
+
+    <!-- Apple Symbol -->
+    <symbol id="f-apple" viewBox="0 0 200 240">
+      <path d="M100 68 C80 50 35 60 25 110 C15 160 55 220 95 220 C100 220 103 216 108 216 C113 216 116 220 121 220 C161 220 185 160 175 110 C165 60 120 50 100 68Z" fill="url(#g-apple)" />
+      <ellipse cx="60" cy="115" rx="14" ry="32" fill="#fff" fill-opacity=".25" transform="rotate(22 60 115)" />
+      <path d="M100 68 C102 46 114 30 126 22" fill="none" stroke="#5a3a12" stroke-width="6" stroke-linecap="round" />
+      <path d="M108 45 C125 32 152 36 160 50 C140 56 120 54 108 45Z" fill="url(#g-leaf)" />
+      <path d="M110 46 C126 44 144 48 154 51" fill="none" stroke="#c8f7d0" stroke-width="1.5" stroke-opacity=".7" />
+    </symbol>
+  </svg>
+
+  <!-- Ambient background glow layers -->
+  <div class="bgs" id="bgs" aria-hidden="true"></div>
+
+  <!-- Studio Top Navigation Header -->
+  <header class="top z-20">
+    <div class="logo font-display font-bold tracking-tight text-white flex items-center gap-2.5" aria-label="Renol Foods">
+      <svg class="w-8 h-8 flex-none" viewBox="0 0 32 32" aria-hidden="true">
+        <circle cx="16" cy="16" r="15" fill="#fff" fill-opacity=".1" stroke="#fff" stroke-opacity=".4" />
+        <path d="M9 21 C9 12 16 8 23 8 C23 16 19 23 11 23Z" fill="#6ee08a" />
+        <path d="M10 22 L19 13" stroke="#0b0b0d" stroke-width="1.6" stroke-linecap="round" />
+      </svg>
+      <span>Renol Foods</span>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <button class="pill back" id="back" type="button" aria-label="Back to carousel">
+        &larr; All powders
+      </button>
+    </div>
+  </header>
+
+  <!-- Main 3D Carousel Stage -->
+  <main
+    class="stage"
+    id="stage"
+    aria-label="Powder carousel. Use arrow keys or horizontal drag to browse, click or press Enter on the fruit to turn it into powder."
+    tabindex="-1"
+  >
+    <!-- Giant Outlined Ghost Typography -->
+    <div class="ghost" id="ghost" aria-hidden="true">LEMON</div>
+
+    <!-- Ring Carousel Container -->
+    <div class="ring" id="ring"></div>
+
+    <!-- FX Particle Canvas -->
+    <canvas id="fx" aria-hidden="true"></canvas>
+
+    <!-- Carousel Arrow Navigation -->
+    <button class="arrow l ui hudfade" id="prev" type="button" aria-label="Previous product">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M15 19l-7-7 7-7" />
+      </svg>
+    </button>
+    <button class="arrow r ui hudfade" id="next" type="button" aria-label="Next product">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 5l7 7-7 7" />
+      </svg>
+    </button>
+
+    <!-- Name & Subcategory Display -->
+    <div class="nameblock" aria-live="polite">
+      <h1 class="name" id="name">Lemon</h1>
+      <p class="sub" id="sub">Fruit powder</p>
+    </div>
+
+    <!-- Navigation Dots -->
+    <div class="dots ui hudfade" id="dots" aria-label="Carousel navigation dots"></div>
+
+    <!-- Interactive Hint with pulsing indicator -->
+    <div class="hint hudfade" id="hint">
+      <i></i>
+      <span id="hintTxt">Drag the lemon to spin it. Click it to turn it into powder</span>
+    </div>
+
+    <!-- Homepage Scroll Cue -->
+    <a href="#content-start" class="scroll-cue hudfade" aria-label="Scroll down to explore facility & products">
+      <span>Scroll to explore</span>
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 5v14M19 12l-7 7-7-7" />
+      </svg>
+    </a>
+  </main>
+
+  <!-- Detail View Section (Revealed via circular clipPath) -->
+  <section class="detail" id="detail" aria-label="Product details" data-lenis-prevent inert>
+    <div class="dbgs" id="dbgs" aria-hidden="true"></div>
+    <div class="dwrap">
+      <!-- Pouch Visual & Heap Simulation Representation -->
+      <div class="dvis dswap">
+        <div class="pwrap" id="pwrap">
+          <svg class="pouch" viewBox="0 0 240 340" role="img" aria-label="Powder pouch">
+            <path class="pbody" d="M28 34 H212 L220 318 Q220 332 206 332 H34 Q20 332 20 318Z" />
+            <path d="M28 34 H92 L84 332 H34 Q20 332 20 318Z" fill="#fff" fill-opacity=".1" />
+            <rect class="pcrimp" x="28" y="14" width="184" height="32" rx="4" />
+            <path d="M34 22 H206 M34 30 H206 M34 38 H206" stroke="#000" stroke-opacity=".2" />
+            <text x="120" y="70" text-anchor="middle" font-size="12" font-weight="600" fill="#fff" fill-opacity=".9" style="font-family:var(--body);letter-spacing:.06em">Renol Foods</text>
+            <rect x="44" y="86" width="152" height="204" rx="12" fill="#fff" fill-opacity=".95" />
+            <svg x="70" y="100" width="100" height="120" viewBox="0 0 200 240">
+              <use id="pouchFruit" href="#f-lemon" />
+            </svg>
+            <text id="pouchName" x="120" y="248" text-anchor="middle" font-size="24" font-weight="800" fill="#17120b" style="font-family:var(--display);letter-spacing:-.02em">Lemon</text>
+            <text id="pouchSub" x="120" y="268" text-anchor="middle" font-size="12" fill="#17120b" fill-opacity=".65" style="font-family:var(--body)">Fruit powder</text>
+          </svg>
+
+          <!-- Powder Pile / Mound Illustration in Detail -->
+          <svg class="mound" viewBox="0 0 320 80" aria-hidden="true">
+            <path class="m" d="M10 74 Q90 68 135 34 Q160 12 185 34 Q230 68 310 74 Z" />
+            <path d="M10 74 Q90 68 135 34 Q160 12 185 34 Q230 68 310 74 Z" fill="url(#g-mound-shade)" opacity=".2" />
+          </svg>
+
+          <!-- Side Fruit Stamp -->
+          <svg class="bigfruit" viewBox="0 0 200 240" aria-hidden="true">
+            <use id="bigFruit" href="#f-lemon" />
+          </svg>
+        </div>
+      </div>
+
+      <!-- Detail Info & Technical Specifications -->
+      <div class="dinfo">
+        <span class="chip" id="dCat">Fruit powder</span>
+        <h2 class="dname font-display" id="dName">Lemon Powder</h2>
+        <p class="dblurb" id="dBlurb">Spray-dried lemon juice with a concentrated citrus kick.</p>
+
+        <h3>Inside</h3>
+        <ul class="tags" id="dInside"></ul>
+
+        <h3>Commercial Applications</h3>
+        <ul class="tags use" id="dUses"></ul>
+
+        <h3>Technical Specifications</h3>
+        <dl class="specs" id="dSpecs"></dl>
+
+        <div class="cta">
+          <button class="btn" id="reqDetail" type="button">Request a Sample</button>
+        </div>
+
+        <div class="pn">
+          <button id="dPrev" type="button">&larr; <span id="dPrevN">Tomato</span></button>
+          <button id="dNext" type="button"><span id="dNextN">Mango</span> &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sample Request Dialog Modal -->
+  <dialog id="dlg" aria-labelledby="dlgTitle">
+    <div class="dbody">
+      <div id="fForm">
+        <h2 id="dlgTitle" class="font-display">Request a Sample</h2>
+        <p>Tell us what you need and our technical sales team will reply with sample details.</p>
+        <form id="sampleForm">
+          <label>
+            Your name
+            <input name="n" required autocomplete="name" placeholder="Full name" />
+          </label>
+          <label>
+            Work email
+            <input name="e" type="email" required autocomplete="email" placeholder="name@company.com" />
+          </label>
+          <label>
+            Product
+            <select id="fProd" name="p"></select>
+          </label>
+          <label>
+            Quantity needed
+            <input name="q" placeholder="e.g. 500 g lab evaluation sample" />
+          </label>
+          <div class="row">
+            <button class="btn ghost" type="button" id="dlgCancel">Cancel</button>
+            <button class="btn" type="submit">Send request</button>
+          </div>
+          <p class="demo">Lead generation demo form. In production, connects directly to Web3Forms.</p>
+        </form>
+      </div>
+
+      <div id="fDone" hidden>
+        <h2 class="font-display">Request noted</h2>
+        <p id="fDoneTxt"></p>
+        <div class="row">
+          <button class="btn" type="button" id="dlgClose">Done</button>
+        </div>
+      </div>
+    </div>
+  </dialog>
+</section>
+
+<style>
+  :root {
+    --cw: clamp(130px, min(44vw, 28vh), 320px);
+  }
+
+  .powder-studio {
+    --accent: #ffe14a;
+    --on: #140a00;
+    --base: #0b0b0d;
+    --panel: #121214;
+    --ink: #ffffff;
+    --ink-2: rgba(255, 255, 255, 0.72);
+    --ink-3: rgba(255, 255, 255, 0.44);
+    --line: rgba(255, 255, 255, 0.12);
+  }
+
+  /* Ambient glowing backgrounds */
+  .bgs {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  :global(.bg) {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 1.1s cubic-bezier(0.2, 0, 0.2, 1);
+    background: radial-gradient(
+        circle at 50% 46%,
+        color-mix(in srgb, var(--glow) 42%, transparent) 0%,
+        transparent 65%
+      ),
+      linear-gradient(180deg, var(--base) 0%, #0b0b0d 100%);
+  }
+
+  :global(.bg.on) {
+    opacity: 1;
+  }
+
+  /* Top Navigation */
+  .top {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 72px;
+    padding: 0 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    pointer-events: none;
+  }
+
+  .top > * {
+    pointer-events: auto;
+  }
+
+  .pill {
+    padding: 8px 18px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 600;
+    border: 1px solid var(--line);
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: var(--ink);
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s, border-color 0.2s;
+  }
+
+  .pill:hover {
+    background: rgba(255, 255, 255, 0.18);
+    border-color: rgba(255, 255, 255, 0.25);
+    transform: translateY(-1px);
+  }
+
+  .pill.back {
+    display: none;
+  }
+
+  :global(body.in-detail) .pill.back {
+    display: inline-flex;
+  }
+
+  /* Stage */
+  .stage {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    touch-action: pan-y;
+    user-select: none;
+    -webkit-user-select: none;
+    cursor: grab;
+  }
+
+  .stage:active {
+    cursor: grabbing;
+  }
+
+  /* Giant Ghost Typography */
+  .ghost {
+    position: absolute;
+    left: 50%;
+    top: 46%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+    white-space: nowrap;
+    pointer-events: none;
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: clamp(80px, 19vw, 290px);
+    line-height: 1;
+    letter-spacing: -0.04em;
+    color: transparent;
+    -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.14);
+  }
+
+  /* Ring Container */
+  .ring {
+    position: absolute;
+    left: 50%;
+    top: 46%;
+    width: 0;
+    height: 0;
+    z-index: 3;
+    perspective: 1400px;
+  }
+
+  :global(.card) {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: var(--cw);
+    height: calc(var(--cw) * 1.2);
+    padding: 0;
+    border: 0;
+    background: none;
+    will-change: transform, opacity;
+    -webkit-tap-highlight-color: transparent;
+    filter: drop-shadow(0 28px 36px rgba(0, 0, 0, 0.45));
+    cursor: pointer;
+  }
+
+  :global(.card .fruit) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    transform-origin: 50% 62%;
+  }
+
+  :global(.card:focus-visible) {
+    outline: 2px solid #fff;
+    outline-offset: 10px;
+    border-radius: 28px;
+  }
+
+  /* FX Canvas */
+  #fx {
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    pointer-events: none;
+  }
+
+  /* Name block */
+  .nameblock {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+    z-index: 6;
+    text-align: center;
+    pointer-events: none;
+    padding: 0 16px;
+  }
+
+  .name {
+    margin: 0;
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: clamp(44px, 7.5vw, 92px);
+    line-height: 0.95;
+    letter-spacing: -0.035em;
+  }
+
+  .sub {
+    margin: 8px 0 0;
+    font-size: 16px;
+    color: var(--ink-2);
+  }
+
+  /* Hint indicator */
+  .hint {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: calc(44px + env(safe-area-inset-bottom, 0px));
+    z-index: 6;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: var(--ink-2);
+    pointer-events: none;
+    padding: 0 16px;
+    text-align: center;
+  }
+
+  .hint i {
+    flex: none;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 0 var(--accent);
+    animation: ping 2s infinite;
+  }
+
+  @keyframes ping {
+    0% {
+      box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 70%, transparent);
+    }
+    80%,
+    100% {
+      box-shadow: 0 0 0 12px transparent;
+    }
+  }
+
+  /* Scroll Cue */
+  .scroll-cue {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 12px;
+    z-index: 6;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    text-decoration: none;
+    transition: color 0.2s, transform 0.2s;
+  }
+
+  .scroll-cue:hover {
+    color: var(--ink);
+    transform: translateX(-50%) translateY(2px);
+  }
+
+  .scroll-cue svg {
+    animation: floatDown 2s ease-in-out infinite;
+  }
+
+  @keyframes floatDown {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(4px);
+    }
+  }
+
+  /* Dots */
+  .dots {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+    z-index: 7;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+  }
+
+  :global(.dot) {
+    min-width: 8px;
+    min-height: 8px;
+    width: 8px;
+    height: 8px;
+    padding: 0;
+    border: 0;
+    border-radius: 99px;
+    background: rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    touch-action: manipulation;
+    transition: width 0.35s, background 0.35s;
+  }
+
+  :global(.dot.on) {
+    width: 28px;
+    background: var(--accent);
+  }
+
+  /* Arrows (min 44px tap targets, always reachable) */
+  .arrow {
+    position: absolute;
+    top: 46%;
+    z-index: 8;
+    min-width: 44px;
+    min-height: 44px;
+    width: 44px;
+    height: 44px;
+    margin-top: -22px;
+    padding: 0;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: #fff;
+    cursor: pointer;
+    touch-action: manipulation;
+    transition: background 0.2s, transform 0.2s;
+  }
+
+  .arrow:hover {
+    background: rgba(255, 255, 255, 0.22);
+    transform: scale(1.06);
+  }
+
+  .arrow.l {
+    left: 14px;
+  }
+
+  .arrow.r {
+    right: 14px;
+  }
+
+  .arrow svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  @media (min-width: 768px) {
+    .arrow {
+      width: 48px;
+      height: 48px;
+      margin-top: -24px;
+    }
+    .arrow.l {
+      left: 24px;
+    }
+    .arrow.r {
+      right: 24px;
+    }
+    .arrow svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .top {
+      padding: 0 16px;
+      height: 64px;
+    }
+    .name {
+      font-size: clamp(34px, 9vw, 56px);
+    }
+    .sub {
+      font-size: 14px;
+      margin-top: 4px;
+    }
+    .hint {
+      font-size: 12px;
+      padding: 0 12px;
+      bottom: calc(38px + env(safe-area-inset-bottom, 0px));
+    }
+    .nameblock {
+      bottom: calc(88px + env(safe-area-inset-bottom, 0px));
+    }
+  }
+
+  /* Landscape phone orientation support (height <= 500px) */
+  @media (max-height: 500px) and (orientation: landscape) {
+    .top {
+      height: 48px;
+      padding: 0 16px;
+    }
+    .ghost {
+      font-size: clamp(48px, 14vh, 90px);
+      top: 42%;
+    }
+    .nameblock {
+      bottom: calc(36px + env(safe-area-inset-bottom, 0px));
+    }
+    .name {
+      font-size: clamp(22px, 6.5vh, 32px);
+    }
+    .sub {
+      margin-top: 2px;
+      font-size: 12px;
+    }
+    .dots {
+      bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+      gap: 6px;
+    }
+    .hint, .scroll-cue {
+      display: none;
+    }
+    .arrow {
+      top: 42%;
+      min-width: 40px;
+      min-height: 40px;
+      width: 40px;
+      height: 40px;
+      margin-top: -20px;
+    }
+  }
+
+  /* Detail Screen (Fullscreen Overlay) */
+  .detail {
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    display: none;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    background: #0b0b0d;
+  }
+
+  .dbgs {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .dwrap {
+    position: relative;
+    z-index: 1;
+    min-height: 100%;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  }
+
+  .dvis {
+    position: relative;
+    display: grid;
+    place-items: center;
+    padding: clamp(88px, 13vh, 130px) 24px 56px;
+  }
+
+  .pwrap {
+    position: relative;
+    width: min(360px, 72%);
+  }
+
+  .pouch {
+    display: block;
+    width: 100%;
+    height: auto;
+    filter: drop-shadow(0 36px 40px rgba(0, 0, 0, 0.55));
+  }
+
+  .pbody {
+    fill: var(--pouch);
+  }
+
+  .pcrimp {
+    fill: var(--pouch);
+    filter: brightness(0.82);
+  }
+
+  .mound {
+    position: absolute;
+    left: -18%;
+    right: -18%;
+    bottom: -6%;
+    width: 136%;
+    height: auto;
+    pointer-events: none;
+  }
+
+  .mound path.m {
+    fill: var(--powder);
+  }
+
+  .bigfruit {
+    position: absolute;
+    right: -34%;
+    bottom: 4%;
+    width: 56%;
+    height: auto;
+    transform: rotate(14deg);
+    filter: drop-shadow(0 18px 22px rgba(0, 0, 0, 0.45));
+  }
+
+  .dinfo {
+    align-self: center;
+    max-width: 680px;
+    padding: clamp(88px, 14vh, 140px) clamp(24px, 5vw, 72px) 72px;
+  }
+
+  .chip {
+    display: inline-block;
+    padding: 6px 14px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink-2);
+    margin: 0 0 18px;
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .dname {
+    margin: 0;
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: clamp(40px, 6vw, 80px);
+    line-height: 0.94;
+    letter-spacing: -0.035em;
+  }
+
+  .dblurb {
+    margin: 18px 0 0;
+    font-size: 18px;
+    line-height: 1.5;
+    color: var(--ink-2);
+    max-width: 48ch;
+  }
+
+  .dinfo h3 {
+    margin: 32px 0 12px;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+  }
+
+  .tags {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  :global(.tags li) {
+    padding: 7px 14px;
+    border-radius: 999px;
+    font-size: 14px;
+    border: 1px solid var(--line);
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  :global(.tags.use li) {
+    border-color: transparent;
+    background: color-mix(in srgb, var(--accent) 22%, transparent);
+    color: #fff;
+  }
+
+  .specs {
+    margin: 0;
+    display: grid;
+    grid-template-columns: 140px 1fr;
+  }
+
+  :global(.specs dt),
+  :global(.specs dd) {
+    margin: 0;
+    padding: 10px 0;
+    border-top: 1px solid var(--line);
+    font-size: 14px;
+  }
+
+  :global(.specs dt) {
+    color: var(--ink-2);
+    font-weight: 500;
+  }
+
+  :global(.specs dd) {
+    color: var(--ink-3);
+  }
+
+  .cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 36px;
+  }
+
+  .btn {
+    border: 0;
+    border-radius: 999px;
+    padding: 14px 26px;
+    font-weight: 600;
+    font-size: 15px;
+    background: var(--accent);
+    color: var(--on);
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s, filter 0.2s;
+  }
+
+  .btn:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.08);
+  }
+
+  .btn.ghost {
+    background: transparent;
+    color: var(--ink);
+    border: 1px solid var(--line);
+  }
+
+  .btn.ghost:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .pn {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 44px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+  }
+
+  .pn button {
+    background: none;
+    border: 0;
+    padding: 6px 0;
+    font-size: 15px;
+    color: var(--ink-2);
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+
+  .pn button:hover {
+    color: var(--ink);
+  }
+
+  @media (max-width: 860px) {
+    .dwrap {
+      grid-template-columns: 1fr;
+    }
+    .dvis {
+      padding-top: 84px;
+      padding-bottom: 16px;
+      padding-left: 16px;
+      padding-right: 16px;
+    }
+    .pwrap {
+      width: min(210px, 54%);
+    }
+    .bigfruit {
+      right: -24%;
+      width: 48%;
+    }
+    .dinfo {
+      padding: 16px 16px calc(64px + env(safe-area-inset-bottom, 0px));
+    }
+    .dname {
+      font-size: clamp(28px, 7vw, 42px);
+    }
+    .dblurb {
+      font-size: 15px;
+    }
+    .specs {
+      grid-template-columns: 110px 1fr;
+    }
+  }
+
+  /* Sample Request Dialog */
+  dialog {
+    width: min(480px, 92vw);
+    padding: 0;
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    background: var(--panel);
+    color: var(--ink);
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.6);
+  }
+
+  dialog::backdrop {
+    background: rgba(0, 0, 0, 0.68);
+    backdrop-filter: blur(6px);
+  }
+
+  .dbody {
+    padding: 32px;
+  }
+
+  .dbody h2 {
+    margin: 0 0 8px;
+    font-size: 28px;
+    letter-spacing: -0.02em;
+  }
+
+  .dbody p {
+    margin: 0 0 20px;
+    color: var(--ink-2);
+    font-size: 15px;
+    line-height: 1.45;
+  }
+
+  .dbody label {
+    display: block;
+    margin: 0 0 16px;
+    font-size: 14px;
+    color: var(--ink-2);
+  }
+
+  .dbody input,
+  .dbody select {
+    display: block;
+    width: 100%;
+    margin-top: 6px;
+    padding: 12px 16px;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    background: #1b1b1f;
+    color: var(--ink);
+    font: inherit;
+    font-size: 14px;
+  }
+
+  .dbody input:focus,
+  .dbody select:focus {
+    outline: 2px solid var(--accent);
+    border-color: transparent;
+  }
+
+  .dbody .row {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 12px;
+  }
+
+  .demo {
+    font-size: 12px;
+    color: var(--ink-3);
+    margin-top: 16px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global(.bg) {
+      transition-duration: 0.01s;
+    }
+    .hint i,
+    .scroll-cue svg {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  import { initPowderStudio } from "../../scripts/studio";
+
+  let cleanup: (() => void) | null = null;
+
+  function boot() {
+    const root = document.getElementById("powder-studio");
+    if (!root) return;
+    if (cleanup) cleanup();
+    cleanup = initPowderStudio(root);
+  }
+
+  document.addEventListener("astro:page-load", boot);
+  document.addEventListener("astro:before-swap", () => {
+    if (cleanup) {
+      cleanup();
+      cleanup = null;
+    }
+  });
+
+  // Fallback for direct page load if ViewTransitions is not used
+  if (document.readyState === "complete" || document.readyState === "interactive") {
+    boot();
+  } else {
+    document.addEventListener("DOMContentLoaded", boot);
+  }
+</script>

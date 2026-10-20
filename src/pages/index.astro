@@ -1,11 +1,722 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PowderStudio from "../components/studio/PowderStudio.astro";
+import { siteConfig } from "../data/site";
+import { products } from "../data/products";
+import { industries } from "../data/industries";
+import { manufacturingProcess } from "../data/process";
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const faqs = [
+  {
+    q: "What is your standard Minimum Order Quantity (MOQ) for commercial production?",
+    a: "Standard commercial production runs start from [ADD: confirm MOQ, e.g. 100 kg to 500 kg] depending on the specific fruit, vegetable, or spice powder and packaging requirements. For custom carrier blending or proprietary mesh sizing, custom batch minimums apply.",
+  },
+  {
+    q: "How can our formulation team request lab evaluation samples?",
+    a: "We provide evaluation sample packets (typically 200 g to 500 g) for qualified R&D food scientists, beverage formulators, and bakery manufacturers. Submit the sample request form below or contact our technical sales desk directly.",
+  },
+  {
+    q: "What moisture barrier standards are used for bulk packaging?",
+    a: "Bulk commercial food powders are packed in heavy-duty multi-wall paper bags with LDPE inner liners or airtight foil-laminated barrier bags (typically 20 kg or 25 kg net weight) to prevent ambient humidity absorption, aroma loss, and caking during transport.",
+  },
+  {
+    q: "Can you calibrate mesh particle sizing or carrier ratios for our processing line?",
+    a: "Yes. We offer particle size customization ranging from coarse dustings (40–60 mesh) for topical snack seasoning adhesion to micro-milled dispersions (80–120 mesh) for cold-soluble beverage and soup premixes.",
+  },
+  {
+    q: "Where is the manufacturing facility located, and can we schedule a site audit?",
+    a: "Our manufacturing facility is located in Bavla, Ahmedabad, Gujarat. We welcome technical representatives and procurement managers from commercial food brands for scheduled factory audits and technical formulation reviews.",
+  },
+];
 ---
 
-<Layout>
-	<Welcome />
-</Layout>
+<BaseLayout
+  title="Renol Foods | B2B Food Powder Manufacturer | Bavla, Ahmedabad"
+  description="Manufacturer of dehydrated and spray-dried fruit, vegetable, and culinary powders in Bavla, Ahmedabad. Supplying bakeries, snack brands, beverage formulators, and food exporters."
+>
+  <!-- 1. First Screen: 100svh Powder Studio with Non-Hijacking Scroll Cue -->
+  <PowderStudio />
+
+  <!-- Content continues below the Studio -->
+  <div id="content-start" class="relative z-10 w-full overflow-hidden bg-[#0b0b0d] text-white">
+    
+    <!-- Dynamic Ambient Section Accent Glow -->
+    <div
+      class="pointer-events-none absolute left-1/2 top-40 -translate-x-1/2 w-[900px] h-[500px] rounded-full blur-[160px] opacity-25 transition-all duration-1000"
+      style="background: radial-gradient(circle, var(--accent, #ffe14a) 0%, transparent 70%);"
+      aria-hidden="true"
+    ></div>
+
+    <!-- 2. Trust Bar: Certification & Client Slots (Marked Placeholders Only) -->
+    <section id="trust-bar" class="relative py-12 border-b border-white/10 bg-[#0e0e12]/80 backdrop-blur-sm">
+      <div class="max-w-7xl mx-auto px-6 lg:px-8">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+          <div class="flex-none text-center md:text-left">
+            <span class="text-xs uppercase font-bold tracking-widest text-white/40 block">Quality & Partner Framework</span>
+            <span class="text-sm font-display font-semibold text-white/80">Compliance Placeholders Pending Final Renol Audits</span>
+          </div>
+
+          <!-- Marked Placeholder Badges -->
+          <div class="flex flex-wrap items-center justify-center md:justify-end gap-3">
+            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-dashed border-white/20 bg-white/5 text-xs text-white/60 font-mono" title="FSSAI central license number verification slot">
+              <span class="w-1.5 h-1.5 rounded-full bg-amber-400/80"></span>
+              <span>[FSSAI Central Lic. - Pending Verification]</span>
+            </div>
+            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-dashed border-white/20 bg-white/5 text-xs text-white/60 font-mono" title="ISO 22000 / HACCP certification verification slot">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400/80"></span>
+              <span>[ISO 22000 / HACCP - Verification Slot]</span>
+            </div>
+            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-dashed border-white/20 bg-white/5 text-xs text-white/60 font-mono" title="Client partnership under NDA slot">
+              <span class="w-1.5 h-1.5 rounded-full bg-blue-400/80"></span>
+              <span>[Tier-1 Snack Brand - NDA Client Slot]</span>
+            </div>
+            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-dashed border-white/20 bg-white/5 text-xs text-white/60 font-mono" title="Export client verification slot">
+              <span class="w-1.5 h-1.5 rounded-full bg-purple-400/80"></span>
+              <span>[Bakery & Premix Exporter - Partner Slot]</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Animated Manufacturing Timeline from Prompt 5 (Restyled Dark) -->
+    <section id="process" class="relative py-28 border-b border-white/10">
+      <!-- Large Outlined Ghost Watermark -->
+      <div class="absolute left-1/2 top-12 -translate-x-1/2 text-center pointer-events-none select-none z-0">
+        <span class="font-display font-black text-[clamp(60px,12vw,180px)] tracking-tighter text-transparent opacity-10" style="-webkit-text-stroke: 1.5px rgba(255,255,255,0.12);">
+          TIMELINE
+        </span>
+      </div>
+
+      <div class="relative z-10 max-w-7xl mx-auto px-6 lg:px-8">
+        <div class="text-center max-w-3xl mx-auto reveal">
+          <div class="inline-flex items-center gap-2 px-3 py-1 mb-3 text-xs font-semibold tracking-widest uppercase rounded-full bg-white/10 border border-white/15 text-white/90">
+            <span class="w-2 h-2 rounded-full inline-block" style="background-color: var(--accent, #ffe14a);"></span>
+            <span>General Manufacturing Process</span>
+          </div>
+          <h2 class="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-[1.12]">
+            Industrial Dehydration & Spray Drying
+          </h2>
+          <p class="mt-4 text-base sm:text-lg text-white/70 leading-relaxed font-body">
+            General production stages engineered in Bavla for high-solids fruit juices, botanical leaves, and savory culinary purees.
+          </p>
+        </div>
+
+        <!-- 6-Stage Timeline Grid with Illuminated Connectors -->
+        <div class="mt-20 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {
+            manufacturingProcess.map((step, idx) => (
+              <div class="timeline-card group relative p-8 rounded-3xl bg-[#121214] border border-white/10 hover:border-white/25 transition-all duration-300 hover:-translate-y-1 overflow-hidden flex flex-col justify-between">
+                <!-- Glowing corner highlight tied to dynamic accent -->
+                <div
+                  class="absolute -top-16 -right-16 w-32 h-32 rounded-full opacity-0 group-hover:opacity-20 transition-opacity duration-500 blur-2xl pointer-events-none"
+                  style="background-color: var(--accent, #ffe14a);"
+                ></div>
+
+                <div>
+                  <div class="flex items-center justify-between mb-4">
+                    <span class="inline-block px-3 py-1 rounded-full bg-white/10 text-white/80 text-[11px] font-semibold uppercase tracking-wider">
+                      Stage 0{step.stepNumber}
+                    </span>
+                    <span class="font-display text-4xl font-black text-white/10 group-hover:text-white/20 transition-colors">
+                      0{step.stepNumber}
+                    </span>
+                  </div>
+
+                  <h3 class="font-display text-2xl font-bold text-white mb-1 group-hover:text-white transition-colors">
+                    {step.title}
+                  </h3>
+                  <p class="text-xs font-semibold uppercase tracking-wider mb-3" style="color: var(--accent, #ffe14a);">
+                    {step.subtitle}
+                  </p>
+                  <p class="text-sm text-white/70 leading-relaxed font-body">
+                    {step.description}
+                  </p>
+                </div>
+
+                <div class="mt-6 pt-4 border-t border-white/10 text-xs text-white/50 font-body">
+                  <strong class="text-white/80">Key Control Point:</strong> {step.keyControlPoint}
+                </div>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Industries Served -->
+    <section id="industries" class="relative py-28 border-b border-white/10 bg-[#0e0e12]">
+      <!-- Background Ghost Header -->
+      <div class="absolute left-1/2 top-10 -translate-x-1/2 text-center pointer-events-none select-none z-0">
+        <span class="font-display font-black text-[clamp(60px,12vw,180px)] tracking-tighter text-transparent opacity-10" style="-webkit-text-stroke: 1.5px rgba(255,255,255,0.12);">
+          INDUSTRIES
+        </span>
+      </div>
+
+      <div class="relative z-10 max-w-7xl mx-auto px-6 lg:px-8">
+        <div class="text-center max-w-3xl mx-auto reveal">
+          <div class="inline-flex items-center gap-2 px-3 py-1 mb-3 text-xs font-semibold tracking-widest uppercase rounded-full bg-white/10 border border-white/15 text-white/90">
+            <span class="w-2 h-2 rounded-full inline-block" style="background-color: var(--accent, #ffe14a);"></span>
+            <span>Commercial Formulation Segments</span>
+          </div>
+          <h2 class="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-[1.12]">
+            Formulated for Industrial Food Manufacturing
+          </h2>
+          <p class="mt-4 text-base sm:text-lg text-white/70 leading-relaxed font-body">
+            Engineered for seamless integration into continuous seasoning drums, dry beverage blending, automated dough mixers, and culinary kettle preparations.
+          </p>
+        </div>
+
+        <div class="mt-20 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {
+            industries.map((ind) => (
+              <div class="industry-card group p-8 rounded-3xl bg-[#121214] border border-white/10 hover:border-white/25 transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between">
+                <div>
+                  <h3 class="font-display text-2xl font-bold text-white mb-2 group-hover:text-amber-300 transition-colors">
+                    {ind.name}
+                  </h3>
+                  <p class="text-sm text-white/70 leading-relaxed mb-6 font-body">
+                    {ind.description}
+                  </p>
+                  
+                  <div class="space-y-2 mb-6">
+                    {ind.keyBenefits.map((b) => (
+                      <p class="flex items-start gap-2.5 text-xs text-white/70 font-body">
+                        <span class="mt-1 w-1.5 h-1.5 rounded-full flex-none" style="background-color: var(--accent, #ffe14a);"></span>
+                        <span>{b}</span>
+                      </p>
+                    ))}
+                  </div>
+                </div>
+
+                <div class="pt-5 border-t border-white/10 flex items-center justify-between">
+                  <a
+                    href="/industries"
+                    class="text-xs font-semibold text-white/70 hover:text-white transition-colors"
+                  >
+                    View details &rarr;
+                  </a>
+                </div>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. Customisation & Private Label -->
+    <section id="customisation" class="relative py-28 border-b border-white/10">
+      <!-- Background Ghost Watermark -->
+      <div class="absolute left-1/2 top-12 -translate-x-1/2 text-center pointer-events-none select-none z-0">
+        <span class="font-display font-black text-[clamp(60px,12vw,180px)] tracking-tighter text-transparent opacity-10" style="-webkit-text-stroke: 1.5px rgba(255,255,255,0.12);">
+          CUSTOM
+        </span>
+      </div>
+
+      <div class="relative z-10 max-w-7xl mx-auto px-6 lg:px-8">
+        <div class="text-center max-w-3xl mx-auto reveal">
+          <div class="inline-flex items-center gap-2 px-3 py-1 mb-3 text-xs font-semibold tracking-widest uppercase rounded-full bg-white/10 border border-white/15 text-white/90">
+            <span class="w-2 h-2 rounded-full inline-block" style="background-color: var(--accent, #ffe14a);"></span>
+            <span>Tailored Product Engineering</span>
+          </div>
+          <h2 class="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-[1.12]">
+            Custom Specification & Bulk Packaging
+          </h2>
+          <p class="mt-4 text-base sm:text-lg text-white/70 leading-relaxed font-body">
+            Every food processing plant has distinct humidity tolerances and equipment requirements. We calibrate key physical properties to match your production line.
+          </p>
+        </div>
+
+        <div class="mt-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div class="p-8 rounded-3xl bg-[#121214] border border-white/10 flex flex-col justify-between">
+            <div>
+              <span class="font-display text-3xl font-extrabold text-white/20">01</span>
+              <h3 class="font-display text-xl font-bold text-white mt-3 mb-2">Mesh Sizing</h3>
+              <p class="text-sm text-white/70 leading-relaxed font-body">
+                Calibrated from 40 mesh for electrostatic topical snack dusting to 120 mesh for instant beverage dispersion.
+              </p>
+            </div>
+            <div class="mt-6 pt-4 border-t border-white/10 text-xs text-white/50">
+              Target: 40 - 120 Mesh
+            </div>
+          </div>
+
+          <div class="p-8 rounded-3xl bg-[#121214] border border-white/10 flex flex-col justify-between">
+            <div>
+              <span class="font-display text-3xl font-extrabold text-white/20">02</span>
+              <h3 class="font-display text-xl font-bold text-white mt-3 mb-2">Moisture Target</h3>
+              <p class="text-sm text-white/70 leading-relaxed font-body">
+                Controlled drying parameters ensuring target moisture content typically ≤ 5.0% to prevent hygroscopic caking.
+              </p>
+            </div>
+            <div class="mt-6 pt-4 border-t border-white/10 text-xs text-white/50">
+              Target: Low Water Activity
+            </div>
+          </div>
+
+          <div class="p-8 rounded-3xl bg-[#121214] border border-white/10 flex flex-col justify-between">
+            <div>
+              <span class="font-display text-3xl font-extrabold text-white/20">03</span>
+              <h3 class="font-display text-xl font-bold text-white mt-3 mb-2">Carrier Blending</h3>
+              <p class="text-sm text-white/70 leading-relaxed font-body">
+                Formulated as pure dehydrated botanical solids or buffered with food-grade maltodextrin/anti-caking matrices.
+              </p>
+            </div>
+            <div class="mt-6 pt-4 border-t border-white/10 text-xs text-white/50">
+              Pure or Carrier-Buffered
+            </div>
+          </div>
+
+          <div class="p-8 rounded-3xl bg-[#121214] border border-white/10 flex flex-col justify-between">
+            <div>
+              <span class="font-display text-3xl font-extrabold text-white/20">04</span>
+              <h3 class="font-display text-xl font-bold text-white mt-3 mb-2">Bulk Packaging</h3>
+              <p class="text-sm text-white/70 leading-relaxed font-body">
+                Supplied in 20 kg / 25 kg LDPE poly-lined kraft barrier bags or airtight fiber drums for export containment.
+              </p>
+            </div>
+            <div class="mt-6 pt-4 border-t border-white/10 text-xs text-white/50">
+              20 kg / 25 kg LDPE Kraft Bags
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-12 text-center">
+          <a href="#enquiry-form" class="pill bg-white/10 hover:bg-white/20 text-white font-semibold text-sm !py-3.5 !px-8">
+            Discuss Custom Formulation Requirements &rarr;
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. Numbers: Only "Founded 2021" is Real (Others Hidden) -->
+    <section id="numbers" class="relative py-24 border-b border-white/10 bg-[#0e0e12]">
+      <div class="max-w-7xl mx-auto px-6 lg:px-8">
+        <div class="max-w-3xl mx-auto text-center reveal">
+          <span class="text-xs uppercase font-bold tracking-widest text-white/40 block mb-2">Manufacturing History</span>
+          
+          <!-- Only Verified Number: Founded 2021 -->
+          <div class="my-6">
+            <span class="font-display text-7xl sm:text-9xl font-black tracking-tight" style="color: var(--accent, #ffe14a);">
+              2021
+            </span>
+          </div>
+
+          <h2 class="font-display text-2xl sm:text-3xl font-bold text-white">
+            Founded in Bavla, Ahmedabad, Gujarat
+          </h2>
+          <p class="mt-4 text-base text-white/70 leading-relaxed font-body">
+            Established as a specialized B2B food powder manufacturer supplying food processing plants, industrial bakeries, beverage brands, and exporters across India and overseas markets.
+          </p>
+
+          <!-- Note: Unverified capacity or metric numbers are omitted per client instruction -->
+          <div class="mt-8 pt-6 border-t border-white/10 flex flex-wrap justify-center gap-6 text-xs text-white/50">
+            <span>&bull; Industrial Dehydration</span>
+            <span>&bull; Low-Temperature Spray Drying</span>
+            <span>&bull; Bulk Food Manufacturing</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. Quality & Quality Assurance (Unverified Placeholders Hidden) -->
+    <section id="quality" class="relative py-28 border-b border-white/10">
+      <div class="relative z-10 max-w-7xl mx-auto px-6 lg:px-8">
+        <div class="text-center max-w-3xl mx-auto reveal">
+          <div class="inline-flex items-center gap-2 px-3 py-1 mb-3 text-xs font-semibold tracking-widest uppercase rounded-full bg-white/10 border border-white/15 text-white/90">
+            <span class="w-2 h-2 rounded-full inline-block" style="background-color: var(--accent, #ffe14a);"></span>
+            <span>Quality Principles</span>
+          </div>
+          <h2 class="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-[1.12]">
+            Verifiable Batch Quality Control
+          </h2>
+          <p class="mt-4 text-base sm:text-lg text-white/70 leading-relaxed font-body">
+            Standard laboratory testing protocols applied to incoming fresh produce, drying chamber temperatures, and finished moisture retention.
+          </p>
+        </div>
+
+        <div class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div class="p-8 rounded-3xl bg-[#121214] border border-white/10">
+            <div class="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center font-display font-bold text-lg mb-6" style="color: var(--accent, #ffe14a);">
+              01
+            </div>
+            <h3 class="font-display text-xl font-bold text-white mb-3">Incoming Raw Produce Sorting</h3>
+            <p class="text-sm text-white/70 leading-relaxed font-body">
+              Physical inspection, grading, and washing cycles configured to fruit and leaf skin textures before milling or pulping.
+            </p>
+          </div>
+
+          <div class="p-8 rounded-3xl bg-[#121214] border border-white/10">
+            <div class="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center font-display font-bold text-lg mb-6" style="color: var(--accent, #ffe14a);">
+              02
+            </div>
+            <h3 class="font-display text-xl font-bold text-white mb-3">Thermal Profile Safeguards</h3>
+            <p class="text-sm text-white/70 leading-relaxed font-body">
+              Calibrated spray drying inlet and outlet temperatures safeguard natural lycopene, citric volatiles, and natural color integrity.
+            </p>
+          </div>
+
+          <div class="p-8 rounded-3xl bg-[#121214] border border-white/10">
+            <div class="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center font-display font-bold text-lg mb-6" style="color: var(--accent, #ffe14a);">
+              03
+            </div>
+            <h3 class="font-display text-xl font-bold text-white mb-3">Batch Traceability & Retention</h3>
+            <p class="text-sm text-white/70 leading-relaxed font-body">
+              Lot-wise labeling on sealed bags with retained reference samples for shelf-life verification and customer QA consistency.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. Commercial FAQ Teaser -->
+    <section id="faq" class="relative py-28 border-b border-white/10 bg-[#0e0e12]">
+      <!-- Background Ghost Header -->
+      <div class="absolute left-1/2 top-10 -translate-x-1/2 text-center pointer-events-none select-none z-0">
+        <span class="font-display font-black text-[clamp(60px,12vw,180px)] tracking-tighter text-transparent opacity-10" style="-webkit-text-stroke: 1.5px rgba(255,255,255,0.12);">
+          QUESTIONS
+        </span>
+      </div>
+
+      <div class="relative z-10 max-w-4xl mx-auto px-6 lg:px-8">
+        <div class="text-center max-w-2xl mx-auto reveal mb-16">
+          <div class="inline-flex items-center gap-2 px-3 py-1 mb-3 text-xs font-semibold tracking-widest uppercase rounded-full bg-white/10 border border-white/15 text-white/90">
+            <span class="w-2 h-2 rounded-full inline-block" style="background-color: var(--accent, #ffe14a);"></span>
+            <span>Commercial Inquiries</span>
+          </div>
+          <h2 class="font-display text-3xl sm:text-4xl font-extrabold tracking-tight text-white leading-[1.15]">
+            Frequently Asked Questions
+          </h2>
+          <p class="mt-3 text-base text-white/70 font-body">
+            Key details for R&D food scientists, formulation chemists, and procurement teams.
+          </p>
+        </div>
+
+        <div class="space-y-4">
+          {
+            faqs.map((faq, idx) => (
+              <details class="faq-item group p-6 rounded-2xl bg-[#121214] border border-white/10 open:border-white/20 transition-all duration-200">
+                <summary class="flex items-center justify-between cursor-pointer list-none select-none font-display text-lg font-bold text-white group-open:text-amber-300">
+                  <span>{faq.q}</span>
+                  <span class="ml-4 flex-none w-6 h-6 rounded-full border border-white/20 flex items-center justify-center text-xs text-white/70 transition-transform duration-300 group-open:rotate-45">
+                    +
+                  </span>
+                </summary>
+                <p class="mt-4 text-sm text-white/70 leading-relaxed font-body pr-8">
+                  {faq.a}
+                </p>
+              </details>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- 9. Final CTA with Comprehensive Lead Generation Enquiry Form -->
+    <section id="enquiry-form" class="relative py-28 bg-[#121214]">
+      <!-- Outlined Ghost Background -->
+      <div class="absolute left-1/2 top-10 -translate-x-1/2 text-center pointer-events-none select-none z-0">
+        <span class="font-display font-black text-[clamp(50px,10vw,160px)] tracking-tighter text-transparent opacity-10 whitespace-nowrap" style="-webkit-text-stroke: 1.5px rgba(255,255,255,0.12);">
+          REQUEST SAMPLE
+        </span>
+      </div>
+
+      <div class="relative z-10 max-w-4xl mx-auto px-6 lg:px-8">
+        <div class="text-center max-w-2xl mx-auto reveal mb-14">
+          <div class="inline-flex items-center gap-2 px-3 py-1 mb-3 text-xs font-semibold tracking-widest uppercase rounded-full bg-white/10 border border-white/15 text-white/90">
+            <span class="w-2 h-2 rounded-full inline-block" style="background-color: var(--accent, #ffe14a);"></span>
+            <span>Commercial Inquiries & Quotations</span>
+          </div>
+          <h2 class="font-display text-3xl sm:text-5xl font-extrabold tracking-tight text-white leading-[1.12]">
+            Request a Sample
+          </h2>
+          <p class="mt-4 text-base sm:text-lg text-white/70 leading-relaxed font-body">
+            Direct from our Bavla manufacturing plant. Share your formulation requirements and target volume below.
+          </p>
+        </div>
+
+        <!-- Form Card Container -->
+        <div class="p-8 sm:p-12 rounded-3xl bg-[#16161a] border border-white/10 shadow-2xl">
+          <form id="homeEnquiryForm" class="space-y-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div>
+                <label class="block text-xs uppercase font-bold tracking-wider text-white/70 mb-2">
+                  Your Full Name *
+                </label>
+                <input
+                  type="text"
+                  name="fullName"
+                  required
+                  autocomplete="name"
+                  placeholder="e.g. Rahul Sharma"
+                  class="w-full px-4 py-3 rounded-xl border border-white/15 bg-[#1b1b1f] text-white text-sm focus:outline-none focus:border-white/40 transition-colors"
+                />
+              </div>
+
+              <div>
+                <label class="block text-xs uppercase font-bold tracking-wider text-white/70 mb-2">
+                  Company / Brand Name *
+                </label>
+                <input
+                  type="text"
+                  name="companyName"
+                  required
+                  placeholder="e.g. Apex Foods Pvt Ltd"
+                  class="w-full px-4 py-3 rounded-xl border border-white/15 bg-[#1b1b1f] text-white text-sm focus:outline-none focus:border-white/40 transition-colors"
+                />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div>
+                <label class="block text-xs uppercase font-bold tracking-wider text-white/70 mb-2">
+                  Work Email *
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  required
+                  autocomplete="email"
+                  placeholder="r.sharma@company.com"
+                  class="w-full px-4 py-3 rounded-xl border border-white/15 bg-[#1b1b1f] text-white text-sm focus:outline-none focus:border-white/40 transition-colors"
+                />
+              </div>
+
+              <div>
+                <label class="block text-xs uppercase font-bold tracking-wider text-white/70 mb-2">
+                  Phone / WhatsApp *
+                </label>
+                <input
+                  type="tel"
+                  name="phone"
+                  required
+                  autocomplete="tel"
+                  placeholder="+91 98765 43210"
+                  class="w-full px-4 py-3 rounded-xl border border-white/15 bg-[#1b1b1f] text-white text-sm focus:outline-none focus:border-white/40 transition-colors"
+                />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div>
+                <label class="block text-xs uppercase font-bold tracking-wider text-white/70 mb-2">
+                  Product of Interest *
+                </label>
+                <select
+                  name="product"
+                  required
+                  class="w-full px-4 py-3 rounded-xl border border-white/15 bg-[#1b1b1f] text-white text-sm focus:outline-none focus:border-white/40 transition-colors"
+                >
+                  <option value="">Select a food powder...</option>
+                  {
+                    products.map((p) => (
+                      <option value={p.name}>{p.name} Powder ({p.cat})</option>
+                    ))
+                  }
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-xs uppercase font-bold tracking-wider text-white/70 mb-2">
+                  Application Segment
+                </label>
+                <select
+                  name="industry"
+                  class="w-full px-4 py-3 rounded-xl border border-white/15 bg-[#1b1b1f] text-white text-sm focus:outline-none focus:border-white/40 transition-colors"
+                >
+                  <option value="">Select your application...</option>
+                  <option value="Snacks & Seasonings">Snacks & Topical Seasonings</option>
+                  <option value="Bakery & Confectionery">Bakery & Confectionery</option>
+                  <option value="Beverages & Drink Mixes">Beverages & Drink Mixes</option>
+                  <option value="Soups & Culinary Sauces">Soups & Culinary Sauces</option>
+                  <option value="Spice Blends & Masalas">Spice Blends & Masalas</option>
+                  <option value="Health & Nutraceuticals">Health & Nutraceuticals</option>
+                  <option value="Other">Other Application</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 gap-6">
+              <div>
+                <label class="block text-xs uppercase font-bold tracking-wider text-white/70 mb-2">
+                  Sample Size or Estimated Volume
+                </label>
+                <input
+                  type="text"
+                  name="volume"
+                  placeholder="e.g. 500 g R&D sample / 500 kg trial order / 5 MT monthly"
+                  class="w-full px-4 py-3 rounded-xl border border-white/15 bg-[#1b1b1f] text-white text-sm focus:outline-none focus:border-white/40 transition-colors"
+                />
+              </div>
+
+              <div>
+                <label class="block text-xs uppercase font-bold tracking-wider text-white/70 mb-2">
+                  Formulation Requirements or Delivery Notes
+                </label>
+                <textarea
+                  name="message"
+                  rows="3"
+                  placeholder="Describe your mesh sizing, carrier preferences, or target delivery timeline..."
+                  class="w-full px-4 py-3 rounded-xl border border-white/15 bg-[#1b1b1f] text-white text-sm focus:outline-none focus:border-white/40 transition-colors resize-none"
+                ></textarea>
+              </div>
+            </div>
+
+            <div class="pt-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <p class="text-xs text-white/40 font-body">
+                Fast response from our technical team in Bavla.
+              </p>
+              <button
+                type="submit"
+                class="pill font-display font-bold text-base !py-3.5 !px-8 hover:brightness-110 shadow-xl transition-all"
+                style="background-color: var(--accent, #ffe14a); color: var(--on, #140a00);"
+              >
+                Request a Sample &rarr;
+              </button>
+            </div>
+          </form>
+
+          <!-- Success Notification Container -->
+          <div id="homeEnquirySuccess" class="hidden text-center py-12 space-y-4">
+            <div class="w-16 h-16 rounded-full mx-auto flex items-center justify-center font-display text-2xl font-bold" style="background-color: var(--accent, #ffe14a); color: #140a00;">
+              ✓
+            </div>
+            <h3 class="font-display text-2xl font-bold text-white">Sample Request Received</h3>
+            <p id="homeEnquirySuccessTxt" class="text-white/70 text-base max-w-lg mx-auto font-body">
+              Thank you. Our technical sales desk in Bavla has received your specifications and will follow up with sample batch details.
+            </p>
+            <div class="pt-4">
+              <button
+                type="button"
+                id="resetHomeEnquiryForm"
+                class="pill text-sm font-semibold !py-2.5 !px-6"
+              >
+                Submit Another Request
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<script>
+  import { gsap } from "gsap";
+  import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  function initScrollReveals() {
+    const isReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (isReducedMotion) return;
+
+    // Subtle section header reveals (0.5 to 0.7s)
+    const revealEls = document.querySelectorAll(".reveal");
+    revealEls.forEach((el) => {
+      gsap.fromTo(
+        el,
+        { opacity: 0, y: 28 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.65,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: el,
+            start: "top 88%",
+            toggleActions: "play none none none",
+          },
+        }
+      );
+    });
+
+    // Timeline cards subtle stagger
+    const timelineCards = document.querySelectorAll(".timeline-card");
+    if (timelineCards.length) {
+      gsap.fromTo(
+        timelineCards,
+        { opacity: 0, y: 30 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.6,
+          stagger: 0.08,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: "#process",
+            start: "top 78%",
+            toggleActions: "play none none none",
+          },
+        }
+      );
+    }
+
+    // Industry cards subtle stagger
+    const industryCards = document.querySelectorAll(".industry-card");
+    if (industryCards.length) {
+      gsap.fromTo(
+        industryCards,
+        { opacity: 0, y: 30 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.6,
+          stagger: 0.08,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: "#industries",
+            start: "top 78%",
+            toggleActions: "play none none none",
+          },
+        }
+      );
+    }
+  }
+
+  function initForm() {
+    const form = document.getElementById("homeEnquiryForm") as HTMLFormElement | null;
+    const successDiv = document.getElementById("homeEnquirySuccess");
+    const successTxt = document.getElementById("homeEnquirySuccessTxt");
+    const resetBtn = document.getElementById("resetHomeEnquiryForm");
+
+    if (form && successDiv) {
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const fd = new FormData(form);
+        const name = fd.get("fullName") || "valued partner";
+        const prod = fd.get("product") || "food powder";
+
+        if (successTxt) {
+          successTxt.textContent = `Thank you ${name}. Your inquiry for ${prod} has been noted. Our technical sales team in Bavla will review your requirements and respond shortly.`;
+        }
+
+        form.classList.add("hidden");
+        successDiv.classList.remove("hidden");
+      });
+
+      if (resetBtn) {
+        resetBtn.addEventListener("click", () => {
+          form.reset();
+          successDiv.classList.add("hidden");
+          form.classList.remove("hidden");
+        });
+      }
+    }
+  }
+
+  document.addEventListener("astro:page-load", () => {
+    initScrollReveals();
+    initForm();
+  });
+
+  if (document.readyState === "complete" || document.readyState === "interactive") {
+    initScrollReveals();
+    initForm();
+  } else {
+    document.addEventListener("DOMContentLoaded", () => {
+      initScrollReveals();
+      initForm();
+    });
+  }
+</script>

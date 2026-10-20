@@ -1,0 +1,88 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SectionHeading from "../components/SectionHeading.astro";
+import { siteConfig } from "../data/site";
+
+// Clean address for display without internal verification tags
+const displayAddress = siteConfig.location.fullAddress.replace(/\[.*?\]/g, "").trim();
+---
+
+<BaseLayout
+  title="About Us | Renol Foods Bavla"
+  description="Renol Foods was founded in 2021 in Bavla, Ahmedabad, producing dehydrated and spray-dried food powders for industrial food processors and exporters."
+>
+  <!-- Hero Section -->
+  <section class="relative py-20 lg:py-28 border-b border-white/10 overflow-hidden">
+    <!-- Ambient Radial Glow -->
+    <div
+      class="pointer-events-none absolute left-1/2 top-10 -translate-x-1/2 w-[600px] h-[350px] rounded-full blur-[140px] opacity-25"
+      style="background: radial-gradient(circle, #ffb020 0%, transparent 70%);"
+      aria-hidden="true"
+    ></div>
+
+    <div class="section-container relative z-10">
+      <SectionHeading
+        eyebrow="Company Background"
+        title="Industrial Food Powder Manufacturing in Bavla"
+        subtitle="Founded in 2021, Renol Foods supplies dehydrated and spray-dried fruit, vegetable, and culinary powders to commercial food processors worldwide."
+      />
+
+      <!-- Hero Primary Action Button (1 per hero) -->
+      <div class="mt-8 flex justify-center">
+        <a href="/contact#sample-quote" class="btn-accent min-h-[44px]">
+          Request a Sample
+        </a>
+      </div>
+
+      <!-- Core Story Card -->
+      <div class="mt-14 max-w-4xl mx-auto bg-[#121214] p-8 sm:p-12 rounded-3xl border border-white/10 space-y-6 text-white/70 leading-relaxed font-body">
+        <p class="text-base sm:text-lg text-white/90 font-medium">
+          Located in the Kerala GIDC industrial belt of Bavla, Ahmedabad, Renol Foods operates specialized dehydration and spray drying production lines engineered specifically for high-solids fruit juices, botanical leaves, and savory culinary purees.
+        </p>
+        <p>
+          We partner with industrial bakeries, extruded snack seasoning blenders, instant beverage formulators, and global merchant exporters who require consistent flowability, accurate mesh distribution, and dependable bulk delivery.
+        </p>
+        <p>
+          Our technical focus centers on moisture management and aroma preservation. By optimizing drying parameters and applying strict control points from washing through packaging, we protect the natural color, acidity, and taste profile of every harvest.
+        </p>
+
+        <!-- Highlights Grid: 3 cols on desktop, 2 on tablet, 1 on mobile -->
+        <div class="pt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 border-t border-white/10">
+          <div class="p-5 rounded-2xl bg-[#1b1b1f] border border-white/5">
+            <span class="text-xs uppercase font-mono tracking-wider text-amber-400 block mb-1">Commercial Focus</span>
+            <h4 class="font-display text-lg font-bold text-white mb-1">100% B2B Supply</h4>
+            <p class="text-xs text-white/60">Dedicated entirely to food processors, premix manufacturers, and export buyers.</p>
+          </div>
+
+          <div class="p-5 rounded-2xl bg-[#1b1b1f] border border-white/5">
+            <span class="text-xs uppercase font-mono tracking-wider text-amber-400 block mb-1">Plant Location</span>
+            <h4 class="font-display text-lg font-bold text-white mb-1">Bavla, Ahmedabad</h4>
+            <p class="text-xs text-white/60">{displayAddress}</p>
+          </div>
+
+          <div class="p-5 rounded-2xl bg-[#1b1b1f] border border-white/5 sm:col-span-2 lg:col-span-1">
+            <span class="text-xs uppercase font-mono tracking-wider text-amber-400 block mb-1">Founded</span>
+            <h4 class="font-display text-lg font-bold text-white mb-1">Year {siteConfig.foundedYear}</h4>
+            <p class="text-xs text-white/60">Engineered with modern stainless steel processing and drying systems.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- One Closing CTA Section Near the End of the Page -->
+  <section class="py-20 bg-[#0e0e12] text-white text-center border-t border-white/10">
+    <div class="section-container max-w-3xl">
+      <span class="text-xs uppercase font-bold tracking-widest text-white/40 block mb-3 font-mono">Partner With Renol</span>
+      <h2 class="font-display text-3xl sm:text-4xl font-extrabold mb-4 tracking-tight">
+        Looking for a dependable food powder manufacturing partner?
+      </h2>
+      <p class="text-white/70 text-sm sm:text-base mb-8 max-w-xl mx-auto leading-relaxed font-body">
+        Bulk and custom formulation orders produced in Bavla, Gujarat. Connect directly with our technical team today.
+      </p>
+      <a href="/contact#sample-quote" class="btn-accent min-h-[44px]">
+        Request a Sample
+      </a>
+    </div>
+  </section>
+</BaseLayout>

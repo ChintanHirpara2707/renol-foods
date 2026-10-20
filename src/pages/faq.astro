@@ -1,0 +1,139 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SectionHeading from "../components/SectionHeading.astro";
+
+const categories = [
+  {
+    name: "Ordering & Commercial Batches",
+    items: [
+      {
+        q: "What is your standard Minimum Order Quantity (MOQ) for commercial production runs?",
+        a: "Standard commercial production runs start from bulk batch quantities depending on the specific fruit, vegetable, or spice powder and packaging formats. For custom carrier formulation or proprietary mesh sizing, custom batch minimums are determined in consultation with our manufacturing team.",
+      },
+      {
+        q: "How can formulation teams request lab evaluation samples?",
+        a: "We provide evaluation sample packets (typically 200 g to 500 g) for qualified R&D food scientists, beverage formulators, snack seasoning blenders, and bakery manufacturers. Submit our sample request form with your application details or contact our technical sales desk directly.",
+      },
+      {
+        q: "What is the typical dispatch lead time for domestic and export orders?",
+        a: "Dispatch lead times depend on current production schedules and order volume. Ready stock batches are typically dispatched promptly upon commercial confirmation, while planned custom drying runs are scheduled with clear delivery windows.",
+      },
+    ],
+  },
+  {
+    name: "Technical Specifications & Custom Blends",
+    items: [
+      {
+        q: "Can Renol adjust particle size (mesh) for specific production machinery?",
+        a: "Yes. We offer particle size customization ranging from coarse dustings (40–60 mesh) designed for uniform topical snack seasoning adhesion, to fine micro-milled powders (80–120 mesh) engineered for cold-soluble beverage and soup premixes.",
+      },
+      {
+        q: "What is the commercial shelf life of Renol food powders?",
+        a: "Commercial shelf life typically ranges from 12 to 24 months from manufacture date when stored in unopened original packaging under cool, dry warehouse conditions away from direct sunlight.",
+      },
+      {
+        q: "What storage conditions are recommended for dehydrated powders?",
+        a: "Powders should be stored in a cool, dry area below 22°C–25°C with controlled relative humidity. Bags should be securely re-sealed immediately after opening to prevent moisture uptake and ambient caking.",
+      },
+    ],
+  },
+  {
+    name: "Packaging & International Logistics",
+    items: [
+      {
+        q: "What industrial packaging formats are available for bulk orders?",
+        a: "Standard industrial packaging consists of heavy-duty multi-wall paper bags with food-grade LDPE inner liners or airtight foil-laminated barrier bags (typically 20 kg or 25 kg net weight). Heavy-duty fiber drums are also available for specialty formulations.",
+      },
+      {
+        q: "What documentation accompanies international export consignments?",
+        a: "Standard commercial shipping documents accompany every dispatch. Depending on destination regulatory requirements, we provide Certificate of Analysis (COA), Certificate of Origin, Packing List, and related technical documentation.",
+      },
+      {
+        q: "Can commercial clients audit the manufacturing facility in Bavla?",
+        a: "Yes. We welcome technical representatives and procurement managers from commercial food brands for scheduled factory audits and technical formulation reviews at our plant in Kerala GIDC, Bavla, Ahmedabad.",
+      },
+    ],
+  },
+];
+---
+
+<BaseLayout
+  title="Frequently Asked Questions (FAQ) | Renol Foods Bavla"
+  description="Answers to common commercial questions regarding MOQ, evaluation samples, technical specifications, custom mesh grading, and export packaging at Renol Foods."
+>
+  <!-- Hero Section -->
+  <section class="relative py-20 lg:py-28 border-b border-white/10 overflow-hidden">
+    <!-- Ambient Radial Glow -->
+    <div
+      class="pointer-events-none absolute left-1/2 top-10 -translate-x-1/2 w-[700px] h-[350px] rounded-full blur-[140px] opacity-20"
+      style="background: radial-gradient(circle, #38bdf8 0%, transparent 70%);"
+      aria-hidden="true"
+    ></div>
+
+    <div class="section-container relative z-10">
+      <SectionHeading
+        eyebrow="Commercial FAQ"
+        title="Frequently Asked Questions"
+        subtitle="Key details regarding minimum order quantities, evaluation samples, custom mesh calibration, and protective export packaging."
+      />
+
+      <!-- Hero Primary Action Button (1 per hero) -->
+      <div class="mt-8 flex justify-center">
+        <a href="/contact#sample-quote" class="btn-accent min-h-[44px]">
+          Request a Sample
+        </a>
+      </div>
+
+      <!-- FAQ Accordions by Category -->
+      <div class="mt-16 max-w-4xl mx-auto space-y-12">
+        {
+          categories.map((cat) => (
+            <div class="space-y-4">
+              <div class="flex items-center gap-3 pb-2 border-b border-white/10">
+                <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+                <h3 class="font-display text-xl sm:text-2xl font-bold text-white tracking-tight">
+                  {cat.name}
+                </h3>
+              </div>
+
+              <div class="space-y-3">
+                {cat.items.map((item) => (
+                  <details class="group bg-[#121214] border border-white/10 rounded-2xl p-5 transition-all duration-200 hover:border-white/20 open:bg-[#16161a] open:border-white/25">
+                    <summary class="flex items-center justify-between gap-4 font-display text-base sm:text-lg font-bold text-white cursor-pointer list-none min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 rounded-lg">
+                      <span>{item.q}</span>
+                      <span class="w-7 h-7 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shrink-0 text-white/70 group-open:rotate-180 group-open:text-amber-400 transition-transform duration-200">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </span>
+                    </summary>
+                    <div class="pt-4 mt-3 border-t border-white/10 text-sm text-white/70 leading-relaxed font-body">
+                      <p>{item.a}</p>
+                    </div>
+                  </details>
+                ))}
+              </div>
+            </div>
+          ))
+        }
+      </div>
+
+    </div>
+  </section>
+
+  <!-- One Closing CTA Section Near the End of the Page -->
+  <section class="py-20 bg-[#0e0e12] text-white text-center border-t border-white/10">
+    <div class="section-container max-w-3xl">
+      <span class="text-xs uppercase font-bold tracking-widest text-white/40 block mb-3 font-mono">Still have questions?</span>
+      <h2 class="font-display text-3xl sm:text-4xl font-extrabold mb-4 tracking-tight">
+        Speak directly with our technical sales team
+      </h2>
+      <p class="text-white/70 text-sm sm:text-base mb-8 max-w-xl mx-auto leading-relaxed font-body">
+        We are happy to answer formulation questions, share batch specifications, or arrange evaluation trial quantities.
+      </p>
+      <a href="/contact#sample-quote" class="btn-accent min-h-[44px]">
+        Request a Sample
+      </a>
+    </div>
+  </section>
+</BaseLayout>

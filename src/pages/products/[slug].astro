@@ -1,0 +1,438 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import FruitDefs from "../../components/studio/FruitDefs.astro";
+import { products, type ProductItem } from "../../data/products";
+
+export async function getStaticPaths() {
+  return products.map((product, index) => {
+    const prevIndex = (index - 1 + products.length) % products.length;
+    const nextIndex = (index + 1) % products.length;
+    return {
+      params: { slug: product.slug },
+      props: {
+        product,
+        prevProduct: products[prevIndex],
+        nextProduct: products[nextIndex],
+      },
+    };
+  });
+}
+
+interface Props {
+  product: ProductItem;
+  prevProduct: ProductItem;
+  nextProduct: ProductItem;
+}
+
+const { product, prevProduct, nextProduct } = Astro.props;
+
+// Filter out any spec row marked with [ADD...]
+const validSpecs = Object.entries(product.specs).filter(
+  ([_, val]) => val && !val.includes("[ADD")
+);
+
+// Other valid technical properties
+const generalProperties = [
+  { label: "Form", val: product.form },
+  { label: "Storage", val: product.storage },
+  { label: "Packaging", val: product.packagingSizes },
+  { label: "Shelf Life", val: product.shelfLife },
+].filter((item) => item.val && !item.val.includes("[ADD"));
+
+// Canonical and Schema.org Product JSON-LD
+const canonicalUrl = new URL(`/products/${product.slug}`, Astro.site || Astro.url.origin).href;
+const productSchema = {
+  "@context": "https://schema.org/",
+  "@type": "Product",
+  name: `${product.name} Powder`,
+  image: new URL(
+    product.id === "lemon" ? "/frames/lemon/10.webp" : "/favicon.svg",
+    Astro.site || Astro.url.origin
+  ).href,
+  description: product.longDescription || product.blurb,
+  sku: `RENOL-${product.id.toUpperCase()}-001`,
+  category: `${product.cat} Powder`,
+  brand: {
+    "@type": "Brand",
+    name: "Renol Foods",
+  },
+  manufacturer: {
+    "@type": "Organization",
+    name: "Renol Foods",
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "Bavla, Ahmedabad",
+      addressRegion: "Gujarat",
+      addressCountry: "IN",
+    },
+  },
+  offers: {
+    "@type": "AggregateOffer",
+    priceCurrency: "INR",
+    availability: "https://schema.org/InStock",
+    priceSpecification: {
+      "@type": "PriceSpecification",
+      priceCurrency: "INR",
+      description: "B2B commercial bulk pricing upon specification inquiry",
+    },
+  },
+};
+---
+
+<BaseLayout
+  title={`${product.name} Powder Manufacturer & Supplier | Renol Foods Bavla`}
+  description={`${product.shortDescription || product.blurb} Manufactured in Bavla, Ahmedabad for snack seasonings, instant beverages, and industrial food formulations.`}
+  canonicalUrl={canonicalUrl}
+>
+  <!-- Schema.org Product Structured Data -->
+  <script type="application/ld+json" set:html={JSON.stringify(productSchema)} />
+
+  <!-- Shared Vector Artwork -->
+  <FruitDefs />
+
+  <article
+    class="product-detail-page relative w-full bg-[#0b0b0d] text-white"
+    style={`--accent: ${product.accent}; --glow: ${product.glow}; --base: ${product.base}; --pouch: ${product.pouch}; --powder: ${product.powder}; --on: #140a00;`}
+  >
+    <!-- Normal document flow Hero Section with min-height: 100svh -->
+    <section class="hero-section relative min-h-[100svh] w-full flex flex-col justify-start pb-16">
+      
+      <!-- Ambient Radial Glow (Absolute within section, NOT fixed) -->
+      <div class="hero-bg absolute inset-0 pointer-events-none z-0 overflow-hidden" aria-hidden="true">
+        <div
+          class="absolute inset-0"
+          style={`background: radial-gradient(circle at 50% 32%, color-mix(in srgb, var(--glow) 35%, transparent) 0%, transparent 65%), linear-gradient(180deg, var(--base) 0%, #0b0b0d 100%);`}
+        ></div>
+      </div>
+
+      <!-- Breadcrumbs in normal document flow (Replaces duplicate inner header) -->
+      <nav class="breadcrumb-bar relative z-10 max-w-7xl mx-auto w-full px-6 sm:px-10 lg:px-12 pt-6 pb-2 flex items-center justify-between text-sm" aria-label="Breadcrumb">
+        <div class="flex items-center gap-2 text-white/60">
+          <a href="/" class="hover:text-white transition-colors">Home</a>
+          <span>/</span>
+          <a href="/#powder-studio" class="hover:text-white transition-colors">Products</a>
+          <span>/</span>
+          <span class="text-white font-medium">{product.name} Powder</span>
+        </div>
+        <a href="/#powder-studio" class="pill text-xs !py-1.5 !px-4 hover:border-white/40">
+          &larr; All powders
+        </a>
+      </nav>
+
+      <!-- Main Detail Grid: 2-column on desktop (lg), 1-column on tablet/mobile -->
+      <div class="dwrap relative z-10 max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 px-6 sm:px-10 lg:px-12 pt-4 items-start">
+        
+        <!-- Left Column: Pouch Visual, Powder Heap & Fruit Stamp -->
+        <div class="dvis relative flex items-center justify-center p-4 sm:p-8 lg:p-12">
+          <div class="pwrap relative w-[clamp(200px,26vw,340px)] max-h-[70svh] flex items-center justify-center">
+            <!-- Pouch SVG with exact product colors -->
+            <svg
+              class="pouch w-full h-auto max-h-[70svh] drop-shadow-2xl"
+              viewBox="0 0 240 340"
+              role="img"
+              aria-label={`${product.name} Powder Pouch Packaging`}
+            >
+              <path class="pbody" d="M28 34 H212 L220 318 Q220 332 206 332 H34 Q20 332 20 318Z" fill="var(--pouch)" />
+              <path d="M28 34 H92 L84 332 H34 Q20 332 20 318Z" fill="#fff" fill-opacity=".1" />
+              <rect class="pcrimp" x="28" y="14" width="184" height="32" rx="4" fill="var(--pouch)" style="filter: brightness(0.82);" />
+              <path d="M34 22 H206 M34 30 H206 M34 38 H206" stroke="#000" stroke-opacity=".2" />
+              <text x="120" y="70" text-anchor="middle" font-size="12" font-weight="600" fill="#fff" fill-opacity=".9" style="font-family:var(--body);letter-spacing:.06em">Renol Foods</text>
+              <rect x="44" y="86" width="152" height="204" rx="12" fill="#fff" fill-opacity=".95" />
+              <svg x="70" y="100" width="100" height="120" viewBox="0 0 200 240">
+                <use href={`#f-${product.id}`} />
+              </svg>
+              <text x="120" y="248" text-anchor="middle" font-size="24" font-weight="800" fill="#17120b" style="font-family:var(--display);letter-spacing:-.02em">{product.name}</text>
+              <text x="120" y="268" text-anchor="middle" font-size="12" fill="#17120b" fill-opacity=".65" style="font-family:var(--body)">{product.cat} powder</text>
+            </svg>
+
+            <!-- Powder Mound Illustration -->
+            <svg class="mound absolute -left-[14%] -right-[14%] -bottom-[5%] w-[128%] h-auto pointer-events-none" viewBox="0 0 320 80" aria-hidden="true">
+              <path class="m" d="M10 74 Q90 68 135 34 Q160 12 185 34 Q230 68 310 74 Z" fill="var(--powder)" />
+              <path d="M10 74 Q90 68 135 34 Q160 12 185 34 Q230 68 310 74 Z" fill="#000" opacity=".22" />
+            </svg>
+
+            <!-- Side Fruit Graphic -->
+            <svg class="bigfruit absolute -right-[26%] bottom-[4%] w-[48%] h-auto rotate-[14deg] pointer-events-none drop-shadow-xl" viewBox="0 0 200 240" aria-hidden="true">
+              <use href={`#f-${product.id}`} />
+            </svg>
+          </div>
+        </div>
+
+        <!-- Right Column: Product Technical Information in Normal Flow -->
+        <div class="dinfo max-w-xl py-4 sm:py-6 lg:py-8">
+          <span class="chip inline-block px-3.5 py-1.5 rounded-full border border-white/15 text-xs text-white/80 font-medium bg-white/5 mb-4">
+            {product.cat} powder
+          </span>
+
+          <h1 class="dname font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[0.95] mb-4">
+            {product.name} Powder
+          </h1>
+
+          <p class="dblurb text-base sm:text-lg text-white/80 leading-relaxed font-body mb-8">
+            {product.blurb}
+          </p>
+
+          <!-- What's Inside Tags -->
+          <div class="mb-8">
+            <h2 class="text-sm font-display font-semibold uppercase tracking-wider text-white mb-3">
+              What's inside
+            </h2>
+            <ul class="tags flex flex-wrap gap-2 list-none p-0 m-0">
+              {product.inside.map((ingredient) => (
+                <li class="px-3.5 py-1.5 rounded-full border border-white/15 text-sm text-white/90 bg-white/5 font-body">
+                  {ingredient}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <!-- Where It's Used Tags -->
+          <div class="mb-8">
+            <h2 class="text-sm font-display font-semibold uppercase tracking-wider text-white mb-3">
+              Where it's used
+            </h2>
+            <ul class="tags use flex flex-wrap gap-2 list-none p-0 m-0">
+              {product.uses.map((application) => (
+                <li
+                  class="px-3.5 py-1.5 rounded-full text-sm font-body text-white"
+                  style="background: color-mix(in srgb, var(--accent) 24%, transparent); border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);"
+                >
+                  {application}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <!-- Technical Specifications Table -->
+          <div class="mb-8">
+            <h2 class="text-sm font-display font-semibold uppercase tracking-wider text-white mb-3">
+              Technical Specifications
+            </h2>
+            <dl class="specs grid grid-cols-[130px_1fr] text-sm divide-y divide-white/10 border-t border-b border-white/10 font-body">
+              {generalProperties.map((prop) => (
+                <div class="contents">
+                  <dt class="py-2.5 text-white/60 font-medium">{prop.label}</dt>
+                  <dd class="py-2.5 text-white/90">{prop.val}</dd>
+                </div>
+              ))}
+              {validSpecs.map(([key, val]) => (
+                <div class="contents">
+                  <dt class="py-2.5 text-white/60 font-medium capitalize">{key}</dt>
+                  <dd class="py-2.5 text-white/90">{val}</dd>
+                </div>
+              ))}
+            </dl>
+            <!-- Notice: Spec rows marked [ADD...] are hidden, showing official line below -->
+            <div class="mt-3 flex items-center justify-between text-xs text-white/50 font-mono">
+              <span>Full specifications on request</span>
+              <span class="text-white/40">Lot-wise COA provided</span>
+            </div>
+          </div>
+
+          <!-- Exactly one primary button in the hero -->
+          <div class="cta mb-8">
+            <button
+              type="button"
+              class="pill font-display font-bold text-sm !py-3.5 !px-8 shadow-lg transition-transform hover:-translate-y-0.5"
+              style="background-color: var(--accent); color: var(--on);"
+              id="reqDetail"
+            >
+              Request a Sample
+            </button>
+          </div>
+
+          <!-- Previous / Next Product Navigation Links -->
+          <nav class="pn flex items-center justify-between pt-6 border-t border-white/10 text-sm font-medium" aria-label="Product Navigation">
+            <a
+              href={`/products/${prevProduct.slug}`}
+              class="pn-btn flex items-center gap-1.5 text-white/60 hover:text-white transition-colors"
+            >
+              <span>&larr;</span>
+              <span>{prevProduct.name}</span>
+            </a>
+            <a
+              href={`/products/${nextProduct.slug}`}
+              class="pn-btn flex items-center gap-1.5 text-white/60 hover:text-white transition-colors"
+            >
+              <span>{nextProduct.name}</span>
+              <span>&rarr;</span>
+            </a>
+          </nav>
+        </div>
+      </div>
+    </section>
+
+    <!-- Closing Band: Exactly one primary button near the end of the page -->
+    <section class="closing-band py-20 bg-[#121214] border-t border-white/10 text-center relative z-10">
+      <div class="max-w-3xl mx-auto px-6 sm:px-8">
+        <span class="text-xs uppercase font-bold tracking-widest text-white/50 block mb-3 font-mono">
+          Trial Formulations
+        </span>
+        <h2 class="font-display text-3xl sm:text-4xl font-bold text-white mb-4">
+          Ready to test {product.name} Powder in your product line?
+        </h2>
+        <p class="text-white/70 text-sm sm:text-base mb-8 max-w-xl mx-auto leading-relaxed font-body">
+          Request evaluation samples for your trial batch. Shipped directly from our manufacturing facility in Bavla, Ahmedabad.
+        </p>
+        <button
+          type="button"
+          class="pill font-display font-bold text-sm !py-3.5 !px-8 shadow-xl transition-transform hover:-translate-y-0.5"
+          style="background-color: var(--accent); color: var(--on);"
+          id="reqClosing"
+        >
+          Request a Sample
+        </button>
+      </div>
+    </section>
+
+    <!-- Interactive Sample Request Dialog Modal -->
+    <dialog
+      id="dlg"
+      aria-labelledby="dlgTitle"
+      data-lenis-prevent
+      class="bg-[#121214] text-white border border-white/15 rounded-3xl p-0 w-[min(480px,92vw)] shadow-2xl backdrop:bg-black/65 backdrop:backdrop-blur-sm"
+    >
+      <div class="p-8">
+        <div id="fForm">
+          <h2 id="dlgTitle" class="font-display text-2xl font-bold mb-2">Request {product.name} Powder Sample</h2>
+          <p class="text-sm text-white/70 mb-6 font-body">Share your trial requirements and our technical team in Bavla will dispatch evaluation samples.</p>
+          <form id="sampleForm" class="space-y-4">
+            <input type="hidden" name="p" value={product.name} />
+            <label class="block text-xs uppercase font-bold tracking-wider text-white/70">
+              Your name *
+              <input name="n" required autocomplete="name" placeholder="Full name" class="w-full mt-1.5 px-4 py-2.5 rounded-xl border border-white/15 bg-[#1b1b1f] text-white text-sm focus:outline-none focus:border-white/40" />
+            </label>
+            <label class="block text-xs uppercase font-bold tracking-wider text-white/70">
+              Work email *
+              <input name="e" type="email" required autocomplete="email" placeholder="name@company.com" class="w-full mt-1.5 px-4 py-2.5 rounded-xl border border-white/15 bg-[#1b1b1f] text-white text-sm focus:outline-none focus:border-white/40" />
+            </label>
+            <label class="block text-xs uppercase font-bold tracking-wider text-white/70">
+              Quantity / Trial size
+              <input name="q" placeholder="e.g. 500 g lab evaluation sample" class="w-full mt-1.5 px-4 py-2.5 rounded-xl border border-white/15 bg-[#1b1b1f] text-white text-sm focus:outline-none focus:border-white/40" />
+            </label>
+            <div class="flex items-center justify-end gap-3 pt-3">
+              <button class="pill ghost text-xs !py-2.5 !px-5" type="button" id="dlgCancel">Cancel</button>
+              <button class="pill font-display font-bold text-xs !py-2.5 !px-6" type="submit" style="background-color: var(--accent); color: var(--on);">Send request &rarr;</button>
+            </div>
+            <p class="text-[11px] text-white/40 pt-2 font-mono">Prototype form: connects directly to Web3Forms in production.</p>
+          </form>
+        </div>
+
+        <div id="fDone" hidden class="text-center py-6 space-y-3">
+          <div class="w-12 h-12 rounded-full mx-auto flex items-center justify-center font-display font-bold text-lg" style="background-color: var(--accent); color: var(--on);">
+            ✓
+          </div>
+          <h2 class="font-display text-xl font-bold">Request Noted</h2>
+          <p id="fDoneTxt" class="text-sm text-white/70 font-body"></p>
+          <div class="pt-3">
+            <button class="pill text-xs !py-2 !px-6" type="button" id="dlgClose">Done</button>
+          </div>
+        </div>
+      </div>
+    </dialog>
+  </article>
+</BaseLayout>
+
+<style>
+  .product-detail-page {
+    --display: "Bricolage Grotesque", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --body: "Instrument Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+
+  /* Sticky pouch only on desktop when screen height is sufficient (avoids overlap on short laptop screens) */
+  @media (min-width: 1024px) and (min-height: 720px) {
+    .dvis {
+      position: sticky;
+      top: 5rem;
+      align-self: flex-start;
+    }
+  }
+
+  /* Prevent sticky desktop quote button from overlapping product detail content */
+  :global(#sticky-desktop-quote) {
+    display: none !important;
+  }
+
+  .pill {
+    padding: 8px 18px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 600;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: #fff;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, transform 0.2s, border-color 0.2s;
+  }
+
+  .pill:hover {
+    background: rgba(255, 255, 255, 0.18);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
+  }
+
+  .pill.ghost {
+    background: transparent;
+  }
+</style>
+
+<script>
+  function setupDetailPage() {
+    // Unconditionally unlock body scroll if set from Studio
+    document.body.classList.remove("in-detail");
+    (window as any).lenis?.start();
+
+    const dlg = document.getElementById("dlg") as HTMLDialogElement | null;
+    const reqDetail = document.getElementById("reqDetail");
+    const reqClosing = document.getElementById("reqClosing");
+    const dlgCancel = document.getElementById("dlgCancel");
+    const dlgClose = document.getElementById("dlgClose");
+    const sampleForm = document.getElementById("sampleForm") as HTMLFormElement | null;
+
+    const openModal = () => {
+      if (!dlg) return;
+      const fForm = document.getElementById("fForm");
+      const fDone = document.getElementById("fDone");
+      if (fForm) fForm.hidden = false;
+      if (fDone) fDone.hidden = true;
+      sampleForm?.reset();
+      dlg.showModal();
+    };
+
+    reqDetail?.addEventListener("click", openModal);
+    reqClosing?.addEventListener("click", openModal);
+    dlgCancel?.addEventListener("click", () => dlg?.close());
+    dlgClose?.addEventListener("click", () => dlg?.close());
+    dlg?.addEventListener("click", (e) => {
+      if (e.target === dlg) dlg.close();
+    });
+
+    sampleForm?.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const fd = new FormData(sampleForm);
+      const name = fd.get("n") || "partner";
+      const product = fd.get("p") || "food powder";
+      const fDoneTxt = document.getElementById("fDoneTxt");
+      if (fDoneTxt) {
+        fDoneTxt.textContent = `Thanks ${name}. Your ${product} sample inquiry is noted. Our technical team in Bavla will follow up with batch dispatch details.`;
+      }
+      const fForm = document.getElementById("fForm");
+      const fDone = document.getElementById("fDone");
+      if (fForm) fForm.hidden = true;
+      if (fDone) fDone.hidden = false;
+    });
+  }
+
+  document.addEventListener("astro:page-load", setupDetailPage);
+  if (document.readyState === "complete" || document.readyState === "interactive") {
+    setupDetailPage();
+  } else {
+    document.addEventListener("DOMContentLoaded", setupDetailPage);
+  }
+</script>

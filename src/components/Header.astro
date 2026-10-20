@@ -1,0 +1,369 @@
+---
+import { siteConfig } from "../data/site";
+
+const currentPath = Astro.url.pathname;
+---
+
+<header
+  class="sticky top-0 z-40 w-full bg-[#0b0b0d]/90 backdrop-blur-md border-b border-white/10 text-white transition-all duration-300"
+>
+  <div class="section-container">
+    <div class="flex items-center justify-between h-20">
+      <!-- Logo & Brand Identity -->
+      <a
+        href="/"
+        class="flex items-center group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 rounded-lg p-1"
+      >
+        <img
+          src="/images/Logo.png"
+          alt={`${siteConfig.name} home`}
+          width="250"
+          height="70"
+          decoding="async"
+          fetchpriority="high"
+          class="h-13 w-auto max-w-[250px] object-contain transition-transform duration-300 group-hover:scale-105"
+        />
+      </a>
+
+      <!-- Desktop Navigation -->
+      <nav
+        class="hidden lg:flex items-center gap-8"
+        aria-label="Main Navigation"
+      >
+        <ul class="flex items-center gap-1">
+          {
+            siteConfig.navigation.map((item) => {
+              const isActive =
+                item.href === "/"
+                  ? currentPath === "/"
+                  : currentPath.startsWith(item.href);
+              return (
+                <li>
+                  <a
+                    href={item.href}
+                    class:list={[
+                      "px-3.5 py-2 rounded-full text-sm font-medium transition-colors duration-200",
+                      isActive
+                        ? "text-white font-semibold bg-white/15"
+                        : "text-white/70 hover:text-white hover:bg-white/10",
+                    ]}
+                    aria-current={isActive ? "page" : undefined}
+                  >
+                    {item.label}
+                  </a>
+                </li>
+              );
+            })
+          }
+        </ul>
+      </nav>
+
+      <!-- Desktop CTA (>= 1024px) -->
+      <div class="hidden lg:flex items-center gap-4">
+        <a
+          href="/contact#sample-quote"
+          class="pill bg-white/10 hover:bg-white/20 text-white text-sm font-semibold !py-2.5 !px-5 min-h-[44px]"
+        >
+          <span>Request a Sample</span>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+          </svg>
+        </a>
+      </div>
+
+      <!-- Mobile Menu Toggle (< 1024px per Rule 5, min 44px tap target) -->
+      <div class="flex lg:hidden items-center gap-2">
+        <button
+          type="button"
+          id="mobile-menu-toggle"
+          aria-expanded="false"
+          aria-controls="mobile-menu-drawer"
+          aria-label="Open mobile navigation menu"
+          class="min-w-[44px] min-h-[44px] p-2.5 rounded-lg text-white hover:bg-white/10 transition-colors flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
+        >
+          <svg
+            id="hamburger-icon"
+            class="w-6 h-6 block"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+          <svg
+            id="close-icon"
+            class="w-6 h-6 hidden"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Slide-In Drawer Backdrop -->
+  <div
+    id="mobile-menu-backdrop"
+    class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 opacity-0 pointer-events-none transition-opacity duration-300 lg:hidden"
+    aria-hidden="true"
+  >
+  </div>
+
+  <!-- Mobile Slide-In Drawer Panel -->
+  <aside
+    id="mobile-menu-drawer"
+    class="fixed top-0 right-0 bottom-0 w-[85%] max-w-sm bg-[#121214] text-white z-50 transform translate-x-full transition-transform duration-300 ease-in-out lg:hidden flex flex-col shadow-2xl border-l border-white/10"
+    aria-label="Mobile Navigation"
+  >
+    <!-- Drawer Header -->
+    <div
+      class="p-6 flex items-center justify-between border-b border-white/10 bg-[#16161a]"
+    >
+      <div class="flex items-center gap-2">
+        <div
+          class="w-8 h-8 rounded-lg bg-white/10 text-white border border-white/15 flex items-center justify-center font-display text-sm font-bold"
+        >
+          <span class="text-amber-400">R</span>F
+        </div>
+        <span class="font-display font-bold text-lg text-white"
+          >{siteConfig.name}</span
+        >
+      </div>
+      <button
+        type="button"
+        id="mobile-menu-close"
+        aria-label="Close mobile menu"
+        class="min-w-[44px] min-h-[44px] p-2 rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-colors flex items-center justify-center"
+      >
+        <svg
+          class="w-6 h-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Drawer Links -->
+    <nav
+      class="flex-grow overflow-y-auto px-6 py-6"
+      aria-label="Mobile Menu Links"
+    >
+      <ul class="flex flex-col gap-2">
+        {
+          siteConfig.navigation.map((item) => {
+            const isActive =
+              item.href === "/"
+                ? currentPath === "/"
+                : currentPath.startsWith(item.href);
+            return (
+              <li>
+                <a
+                  href={item.href}
+                  class:list={[
+                    "flex items-center justify-between px-4 py-3 min-h-[44px] rounded-xl text-base font-medium transition-all duration-200",
+                    isActive
+                      ? "text-white font-bold bg-white/15"
+                      : "text-white/70 hover:text-white hover:bg-white/10",
+                  ]}
+                >
+                  <span>{item.label}</span>
+                  <svg
+                    class="w-4 h-4 text-white/40"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                </a>
+              </li>
+            );
+          })
+        }
+      </ul>
+
+      <!-- Primary Action inside Drawer -->
+      <div class="mt-8 pt-6 border-t border-green-black/10 flex flex-col gap-3">
+        <a
+          href="/contact#sample-quote"
+          class="btn-accent w-full text-center py-3.5 shadow-md flex items-center justify-center gap-2"
+        >
+          <span>Request a Sample</span>
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+          </svg>
+        </a>
+
+        <div
+          class="mt-4 p-4 rounded-xl bg-white/5 border border-white/10 text-xs text-white/70 space-y-1.5 font-body"
+        >
+          <p
+            class="font-semibold text-white uppercase tracking-wider text-[11px]"
+          >
+            Factory Sales Desk
+          </p>
+          <p class="flex items-center gap-2">
+            <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+            <span>Plot 616, Kerala GIDC, Bavla</span>
+          </p>
+          <p class="flex items-center gap-2">
+            <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+            <span>{siteConfig.contact.displayPhones[0]}</span>
+          </p>
+        </div>
+      </div>
+    </nav>
+  </aside>
+</header>
+
+<script>
+  function setupMobileMenu() {
+    const toggleBtn = document.getElementById("mobile-menu-toggle");
+    const closeBtn = document.getElementById("mobile-menu-close");
+    const drawer = document.getElementById("mobile-menu-drawer");
+    const backdrop = document.getElementById("mobile-menu-backdrop");
+    const hamburgerIcon = document.getElementById("hamburger-icon");
+    const closeIcon = document.getElementById("close-icon");
+
+    if (!toggleBtn || !drawer || !backdrop) return;
+
+    let previousActiveElement: HTMLElement | null = null;
+
+    function getFocusableElements(): HTMLElement[] {
+      if (!drawer) return [];
+      return Array.from(
+        drawer.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        ),
+      ).filter((el) => el.offsetParent !== null);
+    }
+
+    function openMenu() {
+      previousActiveElement = document.activeElement as HTMLElement | null;
+      drawer?.classList.remove("translate-x-full");
+      drawer?.classList.add("translate-x-0");
+      backdrop?.classList.remove("opacity-0", "pointer-events-none");
+      backdrop?.classList.add("opacity-100", "pointer-events-auto");
+      document.body.style.overflow = "hidden";
+      toggleBtn?.setAttribute("aria-expanded", "true");
+      hamburgerIcon?.classList.add("hidden");
+      closeIcon?.classList.remove("hidden");
+
+      setTimeout(() => {
+        closeBtn?.focus();
+      }, 50);
+    }
+
+    function closeMenu() {
+      drawer?.classList.remove("translate-x-0");
+      drawer?.classList.add("translate-x-full");
+      backdrop?.classList.remove("opacity-100", "pointer-events-auto");
+      backdrop?.classList.add("opacity-0", "pointer-events-none");
+      document.body.style.overflow = "";
+      toggleBtn?.setAttribute("aria-expanded", "false");
+      hamburgerIcon?.classList.remove("hidden");
+      closeIcon?.classList.add("hidden");
+
+      if (
+        previousActiveElement &&
+        typeof previousActiveElement.focus === "function"
+      ) {
+        previousActiveElement.focus();
+      }
+    }
+
+    toggleBtn.addEventListener("click", () => {
+      const isExpanded = toggleBtn.getAttribute("aria-expanded") === "true";
+      if (isExpanded) {
+        closeMenu();
+      } else {
+        openMenu();
+      }
+    });
+
+    closeBtn?.addEventListener("click", closeMenu);
+    backdrop.addEventListener("click", closeMenu);
+
+    // Keyboard accessibility: Escape to close and Tab focus trap
+    document.addEventListener("keydown", (e) => {
+      if (toggleBtn.getAttribute("aria-expanded") !== "true") return;
+
+      if (e.key === "Escape") {
+        closeMenu();
+        return;
+      }
+
+      if (e.key === "Tab") {
+        const focusables = getFocusableElements();
+        if (focusables.length === 0) return;
+
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+
+        if (e.shiftKey) {
+          if (document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+          }
+        } else {
+          if (document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+          }
+        }
+      }
+    });
+
+    // Close menu when navigating internally
+    const drawerLinks = drawer.querySelectorAll("a");
+    drawerLinks.forEach((link) => {
+      link.addEventListener("click", closeMenu);
+    });
+  }
+
+  // Setup on initial load and after client navigation
+  setupMobileMenu();
+  document.addEventListener("astro:page-load", setupMobileMenu);
+</script>
