@@ -1,686 +1,119 @@
 ---
-import { products } from "../../data/products";
+import CtaButton from "../ui/CtaButton.astro";
+import { studioData } from "../../scripts/studio/data";
+import { site } from "../../data/site";
+
+const { items } = studioData();
+const initial = items[Math.min(2, items.length - 1)];
 ---
 
-<section
-  id="powder-studio"
-  class="powder-studio relative w-full h-[100svh] min-h-[640px] overflow-hidden bg-[#0b0b0d] text-white select-none"
->
-  <!-- Shared fruit SVG artwork & symbols -->
-  <svg
-    width="0"
-    height="0"
-    class="absolute pointer-events-none"
-    aria-hidden="true"
-    focusable="false"
-  >
-    <defs id="fruit-svg-defs">
-      <linearGradient id="g-mango" x1=".2" y1="0" x2=".8" y2="1">
-        <stop offset="0" stop-color="#ffe066"></stop>
-        <stop offset=".45" stop-color="#ffa41b"></stop>
-        <stop offset="1" stop-color="#ee4b2b"></stop>
-      </linearGradient>
-      <radialGradient id="g-tomato" cx=".38" cy=".32" r=".8">
-        <stop offset="0" stop-color="#ff7a63"></stop>
-        <stop offset=".55" stop-color="#e11d2a"></stop>
-        <stop offset="1" stop-color="#8f0d1b"></stop>
-      </radialGradient>
-      <radialGradient id="g-lemon" cx=".38" cy=".3" r=".85">
-        <stop offset="0" stop-color="#fff7a1"></stop>
-        <stop offset=".5" stop-color="#ffd90f"></stop>
-        <stop offset="1" stop-color="#d9a600"></stop>
-      </radialGradient>
-      <linearGradient id="g-leaf" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#6ee08a"></stop>
-        <stop offset="1" stop-color="#1c7a3a"></stop>
-      </linearGradient>
-      <linearGradient id="g-ginger" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0" stop-color="#efd0a0"></stop>
-        <stop offset=".55" stop-color="#c99b5e"></stop>
-        <stop offset="1" stop-color="#9a6d34"></stop>
-      </linearGradient>
-      <linearGradient id="g-caramel" x1=".2" y1="0" x2=".8" y2="1">
-        <stop offset="0" stop-color="#fed7aa"></stop>
-        <stop offset=".45" stop-color="#ea580c"></stop>
-        <stop offset="1" stop-color="#7c2d12"></stop>
-      </linearGradient>
-      <radialGradient id="g-apple" cx=".4" cy=".35" r=".8">
-        <stop offset="0" stop-color="#ff7675"></stop>
-        <stop offset=".55" stop-color="#d63031"></stop>
-        <stop offset="1" stop-color="#74121d"></stop>
-      </radialGradient>
-      <g id="leaf">
-        <path
-          d="M100 220 C58 196 50 120 100 30 C150 120 142 196 100 220Z"
-          fill="url(#g-leaf)"></path>
-        <path
-          d="M100 216 L100 50"
-          stroke="#c8f7d0"
-          stroke-opacity=".55"
-          stroke-width="3"
-          stroke-linecap="round"
-          fill="none"></path>
-        <path
-          d="M100 172 L74 148 M100 142 L126 114 M100 122 L76 100 M100 92 L120 74"
-          stroke="#c8f7d0"
-          stroke-opacity=".4"
-          stroke-width="2"
-          stroke-linecap="round"
-          fill="none"></path>
-      </g>
-    </defs>
+<section class="ps" id="powder-studio" data-studio aria-roledescription="carousel" aria-label="Powder studio">
+  <h1 class="sr-only">{site.tagline}</h1>
 
-    <!-- Tomato Symbol -->
-    <symbol id="f-tomato" viewBox="0 0 200 240">
-      <path
-        d="M100 56 C150 40 192 74 190 130 C188 188 148 226 100 226 C52 226 12 188 10 130 C8 74 50 40 100 56Z"
-        fill="url(#g-tomato)"></path>
-      <ellipse
-        cx="58"
-        cy="108"
-        rx="16"
-        ry="30"
-        fill="#fff"
-        fill-opacity=".26"
-        transform="rotate(24 58 108)"></ellipse>
-      <path
-        d="M100 52 L100 30"
-        stroke="#3b7d2a"
-        stroke-width="8"
-        stroke-linecap="round"></path>
-      <path
-        d="M100 50 L113 66 L134 58 L126 78 L148 84 L127 95 L100 88 L73 95 L52 84 L74 78 L66 58 L87 66Z"
-        fill="#2f9e44"></path>
-    </symbol>
+  <div class="ps-bgs" data-bgs aria-hidden="true"></div>
 
-    <!-- Lemon Symbol (Poster / Fallback) -->
-    <symbol id="f-lemon" viewBox="0 0 200 240">
-      <image
-        id="lemonSym"
-        href="/frames/lemon/10.webp"
-        x="0"
-        y="0"
-        width="200"
-        height="240"
-        preserveAspectRatio="xMidYMid meet"
-      />
-    </symbol>
+  <div class="ps-stage" data-stage>
+    <div class="ps-ghost" data-ghost aria-hidden="true">{initial?.name.toUpperCase()}</div>
+    <div class="ps-ring" data-ring></div>
 
-    <!-- Mango Symbol -->
-    <symbol id="f-mango" viewBox="0 0 200 240">
-      <path
-        d="M104 40 C158 34 190 90 184 146 C178 202 138 232 92 224 C44 216 14 174 22 120 C28 72 58 44 104 40Z"
-        fill="url(#g-mango)"></path>
-      <path
-        d="M150 64 C176 92 180 150 150 196"
-        fill="none"
-        stroke="#ee4b2b"
-        stroke-opacity=".35"
-        stroke-width="16"
-        stroke-linecap="round"></path>
-      <ellipse
-        cx="62"
-        cy="104"
-        rx="12"
-        ry="32"
-        fill="#fff"
-        fill-opacity=".28"
-        transform="rotate(14 62 104)"></ellipse>
-      <path
-        d="M104 42 C102 30 107 22 114 16"
-        fill="none"
-        stroke="#5a3a12"
-        stroke-width="5"
-        stroke-linecap="round"></path>
-      <path
-        d="M114 20 C138 6 166 12 178 28 C152 34 128 32 114 20Z"
-        fill="url(#g-leaf)"></path>
-      <path
-        d="M116 21 C136 20 156 24 170 28"
-        fill="none"
-        stroke="#c8f7d0"
-        stroke-opacity=".6"
-        stroke-width="1.5"></path>
-    </symbol>
-
-    <!-- Spinach Symbol -->
-    <symbol id="f-spinach" viewBox="0 0 200 240">
-      <path
-        d="M100 216 L100 236"
-        stroke="#8bd69a"
-        stroke-width="7"
-        stroke-linecap="round"></path>
-      <g opacity=".92">
-        <use
-          href="#leaf"
-          transform="translate(100 222) rotate(-34) scale(.86) translate(-100 -222)"
-        ></use>
-      </g>
-      <g opacity=".92">
-        <use
-          href="#leaf"
-          transform="translate(100 222) rotate(34) scale(.86) translate(-100 -222)"
-        ></use>
-      </g>
-      <use href="#leaf"></use>
-    </symbol>
-
-    <!-- Ginger Symbol -->
-    <symbol id="f-ginger" viewBox="0 0 200 240">
-      <path
-        d="M40 160 C18 130 36 104 64 108 C66 76 98 64 116 84 C126 52 164 56 166 90 C196 92 198 130 178 146 C192 168 170 198 146 190 C140 214 100 216 90 196 C66 208 36 192 40 160Z"
-        fill="url(#g-ginger)"></path>
-      <ellipse cx="146" cy="62" rx="15" ry="8" fill="#f3e3a8"></ellipse>
-      <path
-        d="M62 122 C74 128 84 128 94 122 M104 152 C118 160 132 160 146 152 M60 170 C72 178 84 178 96 172"
-        stroke="#7a5424"
-        stroke-opacity=".4"
-        stroke-width="3"
-        fill="none"
-        stroke-linecap="round"></path>
-      <ellipse
-        cx="78"
-        cy="138"
-        rx="14"
-        ry="22"
-        fill="#fff"
-        fill-opacity=".18"
-        transform="rotate(20 78 138)"></ellipse>
-    </symbol>
-
-    <!-- Tamarind Symbol -->
-    <symbol id="f-tamarind" viewBox="0 0 200 240">
-      <g fill="none" stroke-linecap="round">
-        <path d="M44 56 L30 46" stroke="#5a3a1a" stroke-width="6"></path>
-        <path
-          d="M44 56 C118 36 176 108 142 196"
-          stroke="#4a2a10"
-          stroke-width="46"></path>
-        <path
-          d="M44 56 C118 36 176 108 142 196"
-          stroke="#a8683a"
-          stroke-width="40"></path>
-        <path
-          d="M44 56 C118 36 176 108 142 196"
-          stroke="#4a2a10"
-          stroke-opacity=".5"
-          stroke-width="40"
-          stroke-linecap="butt"
-          stroke-dasharray="2 30"></path>
-        <path
-          d="M38 48 C112 26 168 98 134 188"
-          stroke="#d6a06a"
-          stroke-opacity=".55"
-          stroke-width="7"></path>
-      </g>
-    </symbol>
-
-    <!-- Caramel Symbol -->
-    <symbol id="f-caramel" viewBox="0 0 200 240">
-      <path
-        d="M52 108 C50 72 82 48 116 48 C154 48 174 76 170 118 C166 160 146 200 102 204 C56 208 54 152 52 108Z"
-        fill="url(#g-caramel)"></path>
-      <path
-        d="M72 102 C78 74 128 68 148 98 C162 122 132 156 98 152 C72 148 68 122 72 102Z"
-        fill="#b45309"
-        fill-opacity=".6"></path>
-      <ellipse
-        cx="92"
-        cy="78"
-        rx="20"
-        ry="10"
-        fill="#fff"
-        fill-opacity=".32"
-        transform="rotate(-18 92 78)"></ellipse>
-      <path
-        d="M122 122 C140 132 154 118 156 104"
-        fill="none"
-        stroke="#fef08a"
-        stroke-width="4"
-        stroke-linecap="round"
-        stroke-opacity=".7"></path>
-      <circle cx="140" cy="180" r="14" fill="url(#g-caramel)"></circle>
-      <circle cx="65" cy="170" r="10" fill="url(#g-caramel)"></circle>
-    </symbol>
-
-    <!-- Apple Symbol -->
-    <symbol id="f-apple" viewBox="0 0 200 240">
-      <path
-        d="M100 68 C80 50 35 60 25 110 C15 160 55 220 95 220 C100 220 103 216 108 216 C113 216 116 220 121 220 C161 220 185 160 175 110 C165 60 120 50 100 68Z"
-        fill="url(#g-apple)"></path>
-      <ellipse
-        cx="60"
-        cy="115"
-        rx="14"
-        ry="32"
-        fill="#fff"
-        fill-opacity=".25"
-        transform="rotate(22 60 115)"></ellipse>
-      <path
-        d="M100 68 C102 46 114 30 126 22"
-        fill="none"
-        stroke="#5a3a12"
-        stroke-width="6"
-        stroke-linecap="round"></path>
-      <path
-        d="M108 45 C125 32 152 36 160 50 C140 56 120 54 108 45Z"
-        fill="url(#g-leaf)"></path>
-      <path
-        d="M110 46 C126 44 144 48 154 51"
-        fill="none"
-        stroke="#c8f7d0"
-        stroke-width="1.5"
-        stroke-opacity=".7"></path>
-    </symbol>
-  </svg>
-
-  <!-- Ambient background glow layers -->
-  <div class="bgs" id="bgs" aria-hidden="true"></div>
-
-  <!-- Studio Top Navigation Header -->
-  <header class="top z-20">
-    <!-- <a href="/" class="logo flex items-center" aria-label="Renol Foods">
-      <img
-        src="/images/Logo.png"
-        alt="Renol Foods"
-        width="180"
-        height="82"
-        decoding="async"
-        class="h-9 sm:h-10 w-auto object-contain"
-      />
-    </a> -->
-
-    <div class="flex items-center gap-3">
-      <button
-        class="pill back"
-        id="back"
-        type="button"
-        aria-label="Back to carousel"
-      >
-        &larr; All powders
-      </button>
+    <div class="ps-cta ps-ui">
+      <CtaButton placement="hero" />
     </div>
-  </header>
 
-  <!-- Main 3D Carousel Stage -->
-  <section
-    class="stage"
-    id="stage"
-    aria-label="Powder carousel. Use arrow keys or horizontal drag to browse, click or press Enter on the fruit to turn it into powder."
-    tabindex="-1"
-  >
-    <!-- Giant Outlined Ghost Typography -->
-    <div class="ghost" id="ghost" aria-hidden="true">LEMON</div>
-
-    <!-- Ring Carousel Container -->
-    <div class="ring" id="ring"></div>
-
-    <!-- FX Particle Canvas -->
-    <canvas id="fx" aria-hidden="true"></canvas>
-
-    <!-- Carousel Arrow Navigation -->
-    <button
-      class="arrow l ui hudfade"
-      id="prev"
-      type="button"
-      aria-label="Previous product"
-    >
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      >
-        <path d="M15 19l-7-7 7-7"></path>
+    <button class="ps-arrow ps-l ps-ui" type="button" data-prev aria-label="Previous product">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M15 5l-7 7 7 7"></path>
       </svg>
     </button>
-    <button
-      class="arrow r ui hudfade"
-      id="next"
-      type="button"
-      aria-label="Next product"
-    >
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      >
+    <button class="ps-arrow ps-r ps-ui" type="button" data-next aria-label="Next product">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path d="M9 5l7 7-7 7"></path>
       </svg>
     </button>
 
-    <!-- Name & Subcategory Display -->
-    <div class="nameblock" aria-live="polite">
-      <h1 class="name" id="name">Lemon</h1>
-      <p class="sub" id="sub">Fruit powder</p>
+    <div class="ps-nameblock" aria-live="polite">
+      <p class="ps-name" data-name>{initial?.name}</p>
+      <p class="ps-sub" data-sub>{initial ? `${initial.cat} powder` : ""}</p>
     </div>
 
-    <!-- Navigation Dots -->
-    <div
-      class="dots ui hudfade"
-      id="dots"
-      aria-label="Carousel navigation dots"
-    >
-    </div>
+    <div class="ps-dots ps-ui" data-dots role="group" aria-label="Choose a powder"></div>
 
-    <!-- Interactive Hint with pulsing indicator -->
-    <div class="hint hudfade" id="hint">
-      <i></i>
-      <span id="hintTxt"
-        >Drag the lemon to spin it. Click it to turn it into powder</span
-      >
-    </div>
+    <p class="ps-hint" data-hint>
+      <i aria-hidden="true"></i>
+      <span data-hint-text>Drag the fruit to turn it. Click it to open the product</span>
+    </p>
 
-    <!-- Homepage Scroll Cue -->
-    <a
-      href="#content-start"
-      class="scroll-cue hudfade"
-    >
+    <a class="ps-cue ps-ui" href="#content-start">
       <span>Scroll to explore</span>
-      <svg
-        class="w-4 h-4"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      >
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path d="M12 5v14M19 12l-7 7-7-7"></path>
       </svg>
     </a>
-  </section>
+  </div>
 
-  <!-- Detail View Section (Revealed via circular clipPath) -->
-  <section
-    class="detail"
-    id="detail"
-    aria-label="Product details"
-    data-lenis-prevent
-    inert
-  >
-    <div class="dbgs" id="dbgs" aria-hidden="true"></div>
-    <div class="dwrap">
-      <!-- Pouch Visual & Heap Simulation Representation -->
-      <div class="dvis dswap">
-        <div class="pwrap" id="pwrap">
-          <svg
-            class="pouch"
-            viewBox="0 0 240 340"
-            role="img"
-            aria-label="Powder pouch"
-          >
-            <path
-              class="pbody"
-              d="M28 34 H212 L220 318 Q220 332 206 332 H34 Q20 332 20 318Z"
-            ></path>
-            <path
-              d="M28 34 H92 L84 332 H34 Q20 332 20 318Z"
-              fill="#fff"
-              fill-opacity=".1"></path>
-            <rect class="pcrimp" x="28" y="14" width="184" height="32" rx="4"
-            ></rect>
-            <path
-              d="M34 22 H206 M34 30 H206 M34 38 H206"
-              stroke="#000"
-              stroke-opacity=".2"></path>
-            <text
-              x="120"
-              y="70"
-              text-anchor="middle"
-              font-size="12"
-              font-weight="600"
-              fill="#fff"
-              fill-opacity=".9"
-              style="font-family:var(--body);letter-spacing:.06em"
-              >Renol Foods</text
-            >
-            <rect
-              x="44"
-              y="86"
-              width="152"
-              height="204"
-              rx="12"
-              fill="#fff"
-              fill-opacity=".95"></rect>
-            <svg x="70" y="100" width="100" height="120" viewBox="0 0 200 240">
-              <use id="pouchFruit" href="#f-lemon"></use>
-            </svg>
-            <text
-              id="pouchName"
-              x="120"
-              y="248"
-              text-anchor="middle"
-              font-size="24"
-              font-weight="800"
-              fill="#17120b"
-              style="font-family:var(--display);letter-spacing:-.02em"
-              >Lemon</text
-            >
-            <text
-              id="pouchSub"
-              x="120"
-              y="268"
-              text-anchor="middle"
-              font-size="12"
-              fill="#17120b"
-              fill-opacity=".65"
-              style="font-family:var(--body)">Fruit powder</text
-            >
-          </svg>
+  <!-- Server-rendered list so every product is reachable without JavaScript -->
+  <nav class="sr-only" aria-label="All powders" data-allnav>
+    <ul>
+      {
+        items.map((p) => (
+          <li>
+            <a href={`/products/${p.slug}`}>{p.name} powder</a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
 
-          <!-- Powder Pile / Mound Illustration in Detail -->
-          <svg class="mound" viewBox="0 0 320 80" aria-hidden="true">
-            <path
-              class="m"
-              d="M10 74 Q90 68 135 34 Q160 12 185 34 Q230 68 310 74 Z"></path>
-            <path
-              d="M10 74 Q90 68 135 34 Q160 12 185 34 Q230 68 310 74 Z"
-              fill="url(#g-mound-shade)"
-              opacity=".2"></path>
-          </svg>
-
-          <!-- Side Fruit Stamp -->
-          <svg class="bigfruit" viewBox="0 0 200 240" aria-hidden="true">
-            <use id="bigFruit" href="#f-lemon"></use>
-          </svg>
-        </div>
-      </div>
-
-      <!-- Detail Info & Technical Specifications -->
-      <div class="dinfo">
-        <span class="chip" id="dCat">Fruit powder</span>
-        <h2 class="dname font-display" id="dName">Lemon Powder</h2>
-        <p class="dblurb" id="dBlurb">
-          Spray-dried lemon juice with a concentrated citrus kick.
-        </p>
-
-        <h3>Inside</h3>
-        <ul class="tags" id="dInside"></ul>
-
-        <h3>Commercial Applications</h3>
-        <ul class="tags use" id="dUses"></ul>
-
-        <h3>Technical Specifications</h3>
-        <dl class="specs" id="dSpecs"></dl>
-
-        <div class="cta">
-          <button class="btn" id="reqDetail" type="button"
-            >Request a Sample</button
-          >
-        </div>
-
-        <div class="pn">
-          <button id="dPrev" type="button"
-            >&larr; <span id="dPrevN">Tomato</span></button
-          >
-          <button id="dNext" type="button"
-            ><span id="dNextN">Mango</span> &rarr;</button
-          >
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Sample Request Dialog Modal -->
-  <dialog id="dlg" aria-labelledby="dlgTitle">
-    <div class="dbody">
-      <div id="fForm">
-        <h2 id="dlgTitle" class="font-display">Request a Sample</h2>
-        <p>
-          Tell us what you need and our technical sales team will reply with
-          sample details.
-        </p>
-        <form id="sampleForm">
-          <label>
-            Your name
-            <input
-              name="n"
-              required
-              autocomplete="name"
-              placeholder="Full name"
-            />
-          </label>
-          <label>
-            Work email
-            <input
-              name="e"
-              type="email"
-              required
-              autocomplete="email"
-              placeholder="name@company.com"
-            />
-          </label>
-          <label>
-            Product
-            <select id="fProd" name="p"></select>
-          </label>
-          <label>
-            Quantity needed
-            <input name="q" placeholder="e.g. 500 g lab evaluation sample" />
-          </label>
-          <div class="row">
-            <button class="btn ghost" type="button" id="dlgCancel"
-              >Cancel</button
-            >
-            <button class="btn" type="submit">Send request</button>
-          </div>
-          <p class="demo">
-            Lead generation demo form. In production, connects directly to
-            Web3Forms.
-          </p>
-        </form>
-      </div>
-
-      <div id="fDone" hidden>
-        <h2 class="font-display">Request noted</h2>
-        <p id="fDoneTxt"></p>
-        <div class="row">
-          <button class="btn" type="button" id="dlgClose">Done</button>
-        </div>
-      </div>
-    </div>
-  </dialog>
+  <script type="application/json" data-studio-data set:html={JSON.stringify(items)} />
 </section>
 
-<style>
-  :root {
-    --cw: clamp(130px, min(44vw, 28vh), 320px);
-  }
-
-  .powder-studio {
-    --accent: #ffe14a;
+<style is:global>
+  .ps {
     --on: #140a00;
-    --base: #0b0b0d;
-    --panel: #121214;
-    --ink: #ffffff;
-    --ink-2: rgba(255, 255, 255, 0.72);
-    --ink-3: rgba(255, 255, 255, 0.44);
-    --line: rgba(255, 255, 255, 0.12);
+    position: relative;
+    display: block;
+    block-size: calc(100svh - var(--header-h));
+    min-block-size: 30rem;
+    overflow: clip;
+    isolation: isolate;
+    container-type: size;
+    background: var(--bg);
+    color: var(--ink);
+  }
+  @media (max-width: 767.98px) {
+    .ps {
+      block-size: calc(100svh - var(--header-h) - var(--bar-h) - env(safe-area-inset-bottom, 0px));
+    }
   }
 
-  /* Ambient glowing backgrounds */
-  .bgs {
+  /* One background layer per product, cross-faded */
+  .ps-bgs {
     position: absolute;
     inset: 0;
     z-index: 0;
-    pointer-events: none;
+    overflow: hidden;
+    background: var(--bg);
   }
-
-  :global(.bg) {
+  .ps-bg {
     position: absolute;
     inset: 0;
     opacity: 0;
-    transition: opacity 1.1s cubic-bezier(0.2, 0, 0.2, 1);
-    background:
-      radial-gradient(
-        circle at 50% 46%,
-        color-mix(in srgb, var(--glow) 42%, transparent) 0%,
-        transparent 65%
-      ),
-      linear-gradient(180deg, var(--base) 0%, #0b0b0d 100%);
+    transition: opacity 0.8s ease;
+    background: radial-gradient(62% 58% at 50% 44%, var(--glow) 0%, transparent 100%), var(--base);
   }
-
-  :global(.bg.on) {
+  .ps-bg::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(120% 90% at 50% 50%, transparent 55%, rgba(0, 0, 0, 0.55) 100%);
+  }
+  .ps-bg.on {
     opacity: 1;
   }
 
-  /* Top Navigation */
-  .top {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 72px;
-    padding: 0 32px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    pointer-events: none;
-  }
-
-  .top > * {
-    pointer-events: auto;
-  }
-
-  .pill {
-    padding: 8px 18px;
-    border-radius: 999px;
-    font-size: 14px;
-    font-weight: 600;
-    border: 1px solid var(--line);
-    background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    color: var(--ink);
-    cursor: pointer;
-    transition:
-      background 0.2s,
-      transform 0.2s,
-      border-color 0.2s;
-  }
-
-  .pill:hover {
-    background: rgba(255, 255, 255, 0.18);
-    border-color: rgba(255, 255, 255, 0.25);
-    transform: translateY(-1px);
-  }
-
-  .pill.back {
-    display: none;
-  }
-
-  :global(body.in-detail) .pill.back {
-    display: inline-flex;
-  }
-
-  /* Stage */
-  .stage {
+  /* Stage: vertical scroll always belongs to the page; only horizontal drags are ours */
+  .ps-stage {
+    --cw: clamp(150px, min(52cqw, 36cqh), 340px);
     position: absolute;
     inset: 0;
     z-index: 1;
@@ -689,41 +122,37 @@ import { products } from "../../data/products";
     -webkit-user-select: none;
     cursor: grab;
   }
-
-  .stage:active {
+  .ps-stage:active {
     cursor: grabbing;
   }
 
-  /* Giant Ghost Typography */
-  .ghost {
+  .ps-ghost {
     position: absolute;
     left: 50%;
-    top: 46%;
-    transform: translate(-50%, -50%);
+    top: 43cqh;
     z-index: 1;
+    transform: translate(-50%, -50%);
     white-space: nowrap;
     pointer-events: none;
     font-family: var(--display);
     font-weight: 800;
-    font-size: clamp(80px, 19vw, 290px);
+    font-size: clamp(72px, min(19cqw, 34cqh), 300px);
     line-height: 1;
     letter-spacing: -0.04em;
     color: transparent;
-    -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.14);
+    -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.15);
   }
 
-  /* Ring Container */
-  .ring {
+  .ps-ring {
     position: absolute;
     left: 50%;
-    top: 46%;
+    top: 43cqh;
+    z-index: 3;
     width: 0;
     height: 0;
-    z-index: 3;
     perspective: 1400px;
   }
-
-  :global(.card) {
+  .ps-card {
     position: absolute;
     left: 0;
     top: 0;
@@ -732,90 +161,86 @@ import { products } from "../../data/products";
     padding: 0;
     border: 0;
     background: none;
+    color: inherit;
+    cursor: inherit;
     will-change: transform, opacity;
     -webkit-tap-highlight-color: transparent;
     filter: drop-shadow(0 28px 36px rgba(0, 0, 0, 0.45));
-    cursor: pointer;
   }
-
-  :global(.card .fruit) {
-    display: block;
-    width: 100%;
-    height: 100%;
-    overflow: visible;
-    transform-origin: 50% 62%;
-  }
-
-  :global(.card:focus-visible) {
+  .ps-card:focus-visible {
     outline: 2px solid #fff;
     outline-offset: 10px;
     border-radius: 28px;
   }
-
-  /* FX Canvas */
-  #fx {
-    position: absolute;
-    inset: 0;
-    z-index: 4;
+  .ps-fruit {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transform-origin: 50% 62%;
     pointer-events: none;
   }
 
-  /* Name block */
-  .nameblock {
+  .ps-cta {
     position: absolute;
-    left: 0;
-    right: 0;
-    bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+    top: 16px;
+    right: 24px;
+    z-index: 9;
+  }
+  @container (max-width: 700px) {
+    .ps-cta {
+      right: 16px;
+    }
+  }
+
+  .ps-nameblock {
+    position: absolute;
+    inset-inline: 0;
+    bottom: 84px;
     z-index: 6;
+    padding-inline: 16px;
     text-align: center;
     pointer-events: none;
-    padding: 0 16px;
   }
-
-  .name {
+  .ps-name {
     margin: 0;
     font-family: var(--display);
     font-weight: 800;
-    font-size: clamp(44px, 7.5vw, 92px);
+    font-size: clamp(36px, min(7.5cqw, 10.5cqh), 96px);
     line-height: 0.95;
     letter-spacing: -0.035em;
   }
-
-  .sub {
+  .ps-sub {
     margin: 8px 0 0;
     font-size: 16px;
     color: var(--ink-2);
   }
 
-  /* Hint indicator */
-  .hint {
+  .ps-hint {
+    display: none;
     position: absolute;
-    left: 0;
-    right: 0;
-    bottom: calc(44px + env(safe-area-inset-bottom, 0px));
+    inset-inline: 0;
+    bottom: 78px;
     z-index: 6;
-    display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
     gap: 10px;
+    margin: 0;
+    padding-inline: 16px;
     font-size: 14px;
     color: var(--ink-2);
-    pointer-events: none;
-    padding: 0 16px;
     text-align: center;
+    pointer-events: none;
   }
-
-  .hint i {
+  .ps-hint i {
     flex: none;
     width: 8px;
     height: 8px;
     border-radius: 50%;
     background: var(--accent);
-    box-shadow: 0 0 0 0 var(--accent);
-    animation: ping 2s infinite;
+    animation: ps-ping 2s infinite;
   }
-
-  @keyframes ping {
+  @keyframes ps-ping {
     0% {
       box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 70%, transparent);
     }
@@ -824,63 +249,25 @@ import { products } from "../../data/products";
       box-shadow: 0 0 0 12px transparent;
     }
   }
-
-  /* Scroll Cue */
-  .scroll-cue {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    bottom: 12px;
-    z-index: 6;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 12px;
-    font-weight: 500;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    color: var(--ink-3);
-    text-decoration: none;
-    transition:
-      color 0.2s,
-      transform 0.2s;
-  }
-
-  .scroll-cue:hover {
-    color: var(--ink);
-    transform: translateX(-50%) translateY(2px);
-  }
-
-  .scroll-cue svg {
-    animation: floatDown 2s ease-in-out infinite;
-  }
-
-  @keyframes floatDown {
-    0%,
-    100% {
-      transform: translateY(0);
+  @container (min-height: 640px) {
+    .ps-nameblock {
+      bottom: 108px;
     }
-    50% {
-      transform: translateY(4px);
+    .ps-hint {
+      display: flex;
     }
   }
 
-  /* Dots */
-  .dots {
+  .ps-dots {
     position: absolute;
-    left: 0;
-    right: 0;
-    bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+    inset-inline: 0;
+    bottom: 52px;
     z-index: 7;
     display: flex;
     justify-content: center;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 12px;
   }
-
   /* 24px hit area (WCAG 2.5.8); the visible dot is drawn by ::before */
-  :global(.dot) {
+  .ps-dot {
     position: relative;
     width: 24px;
     height: 24px;
@@ -888,11 +275,9 @@ import { products } from "../../data/products";
     border: 0;
     background: transparent;
     cursor: pointer;
-    touch-action: manipulation;
     transition: width 0.35s;
   }
-
-  :global(.dot)::before {
+  .ps-dot::before {
     content: "";
     position: absolute;
     top: 50%;
@@ -906,512 +291,521 @@ import { products } from "../../data/products";
       width 0.35s,
       background 0.35s;
   }
-
-  :global(.dot.on) {
+  .ps-dot.on {
     width: 36px;
   }
-
-  :global(.dot.on)::before {
+  .ps-dot.on::before {
     width: 28px;
     background: var(--accent);
   }
 
-  /* Arrows (min 44px tap targets, always reachable) */
-  .arrow {
+  .ps-arrow {
     position: absolute;
-    top: 46%;
+    top: 43cqh;
     z-index: 8;
-    min-width: 44px;
-    min-height: 44px;
-    width: 44px;
-    height: 44px;
-    margin-top: -22px;
-    padding: 0;
     display: grid;
     place-items: center;
+    width: 48px;
+    height: 48px;
+    margin-top: -24px;
+    padding: 0;
     border: 1px solid var(--line);
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.12);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    color: #fff;
+    background: rgba(255, 255, 255, 0.07);
+    color: var(--ink);
     cursor: pointer;
-    touch-action: manipulation;
-    transition:
-      background 0.2s,
-      transform 0.2s;
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
   }
-
-  .arrow:hover {
-    background: rgba(255, 255, 255, 0.22);
-    transform: scale(1.06);
+  .ps-arrow:hover {
+    background: rgba(255, 255, 255, 0.16);
   }
-
-  .arrow.l {
-    left: 14px;
+  .ps-arrow svg {
+    width: 20px;
+    height: 20px;
   }
-
-  .arrow.r {
-    right: 14px;
+  .ps-l {
+    left: 24px;
   }
-
-  .arrow svg {
-    width: 18px;
-    height: 18px;
+  .ps-r {
+    right: 24px;
   }
-
-  @media (min-width: 768px) {
-    .arrow {
-      width: 48px;
-      height: 48px;
-      margin-top: -24px;
-    }
-    .arrow.l {
-      left: 24px;
-    }
-    .arrow.r {
-      right: 24px;
-    }
-    .arrow svg {
-      width: 20px;
-      height: 20px;
-    }
-  }
-
-  @media (max-width: 640px) {
-    .top {
-      padding: 0 16px;
-      height: 64px;
-    }
-    .name {
-      font-size: clamp(34px, 9vw, 56px);
-    }
-    .sub {
-      font-size: 14px;
-      margin-top: 4px;
-    }
-    .hint {
-      font-size: 12px;
-      padding: 0 12px;
-      bottom: calc(38px + env(safe-area-inset-bottom, 0px));
-    }
-    .nameblock {
-      bottom: calc(88px + env(safe-area-inset-bottom, 0px));
-    }
-  }
-
-  /* Landscape phone orientation support (height <= 500px) */
-  @media (max-height: 500px) and (orientation: landscape) {
-    .top {
-      height: 48px;
-      padding: 0 16px;
-    }
-    .ghost {
-      font-size: clamp(48px, 14vh, 90px);
-      top: 42%;
-    }
-    .nameblock {
-      bottom: calc(36px + env(safe-area-inset-bottom, 0px));
-    }
-    .name {
-      font-size: clamp(22px, 6.5vh, 32px);
-    }
-    .sub {
-      margin-top: 2px;
-      font-size: 12px;
-    }
-    .dots {
-      bottom: calc(14px + env(safe-area-inset-bottom, 0px));
-      gap: 6px;
-    }
-    .hint,
-    .scroll-cue {
+  @container (max-width: 700px) {
+    .ps-arrow {
       display: none;
     }
-    .arrow {
-      top: 42%;
-      min-width: 40px;
-      min-height: 40px;
-      width: 40px;
-      height: 40px;
-      margin-top: -20px;
-    }
   }
 
-  /* Detail Screen (Fullscreen Overlay) */
-  .detail {
-    position: fixed;
-    inset: 0;
-    z-index: 999;
-    display: none;
-    overflow-y: auto;
-    overflow-x: hidden;
-    overscroll-behavior: contain;
-    -webkit-overflow-scrolling: touch;
-    background: #0b0b0d;
-  }
-
-  .dbgs {
-    position: fixed;
-    inset: 0;
-    z-index: 0;
-    pointer-events: none;
-  }
-
-  .dwrap {
-    position: relative;
-    z-index: 1;
-    min-height: 100%;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
-  }
-
-  .dvis {
-    position: relative;
-    display: grid;
-    place-items: center;
-    padding: clamp(88px, 13vh, 130px) 24px 56px;
-  }
-
-  .pwrap {
-    position: relative;
-    width: min(360px, 72%);
-  }
-
-  .pouch {
-    display: block;
-    width: 100%;
-    height: auto;
-    filter: drop-shadow(0 36px 40px rgba(0, 0, 0, 0.55));
-  }
-
-  .pbody {
-    fill: var(--pouch);
-  }
-
-  .pcrimp {
-    fill: var(--pouch);
-    filter: brightness(0.82);
-  }
-
-  .mound {
+  .ps-cue {
     position: absolute;
-    left: -18%;
-    right: -18%;
-    bottom: -6%;
-    width: 136%;
-    height: auto;
-    pointer-events: none;
-  }
-
-  .mound path.m {
-    fill: var(--powder);
-  }
-
-  .bigfruit {
-    position: absolute;
-    right: -34%;
-    bottom: 4%;
-    width: 56%;
-    height: auto;
-    transform: rotate(14deg);
-    filter: drop-shadow(0 18px 22px rgba(0, 0, 0, 0.45));
-  }
-
-  .dinfo {
-    align-self: center;
-    max-width: 680px;
-    padding: clamp(88px, 14vh, 140px) clamp(24px, 5vw, 72px) 72px;
-  }
-
-  .chip {
-    display: inline-block;
-    padding: 6px 14px;
-    border: 1px solid var(--line);
-    border-radius: 999px;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--ink-2);
-    margin: 0 0 18px;
-    background: rgba(255, 255, 255, 0.05);
-  }
-
-  .dname {
-    margin: 0;
-    font-family: var(--display);
-    font-weight: 800;
-    font-size: clamp(40px, 6vw, 80px);
-    line-height: 0.94;
-    letter-spacing: -0.035em;
-  }
-
-  .dblurb {
-    margin: 18px 0 0;
-    font-size: 18px;
-    line-height: 1.5;
-    color: var(--ink-2);
-    max-width: 48ch;
-  }
-
-  .dinfo h3 {
-    margin: 32px 0 12px;
-    font-size: 15px;
-    font-weight: 600;
-    letter-spacing: 0.01em;
-    color: var(--ink);
-  }
-
-  .tags {
-    list-style: none;
-    margin: 0;
-    padding: 0;
+    inset-inline: 0;
+    bottom: 4px;
+    z-index: 7;
     display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-
-  :global(.tags li) {
-    padding: 7px 14px;
-    border-radius: 999px;
-    font-size: 14px;
-    border: 1px solid var(--line);
-    background: rgba(255, 255, 255, 0.04);
-  }
-
-  :global(.tags.use li) {
-    border-color: transparent;
-    background: color-mix(in srgb, var(--accent) 22%, transparent);
-    color: #fff;
-  }
-
-  .specs {
-    margin: 0;
-    display: grid;
-    grid-template-columns: 140px 1fr;
-  }
-
-  :global(.specs dt),
-  :global(.specs dd) {
-    margin: 0;
-    padding: 10px 0;
-    border-top: 1px solid var(--line);
-    font-size: 14px;
-  }
-
-  :global(.specs dt) {
-    color: var(--ink-2);
-    font-weight: 500;
-  }
-
-  :global(.specs dd) {
-    color: var(--ink-3);
-  }
-
-  .cta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-top: 36px;
-  }
-
-  .btn {
-    border: 0;
-    border-radius: 999px;
-    padding: 14px 26px;
-    font-weight: 600;
-    font-size: 15px;
-    background: var(--accent);
-    color: var(--on);
-    cursor: pointer;
-    text-decoration: none;
-    display: inline-flex;
     align-items: center;
     justify-content: center;
-    transition:
-      transform 0.2s,
-      filter 0.2s;
-  }
-
-  .btn:hover {
-    transform: translateY(-2px);
-    filter: brightness(1.08);
-  }
-
-  .btn.ghost {
-    background: transparent;
-    color: var(--ink);
-    border: 1px solid var(--line);
-  }
-
-  .btn.ghost:hover {
-    background: rgba(255, 255, 255, 0.1);
-  }
-
-  .pn {
-    display: flex;
-    justify-content: space-between;
-    gap: 12px;
-    margin-top: 44px;
-    padding-top: 20px;
-    border-top: 1px solid var(--line);
-  }
-
-  .pn button {
-    background: none;
-    border: 0;
-    padding: 6px 0;
-    font-size: 15px;
-    color: var(--ink-2);
-    cursor: pointer;
-    transition: color 0.2s;
-  }
-
-  .pn button:hover {
-    color: var(--ink);
-  }
-
-  @media (max-width: 860px) {
-    .dwrap {
-      grid-template-columns: 1fr;
-    }
-    .dvis {
-      padding-top: 84px;
-      padding-bottom: 16px;
-      padding-left: 16px;
-      padding-right: 16px;
-    }
-    .pwrap {
-      width: min(210px, 54%);
-    }
-    .bigfruit {
-      right: -24%;
-      width: 48%;
-    }
-    .dinfo {
-      padding: 16px 16px calc(64px + env(safe-area-inset-bottom, 0px));
-    }
-    .dname {
-      font-size: clamp(28px, 7vw, 42px);
-    }
-    .dblurb {
-      font-size: 15px;
-    }
-    .specs {
-      grid-template-columns: 110px 1fr;
-    }
-  }
-
-  /* Sample Request Dialog */
-  dialog {
-    width: min(480px, 92vw);
-    padding: 0;
-    border: 1px solid var(--line);
-    border-radius: 24px;
-    background: var(--panel);
-    color: var(--ink);
-    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.6);
-  }
-
-  dialog::backdrop {
-    background: rgba(0, 0, 0, 0.68);
-    backdrop-filter: blur(6px);
-  }
-
-  .dbody {
-    padding: 32px;
-  }
-
-  .dbody h2 {
-    margin: 0 0 8px;
-    font-size: 28px;
-    letter-spacing: -0.02em;
-  }
-
-  .dbody p {
-    margin: 0 0 20px;
-    color: var(--ink-2);
-    font-size: 15px;
-    line-height: 1.45;
-  }
-
-  .dbody label {
-    display: block;
-    margin: 0 0 16px;
-    font-size: 14px;
+    gap: 8px;
+    width: max-content;
+    min-height: 44px;
+    margin-inline: auto;
+    padding-inline: 16px;
+    font-size: 13px;
     color: var(--ink-2);
   }
-
-  .dbody input,
-  .dbody select {
-    display: block;
-    width: 100%;
-    margin-top: 6px;
-    padding: 12px 16px;
-    border-radius: 12px;
-    border: 1px solid var(--line);
-    background: #1b1b1f;
+  .ps-cue:hover {
     color: var(--ink);
-    font: inherit;
-    font-size: 14px;
   }
-
-  .dbody input:focus,
-  .dbody select:focus {
-    outline: 2px solid var(--accent);
-    border-color: transparent;
-  }
-
-  .dbody .row {
-    display: flex;
-    gap: 12px;
-    justify-content: flex-end;
-    margin-top: 12px;
-  }
-
-  .demo {
-    font-size: 12px;
-    color: var(--ink-3);
-    margin-top: 16px;
+  .ps-cue svg {
+    width: 16px;
+    height: 16px;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    :global(.bg) {
+    .ps-bg {
       transition-duration: 0.01s;
     }
-    .hint i,
-    .scroll-cue svg {
+    .ps-hint i {
       animation: none;
     }
   }
 </style>
 
 <script>
-  import { initPowderStudio } from "../../scripts/studio";
+  import { gsap } from "gsap";
+  import { createFruitRenderer } from "../../scripts/studio/fruit-gl";
+  import type { StudioProduct } from "../../scripts/studio/data";
+  import { onPageLoad } from "../../scripts/lifecycle";
 
-  let cleanup: (() => void) | null = null;
+  const FN = 36; // lemon frames, and the unit the idle rotation is expressed in
+  const mod = (a: number, b: number) => ((a % b) + b) % b;
 
-  function boot() {
-    const root = document.getElementById("powder-studio");
-    if (!root) return;
-    if (cleanup) cleanup();
-    cleanup = initPowderStudio(root);
-  }
+  let teardown: (() => void) | null = null;
 
-  document.addEventListener("astro:page-load", boot);
-  document.addEventListener("astro:before-swap", () => {
-    if (cleanup) {
-      cleanup();
-      cleanup = null;
+  function init(): void {
+    teardown?.();
+
+    const root = document.querySelector<HTMLElement>("[data-studio]");
+    const dataEl = root?.querySelector("[data-studio-data]");
+    if (!root || !dataEl) return;
+
+    const q = <T extends Element>(selector: string) => root.querySelector<T>(selector)!;
+    const stage = q<HTMLElement>("[data-stage]");
+    const ring = q<HTMLElement>("[data-ring]");
+    const ghost = q<HTMLElement>("[data-ghost]");
+    const nameEl = q<HTMLElement>("[data-name]");
+    const subEl = q<HTMLElement>("[data-sub]");
+    const hintText = q<HTMLElement>("[data-hint-text]");
+    const dotsEl = q<HTMLElement>("[data-dots]");
+    const bgsEl = q<HTMLElement>("[data-bgs]");
+
+    // Keyboard users get the carousel; the plain link list is for no-JS visitors and crawlers.
+    root.querySelector<HTMLElement>("[data-allnav]")?.setAttribute("hidden", "");
+
+    const RM = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const T = (s: number) => (RM ? 0.01 : s);
+    const controller = new AbortController();
+    const { signal } = controller;
+
+    /* ---------- renderer and what can be drawn ---------- */
+    const all: StudioProduct[] = JSON.parse(dataEl.textContent || "[]");
+    let glOK = false;
+    const renderer = all.some((p) => p.kind !== null)
+      ? createFruitRenderer(() => {
+          // Context lost: swap shader canvases for posters (or drop the card) so nothing breaks.
+          glOK = false;
+          cards.forEach((card, i) => {
+            if (data[i].kind === null || data[i].frames) return;
+            const poster = data[i].poster;
+            if (poster) card.replaceChildren(makePoster(poster));
+            else card.hidden = true;
+          });
+        })
+      : null;
+    glOK = Boolean(renderer?.ok);
+
+    const data = all.filter((p) => p.frames || (p.kind !== null && glOK) || p.poster);
+    const n = data.length;
+    if (!n) return;
+
+    function makePoster(src: string): HTMLImageElement {
+      const img = new Image();
+      img.className = "ps-fruit";
+      img.src = src;
+      img.alt = "";
+      img.width = 400;
+      img.height = 480;
+      img.decoding = "async";
+      return img;
     }
-  });
 
-  // Fallback for direct page load if ViewTransitions is not used
-  if (
-    document.readyState === "complete" ||
-    document.readyState === "interactive"
-  ) {
-    boot();
-  } else {
-    document.addEventListener("DOMContentLoaded", boot);
+    const bgs = data.map((p) => {
+      const d = document.createElement("div");
+      d.className = "ps-bg";
+      d.style.setProperty("--glow", p.glow);
+      d.style.setProperty("--base", p.base);
+      bgsEl.appendChild(d);
+      return d;
+    });
+
+    const canvases: (HTMLCanvasElement | null)[] = [];
+    const cards = data.map((p, i) => {
+      const c = document.createElement("button");
+      c.type = "button";
+      c.className = "ps-card";
+      c.setAttribute("aria-label", `${p.name} powder, ${i + 1} of ${n}`);
+      let canvas: HTMLCanvasElement | null = null;
+      if (p.frames) {
+        canvas = document.createElement("canvas");
+        canvas.width = 400;
+        canvas.height = 480;
+      } else if (p.kind !== null && glOK) {
+        canvas = document.createElement("canvas");
+      }
+      if (canvas) {
+        canvas.className = "ps-fruit";
+        canvas.setAttribute("aria-hidden", "true");
+        c.appendChild(canvas);
+      } else if (p.poster) {
+        c.appendChild(makePoster(p.poster));
+      }
+      canvases.push(canvas);
+      c.addEventListener("click", (e) => {
+        if (e.detail === 0) activateCard(i); // keyboard activation; pointer clicks are handled on the stage
+      }, { signal });
+      ring.appendChild(c);
+      return c;
+    });
+
+    /* ---------- lemon: 36-frame 360 spin ---------- */
+    const lemonIdx = data.findIndex((p) => p.frames);
+    const lemon = lemonIdx >= 0 ? data[lemonIdx] : null;
+    const lemonCanvas = lemonIdx >= 0 ? canvases[lemonIdx] : null;
+    const lemonCtx = lemonCanvas ? lemonCanvas.getContext("2d") : null;
+    if (lemonCtx) lemonCtx.imageSmoothingQuality = "high";
+    const IDLE = lemon?.frames?.idle ?? 10;
+    const sp = { f: IDLE };
+    const frames: HTMLImageElement[] = [];
+    let framesLeft = 0;
+
+    function loadFrame(index: number): void {
+      if (!lemon?.frames || frames[index]) return;
+      const im = new Image();
+      im.decoding = "async";
+      im.onload = () => {
+        framesLeft--;
+        if (index === IDLE || Math.round(sp.f) === index) drawLemon();
+      };
+      im.src = `${lemon.frames.folder}${String(index).padStart(2, "0")}.webp`;
+      frames[index] = im;
+    }
+    if (lemon?.frames) {
+      framesLeft = lemon.frames.count;
+      loadFrame(IDLE); // first paint needs one frame; the rest load once the page is idle
+      const loadRest = () => {
+        for (let k = 0; k < lemon.frames!.count; k++) loadFrame(k);
+      };
+      if ("requestIdleCallback" in window) requestIdleCallback(loadRest, { timeout: 2500 });
+      else setTimeout(loadRest, 1200);
+    }
+    const nearestFrame = (i: number): HTMLImageElement | null => {
+      for (let d = 0; d < FN / 2; d++) {
+        for (const k of [i + d, i - d]) {
+          const im = frames[mod(k, FN)];
+          if (im?.complete && im.naturalWidth) return im;
+        }
+      }
+      return null;
+    };
+    function drawLemon(): void {
+      if (!lemonCtx) return;
+      const f = sp.f;
+      const i0 = Math.floor(f);
+      const t = f - i0;
+      const a = nearestFrame(i0);
+      const b = frames[mod(i0 + 1, FN)];
+      lemonCtx.clearRect(0, 0, 400, 480);
+      if (a) lemonCtx.drawImage(a, 0, 0, 400, 480);
+      if (t > 0.03 && b?.complete && b.naturalWidth) {
+        lemonCtx.globalAlpha = t;
+        lemonCtx.drawImage(b, 0, 0, 400, 480);
+        lemonCtx.globalAlpha = 1;
+      }
+    }
+    let introDone = false;
+    function introSpin(): void {
+      if (introDone || RM || !data[active].frames || framesLeft > 0) return;
+      introDone = true;
+      gsap.to(sp, { f: "+=36", duration: 2.8, ease: "power2.inOut", overwrite: true, onUpdate: drawLemon });
+    }
+
+    /* ---------- shader fruits ---------- */
+    const spins = data.map((p) => (p.frames ? sp : { f: 0 }));
+    let dirty = true;
+
+    function drawFruit(i: number): void {
+      const p = data[i];
+      const cv = canvases[i];
+      if (!renderer || !glOK || p.frames || p.kind === null || !cv) return;
+      renderer.draw(p.kind, (spins[i].f * Math.PI * 2) / FN, cv);
+    }
+    function sizeGL(): void {
+      if (!renderer || !glOK) return;
+      const { width, height } = renderer.resize(cards[0].offsetWidth || 400, window.devicePixelRatio || 1);
+      canvases.forEach((cv, i) => {
+        if (cv && !data[i].frames) {
+          cv.width = width;
+          cv.height = height;
+        }
+        drawFruit(i);
+      });
+    }
+    const drawActive = () => {
+      if (data[active].frames) drawLemon();
+      else drawFruit(active);
+    };
+
+    /* ---------- state ---------- */
+    const st = { pos: Math.min(2, n - 1) };
+    let active = st.pos;
+    let drag: null | {
+      x: number; y: number; p: number; moved: boolean; lp: number; lt: number; v: number;
+      spin: boolean; lx: number; sv: number;
+    } = null;
+    const offset = (i: number) => mod(i - st.pos + n / 2, n) - n / 2;
+    const spacing = () => cards[0].offsetWidth * (stage.offsetWidth < 700 ? 0.8 : 0.92);
+
+    function render(): void {
+      dirty = true;
+      const S = spacing();
+      cards.forEach((c, i) => {
+        const o = offset(i);
+        const a = Math.abs(o);
+        const s = Math.max(0.3, 1.1 - a * 0.3);
+        const op = a < 1 ? 1 - a * 0.45 : a < 2 ? 0.55 - (a - 1) * 0.33 : Math.max(0, 0.22 - (a - 2) * 0.22);
+        const y = Math.pow(a, 1.6) * 20;
+        c.style.transform = `translate(-50%,-50%) translate3d(${o * S}px,${y}px,0) rotateY(${-o * 16}deg) rotate(${o * 5}deg) scale(${s})`;
+        c.style.opacity = String(op);
+        c.style.zIndex = String(Math.round(100 - a * 10));
+        c.style.visibility = a > 3 ? "hidden" : "visible";
+        c.tabIndex = a < 0.5 ? 0 : -1;
+        if (a < 0.5) c.setAttribute("aria-current", "true");
+        else c.removeAttribute("aria-current");
+      });
+    }
+
+    const dots = data.map((p, i) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "ps-dot";
+      b.setAttribute("aria-label", `Show ${p.name}`);
+      b.addEventListener("click", () => goTo(st.pos + offset(i)), { signal });
+      dotsEl.appendChild(b);
+      return b;
+    });
+
+    let firstTheme = true;
+    function applyTheme(): void {
+      const p = data[active];
+      root!.style.setProperty("--accent", p.accent);
+      root!.style.setProperty("--on", "#140a00");
+      bgs.forEach((b, k) => b.classList.toggle("on", k === active));
+      dots.forEach((d, k) => {
+        d.classList.toggle("on", k === active);
+        if (k === active) d.setAttribute("aria-current", "true");
+        else d.removeAttribute("aria-current");
+      });
+      ghost.textContent = p.name.toUpperCase();
+      nameEl.textContent = p.name;
+      subEl.textContent = `${p.cat} powder`;
+      hintText.textContent = `Drag the ${p.name.toLowerCase()} to turn it. Click it to open the product`;
+      if (p.frames) setTimeout(introSpin, 800);
+      if (!firstTheme && !RM) {
+        gsap.fromTo([nameEl, subEl], { yPercent: 40, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.6, ease: "power3.out", stagger: 0.05, overwrite: true });
+        gsap.fromTo(ghost, { opacity: 0, scale: 0.96 }, { opacity: 1, scale: 1, duration: 0.8, ease: "power3.out", overwrite: true });
+      }
+      firstTheme = false;
+    }
+
+    function sync(): void {
+      const i = mod(Math.round(st.pos), n);
+      if (i !== active) {
+        active = i;
+        applyTheme();
+      }
+    }
+    function goTo(target: number): void {
+      gsap.to(st, { pos: target, duration: T(0.9), ease: "power3.out", overwrite: true, onUpdate() { render(); sync(); } });
+    }
+    const step = (d: number) => goTo(Math.round(st.pos) + d);
+
+    q<HTMLButtonElement>("[data-prev]").addEventListener("click", () => step(-1), { signal });
+    q<HTMLButtonElement>("[data-next]").addEventListener("click", () => step(1), { signal });
+
+    function activateCard(i: number): void {
+      const o = offset(i);
+      if (Math.abs(o) < 0.5) location.assign(`/products/${data[i].slug}/`);
+      else goTo(Math.round(st.pos + o));
+    }
+
+    /* ---------- pointer: only horizontal drags are taken over ---------- */
+    stage.addEventListener("pointerdown", (e) => {
+      if ((e.target as HTMLElement).closest(".ps-ui")) return;
+      if (e.pointerType === "mouse" && e.button !== 0) return;
+      gsap.killTweensOf(st);
+      gsap.killTweensOf(spins[active]);
+      const r = cards[active].getBoundingClientRect();
+      const spin = e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
+      drag = { x: e.clientX, y: e.clientY, p: st.pos, moved: false, lp: st.pos, lt: performance.now(), v: 0, spin, lx: e.clientX, sv: 0 };
+      stage.setPointerCapture(e.pointerId);
+    }, { signal });
+
+    stage.addEventListener("pointermove", (e) => {
+      if (!drag) return;
+      const dx = e.clientX - drag.x;
+      if (!drag.moved) {
+        if (Math.hypot(dx, e.clientY - drag.y) <= 6) return;
+        if (Math.abs(dx) <= Math.abs(e.clientY - drag.y)) {
+          drag = null; // vertical intent: leave it to the page
+          return;
+        }
+        drag.moved = true;
+      }
+      if (drag.spin) {
+        const now = performance.now();
+        const dt = Math.max(1, now - drag.lt);
+        const df = (e.clientX - drag.lx) / 11;
+        spins[active].f += df;
+        drag.sv = 0.8 * drag.sv + 0.2 * ((df / dt) * 1000);
+        drag.lx = e.clientX;
+        drag.lt = now;
+        dirty = true;
+        drawActive();
+        return;
+      }
+      st.pos = drag.p - dx / spacing();
+      const now = performance.now();
+      const dt = now - drag.lt;
+      if (dt > 0) {
+        drag.v = ((st.pos - drag.lp) / dt) * 1000;
+        drag.lp = st.pos;
+        drag.lt = now;
+      }
+      render();
+      sync();
+    }, { signal });
+
+    const settle = (d: NonNullable<typeof drag>) => {
+      if (d.spin) {
+        const S = spins[active];
+        gsap.to(S, { f: S.f + Math.max(-14, Math.min(14, d.sv * 0.35)), duration: T(1.1), ease: "power3.out", overwrite: true, onUpdate: drawActive });
+      } else {
+        goTo(Math.round(st.pos + Math.max(-1.5, Math.min(1.5, d.v * 0.18))));
+      }
+    };
+    stage.addEventListener("pointerup", (e) => {
+      if (!drag) return;
+      const d = drag;
+      drag = null;
+      if (d.moved) return settle(d);
+      const el = document.elementFromPoint(e.clientX, e.clientY);
+      const card = el?.closest<HTMLElement>(".ps-card");
+      if (card) activateCard(cards.indexOf(card as HTMLButtonElement));
+    }, { signal });
+    // A cancelled gesture (the browser took over for a vertical scroll) must never activate a card.
+    stage.addEventListener("pointercancel", () => {
+      if (!drag) return;
+      const d = drag;
+      drag = null;
+      if (d.moved) settle(d);
+    }, { signal });
+
+    // Horizontal-dominant wheel/trackpad gestures only; vertical wheel is never touched or prevented.
+    let lastWheel = 0;
+    stage.addEventListener("wheel", (e) => {
+      if (Math.abs(e.deltaX) <= Math.abs(e.deltaY) || Math.abs(e.deltaX) <= 20) return;
+      const now = performance.now();
+      if (now - lastWheel < 500) return;
+      lastWheel = now;
+      step(e.deltaX > 0 ? 1 : -1);
+    }, { passive: true, signal });
+
+    let visible = true;
+    window.addEventListener("keydown", (e) => {
+      if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+      if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+      const t = e.target as HTMLElement;
+      if (t.closest("input, textarea, select, [contenteditable], dialog, [role='dialog']")) return;
+      if (!(root.contains(t) || (t === document.body && visible))) return;
+      step(e.key === "ArrowRight" ? 1 : -1);
+    }, { signal });
+
+    /* ---------- render loop: only while the studio is on screen and the tab is visible ---------- */
+    let raf = 0;
+    let lastTime = 0;
+    let frame = 0;
+    function loop(now: number): void {
+      raf = requestAnimationFrame(loop);
+      const dt = Math.min(0.05, (now - lastTime) / 1000);
+      lastTime = now;
+      frame++;
+      if (!glOK) return;
+      if (!RM && !drag && !data[active].frames && !gsap.isTweening(spins[active])) {
+        spins[active].f += dt * 0.9;
+        dirty = true;
+      }
+      if (RM && !dirty) return;
+      for (let i = 0; i < n; i++) {
+        if (data[i].frames || Math.abs(offset(i)) > 2.6) continue;
+        if (i === active || (frame + i) % 4 === 0) drawFruit(i);
+      }
+      if (RM) dirty = false;
+    }
+    const running = () => visible && !document.hidden;
+    function syncLoop(): void {
+      if (running() && !raf) {
+        lastTime = performance.now();
+        raf = requestAnimationFrame(loop);
+      } else if (!running() && raf) {
+        cancelAnimationFrame(raf);
+        raf = 0;
+      }
+    }
+    const io = new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+      syncLoop();
+    });
+    io.observe(root);
+    document.addEventListener("visibilitychange", syncLoop, { signal });
+
+    const ro = new ResizeObserver(() => {
+      sizeGL();
+      render();
+    });
+    ro.observe(stage);
+
+    /* ---------- start ---------- */
+    applyTheme();
+    sizeGL();
+    render();
+    syncLoop();
+
+    teardown = () => {
+      controller.abort();
+      cancelAnimationFrame(raf);
+      io.disconnect();
+      ro.disconnect();
+      gsap.killTweensOf([st, sp, nameEl, subEl, ghost, ...spins]);
+      renderer?.dispose();
+      ring.replaceChildren();
+      bgsEl.replaceChildren();
+      dotsEl.replaceChildren();
+      teardown = null;
+    };
   }
+
+  onPageLoad(init);
+  window.addEventListener("pagehide", () => teardown?.());
+  window.addEventListener("pageshow", (event) => {
+    if (event.persisted) init();
+  });
 </script>
