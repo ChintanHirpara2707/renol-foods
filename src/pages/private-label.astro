@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import ChatLink from "../components/ChatLink.astro";
 import SectionHeading from "../components/SectionHeading.astro";
 ---
 
@@ -26,9 +27,7 @@ import SectionHeading from "../components/SectionHeading.astro";
 
       <!-- Hero Primary Action Button (1 per hero) -->
       <div class="mt-8 flex justify-center">
-        <a href="/request-sample" class="btn-accent min-h-[44px]">
-          Request a Sample
-        </a>
+        <ChatLink class="btn-accent min-h-[44px]" />
       </div>
 
       <!-- Core Capabilities Grid: 3 cols desktop, 2 tablet, 1 mobile -->
@@ -97,9 +96,7 @@ import SectionHeading from "../components/SectionHeading.astro";
           </p>
         </div>
         <div class="shrink-0">
-          <a href="/request-sample" class="btn-secondary min-h-[44px]">
-            Inquire Under NDA
-          </a>
+          <ChatLink class="btn-secondary min-h-[44px]" />
         </div>
       </div>
 
@@ -116,9 +113,7 @@ import SectionHeading from "../components/SectionHeading.astro";
       <p class="text-white/70 text-sm sm:text-base mb-8 max-w-xl mx-auto leading-relaxed font-body">
         Discuss your batch size requirements, carrier preferences, and packaging specifications with our manufacturing desk.
       </p>
-      <a href="/request-sample" class="btn-accent min-h-[44px]">
-        Request a Sample
-      </a>
+      <ChatLink class="btn-accent min-h-[44px]" />
     </div>
   </section>
 </BaseLayout>

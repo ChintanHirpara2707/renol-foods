@@ -1,0 +1,13 @@
+---
+import { whatsappLink } from "../data/site";
+import { CTA } from "../data/cta";
+
+interface Props {
+  class?: string;
+  /** WhatsApp text; defaults to the general message. */
+  message?: string;
+}
+const { class: className, message } = Astro.props;
+---
+
+<a href={whatsappLink(message)} target="_blank" rel="noopener noreferrer" class={className}>{CTA.chat.label}</a>

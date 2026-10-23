@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import ChatLink from "../components/ChatLink.astro";
 import SectionHeading from "../components/SectionHeading.astro";
 import { manufacturingProcess } from "../data/process";
 ---
@@ -27,9 +28,7 @@ import { manufacturingProcess } from "../data/process";
 
       <!-- Hero Primary Action Button (1 per hero) -->
       <div class="mt-8 flex justify-center">
-        <a href="/request-sample" class="btn-accent min-h-[44px]">
-          Request a Sample
-        </a>
+        <ChatLink class="btn-accent min-h-[44px]" />
       </div>
 
       <!-- 6-Stage Timeline Grid: 3 cols on desktop, 2 on tablet, 1 on mobile -->
@@ -136,9 +135,7 @@ import { manufacturingProcess } from "../data/process";
       <p class="text-white/70 text-sm sm:text-base mb-8 max-w-xl mx-auto leading-relaxed font-body">
         Technical representatives from commercial food manufacturers are welcome to schedule plant reviews in Bavla.
       </p>
-      <a href="/request-sample" class="btn-accent min-h-[44px]">
-        Request a Sample
-      </a>
+      <ChatLink class="btn-accent min-h-[44px]" />
     </div>
   </section>
 </BaseLayout>

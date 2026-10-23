@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import ChatLink from "../components/ChatLink.astro";
 import SectionHeading from "../components/SectionHeading.astro";
 import { siteConfig } from "../data/site";
 
@@ -30,9 +31,7 @@ const displayAddress = siteConfig.location.fullAddress.replace(/\[.*?\]/g, "").t
 
       <!-- Hero Primary Action Button (1 per hero) -->
       <div class="mt-8 flex justify-center">
-        <a href="/request-sample" class="btn-accent min-h-[44px]">
-          Request a Sample
-        </a>
+        <ChatLink class="btn-accent min-h-[44px]" />
       </div>
 
       <!-- Core Story Card -->
@@ -81,9 +80,7 @@ const displayAddress = siteConfig.location.fullAddress.replace(/\[.*?\]/g, "").t
       <p class="text-white/70 text-sm sm:text-base mb-8 max-w-xl mx-auto leading-relaxed font-body">
         Bulk and custom formulation orders produced in Bavla, Gujarat. Connect directly with our technical team today.
       </p>
-      <a href="/request-sample" class="btn-accent min-h-[44px]">
-        Request a Sample
-      </a>
+      <ChatLink class="btn-accent min-h-[44px]" />
     </div>
   </section>
 </BaseLayout>

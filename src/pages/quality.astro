@@ -1,5 +1,7 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import ChatLink from "../components/ChatLink.astro";
+import LicenceBadges from "../components/LicenceBadges.astro";
 import SectionHeading from "../components/SectionHeading.astro";
 ---
 
@@ -26,9 +28,11 @@ import SectionHeading from "../components/SectionHeading.astro";
 
       <!-- Hero Primary Action Button (1 per hero) -->
       <div class="mt-8 flex justify-center">
-        <a href="/request-sample" class="btn-accent min-h-[44px]">
-          Request a Sample
-        </a>
+        <ChatLink class="btn-accent min-h-[44px]" />
+      </div>
+
+      <div class="mt-6 flex justify-center">
+        <LicenceBadges align="center" />
       </div>
 
       <div class="mt-14 max-w-5xl mx-auto space-y-10">
@@ -119,11 +123,9 @@ import SectionHeading from "../components/SectionHeading.astro";
         Need detailed product specification sheets?
       </h2>
       <p class="text-white/70 text-sm sm:text-base mb-8 max-w-xl mx-auto leading-relaxed font-body">
-        Contact our technical sales desk to request product specification sheets, parameter details, or evaluation samples for your formulation trials.
+        Contact our technical sales desk for product specification sheets and parameter details.
       </p>
-      <a href="/request-sample" class="btn-accent min-h-[44px]">
-        Request a Sample
-      </a>
+      <ChatLink class="btn-accent min-h-[44px]" />
     </div>
   </section>
 </BaseLayout>

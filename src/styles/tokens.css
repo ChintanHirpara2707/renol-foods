@@ -52,7 +52,10 @@
 
   /* Layout chrome */
   --header-h: 4rem;
-  --bar-h: 4.25rem;
+  --stack-size: 3rem; /* 48px contact buttons */
+  --stack-gap: 0.75rem;
+  --stack-offset: 1rem;
+  --stack-h: calc(3 * var(--stack-size) + 2 * var(--stack-gap) + var(--stack-offset));
   --tap: 2.75rem; /* 44px minimum target */
 
   /* Motion (0.3 to 0.8 s) */
@@ -63,7 +66,7 @@
 
   /* Layering */
   --z-header: 40;
-  --z-bar: 45;
+  --z-stack: 45;
   --z-notice: 50;
   --z-menu: 60;
 }

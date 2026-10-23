@@ -88,7 +88,7 @@ const TEMPLATE = `
     <section class="sd-uses" hidden><h3>Where it is used</h3><ul class="sd-tags"></ul></section>
     <section><h3>Specifications</h3><dl class="sd-specs" hidden></dl><p class="sd-note sd-specs-empty">Full specifications on request</p></section>
     <div class="sd-cta">
-      <a class="sd-btn sd-request" data-cta="closing"></a>
+      <a class="sd-btn sd-request" target="_blank" rel="noopener noreferrer"></a>
       <a class="sd-btn sd-ghost" href="/contact">Contact</a>
     </div>
     <div class="sd-pn"><button type="button" class="sd-prev"></button><button type="button" class="sd-next"></button></div>
@@ -130,7 +130,7 @@ export function createProductDetail(host: DetailHost): ProductDetail {
   });
   const backBtn = q<HTMLButtonElement>(".sd-back");
   const request = q<HTMLAnchorElement>(".sd-request");
-  request.textContent = CTA.label;
+  request.textContent = CTA.chat.label;
 
   /* ---------- state ---------- */
   let mode: DetailMode = "browse";
@@ -188,7 +188,7 @@ export function createProductDetail(host: DetailHost): ProductDetail {
     q(".sd-pouch-name").textContent = p.name;
     q(".sd-pouch-sub").textContent = `${p.cat} powder`;
 
-    request.href = `${CTA.href}?product=${encodeURIComponent(p.slug)}`;
+    request.href = p.chatUrl;
     q<HTMLButtonElement>(".sd-prev").textContent = `← ${data[mod(i - 1, n)].name}`;
     q<HTMLButtonElement>(".sd-next").textContent = `${data[mod(i + 1, n)].name} →`;
   }

@@ -31,13 +31,6 @@
     line-height: 1.6;
   }
 
-  /* Room for the mobile bottom bar so it never covers the footer */
-  @media (max-width: 767.98px) {
-    body {
-      padding-bottom: calc(var(--bar-h) + env(safe-area-inset-bottom, 0px));
-    }
-  }
-
   h1, h2, h3, h4 {
     font-family: var(--display);
     text-wrap: balance;
@@ -196,6 +189,29 @@
 .btn-ghost:hover {
   color: var(--ink);
   background-color: rgba(255, 255, 255, 0.08);
+}
+
+/* WhatsApp chat button (white on a green that passes AA, independent of the page accent) */
+.btn-wa {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--tap);
+  padding: 0.8rem 1.625rem;
+  border: 1px solid transparent;
+  border-radius: var(--r-pill);
+  background: #0f7a40;
+  color: #fff;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  transition: filter var(--dur-1) var(--ease-out), transform var(--dur-1) var(--ease-out);
+}
+
+.btn-wa:hover {
+  filter: brightness(1.12);
+  transform: translateY(-1px);
 }
 
 /* Motion accessibility */

@@ -13,7 +13,6 @@ This document logs all content, specifications, legal details, and operational f
 | **Postal Address & Spelling** | `Plot No. 616, Kerala GIDC, Bavla, Ahmedabad [CONFIRM spelling]` | `src/data/site.ts` | Verify plot number, pin code, and postal jurisdiction. *(Rendered without "[CONFIRM spelling]" in public UI).* |
 | **WhatsApp Business Number** | `[CONFIRM: WhatsApp number with country code, e.g. 919979977396]` | `src/data/site.ts`, Floating WhatsApp, Mobile Bar | Confirm whether primary WhatsApp is +91 9979977396 or dedicated support desk. |
 | **Operational Hours** | `[CONFIRM: Monday - Saturday 9:00 AM - 6:00 PM IST]` | `src/data/site.ts` | Confirm factory office business hours and dispatch windows. *(Publicly rendered as "Monday – Saturday (IST)").* |
-| **Web3Forms Access Key** | Needs `.env` variable `PUBLIC_WEB3FORMS_ACCESS_KEY` | `.env`, Contact / Quote forms | Provide production API key from web3forms.com. |
 
 ---
 
@@ -59,7 +58,6 @@ Each product page will detail physical, chemical, and microbiological properties
 | **ISO Certifications** | `[CONFIRM: ISO 22000 / ISO 9001 registration details if held]` | Quality Page, About Page |
 | **HACCP & GMP** | `[CONFIRM: HACCP / GMP compliance or audit agency]` | Quality Page |
 | **Halal / Kosher** | `[CONFIRM: Halal / Kosher certification availability for export]` | Quality Page, Export section |
-| **Lab Testing / COA** | `[ADD: Sample COA download / standard parameters]` | Quality & Quote pages |
 
 ---
 
@@ -69,8 +67,6 @@ Each product page will detail physical, chemical, and microbiological properties
 | :--- | :--- | :--- |
 | **Monthly / Annual Production Capacity** | `[ADD: Metric tonnes per month / year]` | About Page, Facility Overview |
 | **Drying Technology Type** | Spray-Drying vs. Dehydration vs. Vacuum Belt drying verification | Process & About Page |
-| **Minimum Order Quantity (MOQ)** | `[ADD: Standard commercial MOQ, e.g. 50 kg / 500 kg / 1 MT]` | Quote Form, Product Pages |
-| **Sample Dispatch Timeline** | `[CONFIRM: Domestic 48-72h, International courier dispatch time]` | Sample Request Form |
 
 ---
 
@@ -94,7 +90,6 @@ The following claims were removed or replaced with neutral, verified phrasing ac
 | **Facility Capabilities** | `"Cleanroom packaging"`, `"climate-controlled cleanrooms"` | Removed. Replaced with general protective packaging description. Verify actual cleanroom classification (e.g. Class 100,000 / ISO 8) if applicable. |
 | **Packaging Technology** | `"Nitrogen-flushed"`, `"hermetic sealing"`, `"aseptic barrier packaging"` | Removed. Replaced with standard food-grade multi-wall moisture-barrier packaging. Verify if nitrogen flushing is equipped. |
 | **Processing Physics** | `"Zero-tolerance moisture boundary"`, `"microsecond moisture flash-off"` | Removed. Replaced with factual description of heated spray drying air and evaporation. |
-| **Sample & Pricing Promises** | `"Free test samples"`, `"free test batches"`, `"free courier sample"`, `"free lab testing"` | Removed. Replaced with neutral `"Request a sample or quote"`, `"Samples available on request"`. Verify Renol's commercial sample policy and courier terms. |
 | **Pricing Claims** | `"Bulk pricing direct from our Bavla facility"`, `"Factory direct sales"` | Replaced with `"Commercial Inquiries"`, `"Sales & Inquiries"`. Verify pricing structures and sales channels. |
 | **Lab & Quality Claims** | `"Certificate of Analysis (COA) Guarantee"`, `"Parametric testing"`, `"Batch verified"` | Removed. Replaced with general quality parameter overview (moisture, mesh size, organoleptic assessment). Verify internal lab vs. third-party NABL lab testing arrangements. |
 | **Public Placeholders** | `[ADD: moisture %]`, `[ADD: mesh]`, `[ADD: shelf life]`, `[ADD: FSSAI License]`, `[CONFIRM spelling]` | Hidden from public visitors. Replaced with `"Full specifications on request"` and direct sample inquiry links. |
@@ -153,3 +148,13 @@ All of the following are drafted general copy or placeholders. Nothing below has
 
 ### Pages still on the old schema
 - Home, `/products`, product pages, `/downloads`, `/request-sample`, `/industries` read the catalogue through `src/data/legacy.ts` until they are rebuilt. Delete that file with them.
+
+---
+
+## 8. Direct-contact rebuild (no forms)
+
+- **Office hours**: `[ADD]` in `src/data/site.ts`; hidden on the Contact page until provided.
+- **Licences**: the text badges "FSSAI Licensed" and "ISO 22000:2018 Certified" are shown everywhere (footer, home trust bar, Quality page, every product page). The licence numbers / certificate files are `[ADD]` and hidden. No official logos until the client supplies them. Confirm the badges are accurate before launch.
+- **Privacy Policy and Cookie Notice** were rewritten for a site with no forms and no analytics. Client / legal review needed.
+- **Contact buttons**: WhatsApp uses +919979977396 `[CONFIRM it is WhatsApp-enabled]`. Product pages pre-fill the WhatsApp message with the product name and "20 kg corrugated box".
+- **Embedded Google Map** on the Contact page is built from the address text (spelling `[CONFIRM]`); it needs `frame-src https://www.google.com` in the security headers (already set).

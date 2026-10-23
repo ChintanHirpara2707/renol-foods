@@ -2,6 +2,7 @@ import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { products, productTheme, publicSpecs, shortName } from "../../data/products";
 import { categoryById } from "../../data/categories";
+import { whatsappLink, productChatMessage } from "../../data/site";
 import { publicList } from "../../data/public";
 import { GL_KIND } from "./fruit-gl";
 
@@ -27,6 +28,8 @@ export interface StudioProduct {
   powder: string;
   particles: string[];
   blurb: string;
+  /** WhatsApp link whose text names the product and the packaging. */
+  chatUrl: string;
   /** Confirmed uses only. */
   uses: string[];
   /** Confirmed spec rows only; empty means "Full specifications on request". */
@@ -62,6 +65,7 @@ export function studioData(): StudioData {
       cat: categoryById(p.category).name.replace(/ Powders$/, ""),
       ...productTheme(p),
       blurb: p.summary,
+      chatUrl: whatsappLink(productChatMessage(p)),
       uses: publicList(p.uses),
       specs: publicSpecs(p),
       kind: GL_KIND[art] ?? null,

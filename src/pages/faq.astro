@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import ChatLink from "../components/ChatLink.astro";
 import SectionHeading from "../components/SectionHeading.astro";
 
 const categories = [
@@ -9,10 +10,6 @@ const categories = [
       {
         q: "What is your standard Minimum Order Quantity (MOQ) for commercial production runs?",
         a: "Standard commercial production runs start from bulk batch quantities depending on the specific fruit, vegetable, or spice powder and packaging formats. For custom carrier formulation or proprietary mesh sizing, custom batch minimums are determined in consultation with our manufacturing team.",
-      },
-      {
-        q: "How can formulation teams request lab evaluation samples?",
-        a: "We provide evaluation sample packets (typically 200 g to 500 g) for qualified R&D food scientists, beverage formulators, snack seasoning blenders, and bakery manufacturers. Submit our sample request form with your application details or contact our technical sales desk directly.",
       },
       {
         q: "What is the typical dispatch lead time for domestic and export orders?",
@@ -59,7 +56,7 @@ const categories = [
 
 <BaseLayout
   title="Frequently Asked Questions (FAQ) | Renol Foods Bavla"
-  description="Answers to common commercial questions regarding MOQ, evaluation samples, technical specifications, custom mesh grading, and export packaging at Renol Foods."
+  description="Answers to common commercial questions regarding MOQ, technical specifications, custom mesh grading, and export packaging at Renol Foods."
 >
   <!-- Hero Section -->
   <section class="relative py-20 lg:py-28 border-b border-white/10 overflow-hidden">
@@ -75,14 +72,12 @@ const categories = [
         level={1}
         eyebrow="Commercial FAQ"
         title="Frequently Asked Questions"
-        subtitle="Key details regarding minimum order quantities, evaluation samples, custom mesh calibration, and protective export packaging."
+        subtitle="Key details regarding minimum order quantities, custom mesh calibration, and protective export packaging."
       />
 
       <!-- Hero Primary Action Button (1 per hero) -->
       <div class="mt-8 flex justify-center">
-        <a href="/request-sample" class="btn-accent min-h-[44px]">
-          Request a Sample
-        </a>
+        <ChatLink class="btn-accent min-h-[44px]" />
       </div>
 
       <!-- FAQ Accordions by Category -->
@@ -132,9 +127,7 @@ const categories = [
       <p class="text-white/70 text-sm sm:text-base mb-8 max-w-xl mx-auto leading-relaxed font-body">
         We are happy to answer formulation questions, share batch specifications, or arrange evaluation trial quantities.
       </p>
-      <a href="/request-sample" class="btn-accent min-h-[44px]">
-        Request a Sample
-      </a>
+      <ChatLink class="btn-accent min-h-[44px]" />
     </div>
   </section>
 </BaseLayout>

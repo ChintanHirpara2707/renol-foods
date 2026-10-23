@@ -6,7 +6,7 @@
 - **Location**: Plot No. 616, Kerala GIDC, Bavla, Ahmedabad, Gujarat, India
 - **Core Business**: B2B manufacturer of dehydrated and spray-dried food powders for food processors, industrial bakeries, snack brands, beverage formulators, and exporters.
 - **Product Portfolio (8 Powders)**: Tomato, Tamarind, Caramel, Lemon, Mango, Spinach, Ginger, Apple.
-- **Primary Goal**: **Pure B2B Lead Generation**. No e-commerce, no retail cart, no visible consumer pricing, no checkout. Every page drives a single primary action: **Request a Sample or Quote**.
+- **Primary Goal**: **Pure B2B Lead Generation by direct contact**. No e-commerce, no retail cart, no visible consumer pricing, no checkout and no forms. Every page offers three contact actions: Chat on WhatsApp, Call, and Open in Google Maps.
 
 ---
 
@@ -17,7 +17,6 @@
 - **Animation & Motion**: **GSAP (GreenSock) + ScrollTrigger**
 - **Smooth Scroll**: **Lenis**
 - **Visual Engine**: **SVG + Canvas 2D + GSAP** (replacing Three.js based on the approved reference prototype)
-- **Forms**: Web3Forms client-side integration via environment variable `PUBLIC_WEB3FORMS_ACCESS_KEY`
 - **Fonts**: Self-hosted via Fontsource
   - Display / Headings: **Bricolage Grotesque** (weights 500, 800)
   - Body / UI: **Instrument Sans** (weights 400, 500, 600)

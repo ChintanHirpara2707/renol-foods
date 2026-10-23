@@ -85,19 +85,14 @@ function inspectPage() {
 
   const text = document.body.innerText;
   const leaks = [];
-  for (const re of [/\[(ADD|CONFIRM)\b[^\]]*\]?/i, /&amp;/, /Pending Verification|Verification Slot|Placeholders? Pending/i]) {
+  for (const re of [/\[(ADD|CONFIRM)\b[^\]]*\]?/i, /&amp;/, /Pending Verification|Verification Slot|Placeholders? Pending/i, /request (a )?(sample|quot)|web3forms/i]) {
     const m = text.match(re);
     if (m) leaks.push(m[0].slice(0, 60));
   }
 
-  const cta = {
-    managed: [...document.querySelectorAll("[data-cta]")].filter(visible).map((el) => el.getAttribute("data-cta")),
-    unmanaged: [...document.querySelectorAll("a,button")].filter(
-      (el) => visible(el) && /request (a )?sample/i.test(el.textContent ?? "") && !el.hasAttribute("data-cta"),
-    ).length,
-  };
+  const forms = document.querySelectorAll("form, input, textarea, select").length;
 
-  const chrome = ["[data-site-header]", "footer", 'nav[aria-label="Quick contact"]', "#cookie-notice", "a.wa"];
+  const chrome = ["[data-site-header]", "footer", ".contact-stack", "#cookie-notice"];
   const small = [];
   for (const sel of chrome) {
     for (const root of document.querySelectorAll(sel)) {
@@ -112,7 +107,7 @@ function inspectPage() {
   return {
     overflow,
     leaks,
-    cta,
+    forms,
     small,
     title: document.title,
     h1: document.querySelectorAll("h1").length,
@@ -139,8 +134,8 @@ async function auditViewport(browser, base, vp, routes) {
     const problems = [];
     page.on("console", (m) => m.type() === "error" && !(m.location().url.endsWith(route) && /status of 404/.test(m.text())) && problems.push(`console: ${m.text().slice(0, 200)}`));
     page.on("pageerror", (e) => problems.push(`pageerror: ${e.message.slice(0, 200)}`));
-    page.on("response", (r) => r.status() >= 400 && !r.url().endsWith(route) && problems.push(`HTTP ${r.status()}: ${r.url()}`));
-    page.on("requestfailed", (r) => problems.push(`request failed: ${r.url()}`));
+    page.on("response", (r) => r.status() >= 400 && !r.url().endsWith(route) && !r.url().includes("google.com") && problems.push(`HTTP ${r.status()}: ${r.url()}`));
+    page.on("requestfailed", (r) => !r.url().includes("google.com") && problems.push(`request failed: ${r.url()}`));
 
     const response = await page.goto(base + route, { waitUntil: "load" });
     const isMissing = route.includes("__qa-missing-page__");
@@ -158,9 +153,7 @@ async function auditViewport(browser, base, vp, routes) {
     if (info.small.length) fail(where, `tap target < 44px: ${info.small.slice(0, 4).join(", ")}`);
     if (info.h1 !== 1) fail(where, `${info.h1} <h1> elements`);
     if (info.lang !== "en") fail(where, "missing html lang");
-    const dup = info.cta.managed.filter((p, i, a) => a.indexOf(p) !== i);
-    if (dup.length) fail(where, `duplicate CTA placement: ${dup.join(", ")}`);
-    if (info.cta.unmanaged) warn(where, `${info.cta.unmanaged} unmanaged "Request a Sample" link(s) (legacy copy, replaced in the content phases)`);
+    if (info.forms) fail(where, `${info.forms} form control(s) on the page (the site has no forms)`);
     for (const p of problems) fail(where, p);
 
     if (process.env.QA_NO_AXE !== "1") await runAxe(page, where);
@@ -282,7 +275,7 @@ async function menuSuite(browser, base) {
 }
 
 async function redirectSuite(base, redirects) {
-  for (const route of ["/quote/", "/request-quote/", "/legal/privacy/", "/legal/terms/"]) {
+  for (const route of ["/legal/privacy/", "/legal/terms/"]) {
     if (!redirects.includes(route)) fail("redirects", `${route} is not built as a redirect`);
   }
   const res = await fetch(`${base}/robots.txt`);
@@ -297,10 +290,10 @@ async function redirectSuite(base, redirects) {
 
 async function launch() {
   try {
-    return await chromium.launch();
+    return await chromium.launch({ args: ["--disable-3d-apis"] }); // posters instead of software WebGL: deterministic and fast
   } catch {
     console.log("Bundled Chromium not found, falling back to installed Microsoft Edge.");
-    return chromium.launch({ channel: "msedge" });
+    return chromium.launch({ channel: "msedge", args: ["--disable-3d-apis"] });
   }
 }
 

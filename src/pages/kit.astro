@@ -5,10 +5,8 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import Section from "../components/ui/Section.astro";
 import Card from "../components/ui/Card.astro";
 import Button from "../components/ui/Button.astro";
-import CtaButton from "../components/ui/CtaButton.astro";
 import Tag from "../components/ui/Tag.astro";
 import Stat from "../components/ui/Stat.astro";
-import Field from "../components/ui/Field.astro";
 import Accordion from "../components/ui/Accordion.astro";
 import Breadcrumb from "../components/ui/Breadcrumb.astro";
 import { products, productTheme } from "../data/products";
@@ -43,7 +41,7 @@ const swatches = [
 
   <Section id="kit-buttons" title="Buttons and tags">
     <div class="row">
-      <CtaButton placement="hero" size="lg" />
+      <Button href="/products" size="lg">View Products</Button>
       <Button variant="ghost" href="/products">View products</Button>
       <Button variant="link" href="/contact">Contact</Button>
       <Button type="button" variant="ghost">Button element</Button>
@@ -65,16 +63,6 @@ const swatches = [
       <Stat value={String(site.foundedYear)} label="Founded" />
       <Stat value={String(products.length)} label="Powders" />
     </div>
-  </Section>
-
-  <Section id="kit-form" title="Form fields">
-    <div class="grid">
-      <Field label="Full name" name="name" required autocomplete="name" />
-      <Field label="Work email" name="email" type="email" required autocomplete="email" hint="We reply to this address." />
-      <Field label="Product" name="product" type="select" options={products.map((p) => p.name)} />
-      <Field label="Phone" name="phone" type="tel" autocomplete="tel" error="Enter a phone number with country code." />
-    </div>
-    <Field label="Message" name="message" type="textarea" />
   </Section>
 
   <Section id="kit-faq" title="Accordion" tone="panel">

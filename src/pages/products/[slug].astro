@@ -1,426 +1,280 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import FruitDefs from "../../components/studio/FruitDefs.astro";
-import { legacyProducts as products, type LegacyProduct as ProductItem } from "../../data/legacy";
+import Breadcrumb from "../../components/ui/Breadcrumb.astro";
+import Button from "../../components/ui/Button.astro";
+import Tag from "../../components/ui/Tag.astro";
+import ChatLink from "../../components/ChatLink.astro";
+import LicenceBadges from "../../components/LicenceBadges.astro";
+import { products, publicSpecs, productTheme, type Product } from "../../data/products";
+import { categoryById } from "../../data/categories";
+import { productChatMessage, site } from "../../data/site";
+import { CTA } from "../../data/cta";
 
 export async function getStaticPaths() {
-  return products.map((product, index) => {
-    const prevIndex = (index - 1 + products.length) % products.length;
-    const nextIndex = (index + 1) % products.length;
-    return {
-      params: { slug: product.slug },
-      props: {
-        product,
-        prevProduct: products[prevIndex],
-        nextProduct: products[nextIndex],
-      },
-    };
-  });
+  return products.map((product) => ({
+    params: { slug: product.slug },
+    props: {
+      product,
+      related: products.filter((p) => p.category === product.category && p.slug !== product.slug).slice(0, 4),
+    },
+  }));
 }
 
 interface Props {
-  product: ProductItem;
-  prevProduct: ProductItem;
-  nextProduct: ProductItem;
+  product: Product;
+  related: Product[];
 }
 
-const { product, prevProduct, nextProduct } = Astro.props;
+const { product, related } = Astro.props;
+const theme = productTheme(product);
+const category = categoryById(product.category);
+const specs = publicSpecs(product);
+const chatMessage = productChatMessage(product);
+const origin = Astro.site ?? new URL(Astro.url.origin);
 
-// Unconfirmed spec rows are hidden
-const validSpecs = Object.entries(product.specs).filter(
-  ([_, val]) => val && !val.includes("[ADD")
-);
-
-// Other valid technical properties
-const generalProperties = [
-  { label: "Form", val: product.form },
-  { label: "Storage", val: product.storage },
-  { label: "Packaging", val: product.packagingSizes },
-  { label: "Shelf Life", val: product.shelfLife },
-].filter((item) => item.val && !item.val.includes("[ADD"));
-
-// Canonical and Schema.org Product JSON-LD
-const canonicalUrl = new URL(`/products/${product.slug}`, Astro.site || Astro.url.origin).href;
 const productSchema = {
   "@context": "https://schema.org/",
   "@type": "Product",
-  name: `${product.name} Powder`,
-  image: new URL(
-    product.id === "lemon" ? "/frames/lemon/10.webp" : "/og-default.png",
-    Astro.site || Astro.url.origin
-  ).href,
-  description: product.longDescription || product.blurb,
-  category: `${product.cat} Powder`,
-  brand: {
-    "@type": "Brand",
-    name: "Renol Foods",
-  },
+  name: product.name,
+  description: product.description,
+  image: new URL(product.image, origin).href,
+  category: category.name,
+  brand: { "@type": "Brand", name: site.name },
   manufacturer: {
     "@type": "Organization",
-    name: "Renol Foods",
+    name: site.name,
     address: {
       "@type": "PostalAddress",
-      addressLocality: "Bavla, Ahmedabad",
-      addressRegion: "Gujarat",
-      addressCountry: "IN",
+      streetAddress: site.address.street,
+      addressLocality: site.address.city,
+      addressRegion: site.address.state,
+      addressCountry: site.address.countryCode,
     },
   },
 };
 ---
 
 <BaseLayout
-  title={`${product.name} Powder Manufacturer & Supplier | Renol Foods Bavla`}
-  description={`${product.shortDescription || product.blurb} Manufactured in Bavla, Ahmedabad for snack seasonings, instant beverages, and industrial food formulations.`}
-  canonicalUrl={canonicalUrl}
+  title={`${product.name} | ${site.name}`}
+  description={product.summary}
+  ogImage={product.image}
+  jsonLd={[productSchema]}
+  chatMessage={chatMessage}
 >
-  <!-- Schema.org Product Structured Data -->
-  <script type="application/ld+json" set:html={JSON.stringify(productSchema)} />
+  <article class="product" style={`--accent: ${theme.accent}; --glow: ${theme.glow};`}>
+    <div class="container">
+      <Breadcrumb
+        items={[
+          { label: "Home", href: "/" },
+          { label: "Products", href: "/products" },
+          { label: product.name },
+        ]}
+      />
 
-  <!-- Shared Vector Artwork -->
-  <FruitDefs />
-
-  <article
-    class="product-detail-page relative w-full bg-[#0b0b0d] text-white"
-    style={`--accent: ${product.accent}; --glow: ${product.glow}; --base: ${product.base}; --pouch: ${product.pouch}; --powder: ${product.powder}; --on: #140a00;`}
-  >
-    <!-- Normal document flow Hero Section with min-height: 100svh -->
-    <section class="hero-section relative min-h-[100svh] w-full flex flex-col justify-start pb-16">
-      
-      <!-- Ambient Radial Glow (Absolute within section, NOT fixed) -->
-      <div class="hero-bg absolute inset-0 pointer-events-none z-0 overflow-hidden" aria-hidden="true">
-        <div
-          class="absolute inset-0"
-          style={`background: radial-gradient(circle at 50% 32%, color-mix(in srgb, var(--glow) 35%, transparent) 0%, transparent 65%), linear-gradient(180deg, var(--base) 0%, #0b0b0d 100%);`}
-        ></div>
-      </div>
-
-      <!-- Breadcrumbs in normal document flow (Replaces duplicate inner header) -->
-      <nav class="breadcrumb-bar relative z-10 max-w-7xl mx-auto w-full px-6 sm:px-10 lg:px-12 pt-6 pb-2 flex items-center justify-between text-sm" aria-label="Breadcrumb">
-        <div class="flex items-center gap-2 text-white/60">
-          <a href="/" class="hover:text-white transition-colors">Home</a>
-          <span>/</span>
-          <a href="/#powder-studio" class="hover:text-white transition-colors">Products</a>
-          <span>/</span>
-          <span class="text-white font-medium">{product.name} Powder</span>
+      <div class="product__grid">
+        <div class="product__media">
+          <img src={product.image} alt={product.name} width="800" height="800" decoding="async" fetchpriority="high" />
         </div>
-        <a href="/#powder-studio" class="pill text-xs !py-1.5 !px-4 hover:border-white/40">
-          &larr; All powders
-        </a>
-      </nav>
 
-      <!-- Main Detail Grid: 2-column on desktop (lg), 1-column on tablet/mobile -->
-      <div class="dwrap relative z-10 max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 px-6 sm:px-10 lg:px-12 pt-4 items-start">
-        
-        <!-- Left Column: Pouch Visual, Powder Heap & Fruit Stamp -->
-        <div class="dvis relative flex items-center justify-center p-4 sm:p-8 lg:p-12">
-          <div class="pwrap relative w-[clamp(200px,26vw,340px)] max-h-[70svh] flex items-center justify-center">
-            <!-- Pouch SVG with exact product colors -->
-            <svg
-              class="pouch w-full h-auto max-h-[70svh] drop-shadow-2xl"
-              viewBox="0 0 240 340"
-              role="img"
-              aria-label={`${product.name} Powder Pouch Packaging`}
-            >
-              <path class="pbody" d="M28 34 H212 L220 318 Q220 332 206 332 H34 Q20 332 20 318Z" fill="var(--pouch)" />
-              <path d="M28 34 H92 L84 332 H34 Q20 332 20 318Z" fill="#fff" fill-opacity=".1" />
-              <rect class="pcrimp" x="28" y="14" width="184" height="32" rx="4" fill="var(--pouch)" style="filter: brightness(0.82);" />
-              <path d="M34 22 H206 M34 30 H206 M34 38 H206" stroke="#000" stroke-opacity=".2" />
-              <text x="120" y="70" text-anchor="middle" font-size="12" font-weight="600" fill="#fff" fill-opacity=".9" style="font-family:var(--body);letter-spacing:.06em">Renol Foods</text>
-              <rect x="44" y="86" width="152" height="204" rx="12" fill="#fff" fill-opacity=".95" />
-              <svg x="70" y="100" width="100" height="120" viewBox="0 0 200 240">
-                <use href={`#f-${product.id}`} />
-              </svg>
-              <text x="120" y="248" text-anchor="middle" font-size="24" font-weight="800" fill="#17120b" style="font-family:var(--display);letter-spacing:-.02em">{product.name}</text>
-              <text x="120" y="268" text-anchor="middle" font-size="12" fill="#17120b" fill-opacity=".65" style="font-family:var(--body)">{product.cat} powder</text>
-            </svg>
+        <div class="product__body">
+          <Tag accent={theme.accent}>{category.name}</Tag>
+          <h1>{product.name}</h1>
+          <p class="product__summary">{product.summary}</p>
+          <p class="product__description">{product.description}</p>
 
-            <!-- Powder Mound Illustration -->
-            <svg class="mound absolute -left-[14%] -right-[14%] -bottom-[5%] w-[128%] h-auto pointer-events-none" viewBox="0 0 320 80" aria-hidden="true">
-              <path class="m" d="M10 74 Q90 68 135 34 Q160 12 185 34 Q230 68 310 74 Z" fill="var(--powder)" />
-              <path d="M10 74 Q90 68 135 34 Q160 12 185 34 Q230 68 310 74 Z" fill="#000" opacity=".22" />
-            </svg>
+          <div class="product__actions">
+            <ChatLink class="btn-wa" message={chatMessage} />
+            <Button href={CTA.products.href} variant="ghost">{CTA.products.label}</Button>
+          </div>
 
-            <!-- Side Fruit Graphic -->
-            <svg class="bigfruit absolute -right-[26%] bottom-[4%] w-[48%] h-auto rotate-[14deg] pointer-events-none drop-shadow-xl" viewBox="0 0 200 240" aria-hidden="true">
-              <use href={`#f-${product.id}`} />
-            </svg>
+          <div class="product__licences">
+            <LicenceBadges />
           </div>
         </div>
+      </div>
 
-        <!-- Right Column: Product Technical Information in Normal Flow -->
-        <div class="dinfo max-w-xl py-4 sm:py-6 lg:py-8">
-          <span class="chip inline-block px-3.5 py-1.5 rounded-full border border-white/15 text-xs text-white/80 font-medium bg-white/5 mb-4">
-            {product.cat} powder
-          </span>
+      <div class="product__facts">
+        {
+          product.uses.length > 0 && (
+            <section aria-labelledby="uses-title">
+              <h2 id="uses-title">Typical uses</h2>
+              <ul class="tags">
+                {product.uses.map((use) => <li>{use}</li>)}
+              </ul>
+            </section>
+          )
+        }
 
-          <h1 class="dname font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[0.95] mb-4">
-            {product.name} Powder
-          </h1>
+        <section aria-labelledby="pack-title">
+          <h2 id="pack-title">Packaging</h2>
+          <p class="pack">{product.packaging}</p>
+          {product.allergens.length > 0 && <p class="allergens">Contains: {product.allergens.join(", ")}.</p>}
+        </section>
 
-          <p class="dblurb text-base sm:text-lg text-white/80 leading-relaxed font-body mb-8">
-            {product.blurb}
-          </p>
+        <section aria-labelledby="specs-title">
+          <h2 id="specs-title">Specifications</h2>
+          {
+            specs.length > 1 ? (
+              <dl class="specs">
+                {specs.map((s) => (
+                  <>
+                    <dt>{s.label}</dt>
+                    <dd>{s.value}</dd>
+                  </>
+                ))}
+              </dl>
+            ) : (
+              <p class="muted">Full specifications on request</p>
+            )
+          }
+        </section>
+      </div>
 
-          <!-- What's Inside Tags -->
-          <div class="mb-8">
-            <h2 class="text-sm font-display font-semibold uppercase tracking-wider text-white mb-3">
-              What's inside
-            </h2>
-            <ul class="tags flex flex-wrap gap-2 list-none p-0 m-0">
-              {product.inside.map((ingredient) => (
-                <li class="px-3.5 py-1.5 rounded-full border border-white/15 text-sm text-white/90 bg-white/5 font-body">
-                  {ingredient}
+      {
+        related.length > 0 && (
+          <section class="related" aria-labelledby="related-title">
+            <h2 id="related-title">More {category.name.toLowerCase()}</h2>
+            <ul>
+              {related.map((p) => (
+                <li>
+                  <a href={`/products/${p.slug}`}>{p.name}</a>
                 </li>
               ))}
             </ul>
-          </div>
-
-          <!-- Where It's Used Tags -->
-          <div class="mb-8">
-            <h2 class="text-sm font-display font-semibold uppercase tracking-wider text-white mb-3">
-              Where it's used
-            </h2>
-            <ul class="tags use flex flex-wrap gap-2 list-none p-0 m-0">
-              {product.uses.map((application) => (
-                <li
-                  class="px-3.5 py-1.5 rounded-full text-sm font-body text-white"
-                  style="background: color-mix(in srgb, var(--accent) 24%, transparent); border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);"
-                >
-                  {application}
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <!-- Technical Specifications Table -->
-          <div class="mb-8">
-            <h2 class="text-sm font-display font-semibold uppercase tracking-wider text-white mb-3">
-              Technical Specifications
-            </h2>
-            <dl class="specs grid grid-cols-[130px_1fr] text-sm divide-y divide-white/10 border-t border-b border-white/10 font-body">
-              {generalProperties.map((prop) => (
-                <div class="contents">
-                  <dt class="py-2.5 text-white/60 font-medium">{prop.label}</dt>
-                  <dd class="py-2.5 text-white/90">{prop.val}</dd>
-                </div>
-              ))}
-              {validSpecs.map(([key, val]) => (
-                <div class="contents">
-                  <dt class="py-2.5 text-white/60 font-medium capitalize">{key}</dt>
-                  <dd class="py-2.5 text-white/90">{val}</dd>
-                </div>
-              ))}
-            </dl>
-            <!-- Unconfirmed spec rows are hidden; the line below is shown instead -->
-            <div class="mt-3 flex items-center justify-between text-xs text-white/50 font-mono">
-              <span>Full specifications on request</span>
-            </div>
-          </div>
-
-          <!-- Exactly one primary button in the hero -->
-          <div class="cta mb-8">
-            <button
-              type="button"
-              class="pill font-display font-bold text-sm !py-3.5 !px-8 shadow-lg transition-transform hover:-translate-y-0.5"
-              style="background-color: var(--accent); color: var(--on);"
-              id="reqDetail"
-            >
-              Request a Sample
-            </button>
-          </div>
-
-          <!-- Previous / Next Product Navigation Links -->
-          <nav class="pn flex items-center justify-between pt-6 border-t border-white/10 text-sm font-medium" aria-label="Product Navigation">
-            <a
-              href={`/products/${prevProduct.slug}`}
-              class="pn-btn flex items-center gap-1.5 text-white/60 hover:text-white transition-colors"
-            >
-              <span>&larr;</span>
-              <span>{prevProduct.name}</span>
-            </a>
-            <a
-              href={`/products/${nextProduct.slug}`}
-              class="pn-btn flex items-center gap-1.5 text-white/60 hover:text-white transition-colors"
-            >
-              <span>{nextProduct.name}</span>
-              <span>&rarr;</span>
-            </a>
-          </nav>
-        </div>
-      </div>
-    </section>
-
-    <!-- Closing Band: Exactly one primary button near the end of the page -->
-    <section class="closing-band py-20 bg-[#121214] border-t border-white/10 text-center relative z-10">
-      <div class="max-w-3xl mx-auto px-6 sm:px-8">
-        <span class="text-xs uppercase font-bold tracking-widest text-white/50 block mb-3 font-mono">
-          Trial Formulations
-        </span>
-        <h2 class="font-display text-3xl sm:text-4xl font-bold text-white mb-4">
-          Ready to test {product.name} Powder in your product line?
-        </h2>
-        <p class="text-white/70 text-sm sm:text-base mb-8 max-w-xl mx-auto leading-relaxed font-body">
-          Request evaluation samples for your trial batch. Shipped directly from our manufacturing facility in Bavla, Ahmedabad.
-        </p>
-        <button
-          type="button"
-          class="pill font-display font-bold text-sm !py-3.5 !px-8 shadow-xl transition-transform hover:-translate-y-0.5"
-          style="background-color: var(--accent); color: var(--on);"
-          id="reqClosing"
-        >
-          Request a Sample
-        </button>
-      </div>
-    </section>
-
-    <!-- Interactive Sample Request Dialog Modal -->
-    <dialog
-      id="dlg"
-      aria-labelledby="dlgTitle"
-      data-lenis-prevent
-      class="bg-[#121214] text-white border border-white/15 rounded-3xl p-0 w-[min(480px,92vw)] shadow-2xl backdrop:bg-black/65 backdrop:backdrop-blur-sm"
-    >
-      <div class="p-8">
-        <div id="fForm">
-          <h2 id="dlgTitle" class="font-display text-2xl font-bold mb-2">Request {product.name} Powder Sample</h2>
-          <p class="text-sm text-white/70 mb-6 font-body">Share your trial requirements and our technical team in Bavla will dispatch evaluation samples.</p>
-          <form id="sampleForm" class="space-y-4">
-            <input type="hidden" name="p" value={product.name} />
-            <label class="block text-xs uppercase font-bold tracking-wider text-white/70">
-              Your name *
-              <input name="n" required autocomplete="name" placeholder="Full name" class="w-full mt-1.5 px-4 py-2.5 rounded-xl border border-white/15 bg-[#1b1b1f] text-white text-sm focus:outline-none focus:border-white/40" />
-            </label>
-            <label class="block text-xs uppercase font-bold tracking-wider text-white/70">
-              Work email *
-              <input name="e" type="email" required autocomplete="email" placeholder="name@company.com" class="w-full mt-1.5 px-4 py-2.5 rounded-xl border border-white/15 bg-[#1b1b1f] text-white text-sm focus:outline-none focus:border-white/40" />
-            </label>
-            <label class="block text-xs uppercase font-bold tracking-wider text-white/70">
-              Quantity / Trial size
-              <input name="q" placeholder="e.g. 500 g lab evaluation sample" class="w-full mt-1.5 px-4 py-2.5 rounded-xl border border-white/15 bg-[#1b1b1f] text-white text-sm focus:outline-none focus:border-white/40" />
-            </label>
-            <div class="flex items-center justify-end gap-3 pt-3">
-              <button class="pill ghost text-xs !py-2.5 !px-5" type="button" id="dlgCancel">Cancel</button>
-              <button class="pill font-display font-bold text-xs !py-2.5 !px-6" type="submit" style="background-color: var(--accent); color: var(--on);">Send request &rarr;</button>
-            </div>
-            <p class="text-[11px] text-white/40 pt-2 font-mono">Prototype form: connects directly to Web3Forms in production.</p>
-          </form>
-        </div>
-
-        <div id="fDone" hidden class="text-center py-6 space-y-3">
-          <div class="w-12 h-12 rounded-full mx-auto flex items-center justify-center font-display font-bold text-lg" style="background-color: var(--accent); color: var(--on);">
-            ✓
-          </div>
-          <h2 class="font-display text-xl font-bold">Request Noted</h2>
-          <p id="fDoneTxt" class="text-sm text-white/70 font-body"></p>
-          <div class="pt-3">
-            <button class="pill text-xs !py-2 !px-6" type="button" id="dlgClose">Done</button>
-          </div>
-        </div>
-      </div>
-    </dialog>
+          </section>
+        )
+      }
+    </div>
   </article>
 </BaseLayout>
 
 <style>
-  .product-detail-page {
-    --display: "Bricolage Grotesque", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    --body: "Instrument Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  .product {
+    padding-block: var(--s-6) var(--section-y);
+    background: radial-gradient(60% 40% at 80% 0%, color-mix(in srgb, var(--glow) 45%, transparent), transparent), var(--bg);
   }
-
-  /* Sticky pouch only on desktop when screen height is sufficient (avoids overlap on short laptop screens) */
-  @media (min-width: 1024px) and (min-height: 720px) {
-    .dvis {
-      position: sticky;
-      top: 5rem;
-      align-self: flex-start;
+  .product__grid {
+    display: grid;
+    gap: var(--s-8);
+    margin-top: var(--s-4);
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 900px) {
+    .product__grid {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+      align-items: center;
+      gap: var(--s-16);
     }
   }
-
-  /* Prevent sticky desktop quote button from overlapping product detail content */
-  :global(#sticky-desktop-quote) {
-    display: none !important;
+  .product__media img {
+    display: block;
+    width: 100%;
+    max-width: 34rem;
+    height: auto;
+    margin-inline: auto;
+    border-radius: var(--r-panel);
+    border: 1px solid var(--line-soft);
+    aspect-ratio: 1;
+    object-fit: cover;
   }
-
-  .pill {
-    padding: 8px 18px;
-    border-radius: 999px;
-    font-size: 14px;
-    font-weight: 600;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    color: #fff;
-    cursor: pointer;
-    text-decoration: none;
+  .product__body h1 {
+    margin-top: var(--s-4);
+    font-size: var(--fs-h1);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+  }
+  .product__summary {
+    margin-top: var(--s-4);
+    color: var(--ink);
+    font-size: 1.125rem;
+  }
+  .product__description {
+    margin-top: var(--s-3);
+    max-width: var(--prose);
+    color: var(--ink-2);
+  }
+  .product__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-3);
+    margin-top: var(--s-8);
+  }
+  .product__licences {
+    margin-top: var(--s-6);
+  }
+  .product__facts {
+    display: grid;
+    gap: var(--s-8);
+    margin-top: var(--s-16);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  }
+  .product__facts h2,
+  .related h2 {
+    margin-bottom: var(--s-3);
+    font-size: var(--fs-h3);
+    font-weight: 800;
+  }
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .tags li {
+    padding: 0.4rem 0.9rem;
+    border-radius: var(--r-pill);
+    background: color-mix(in srgb, var(--accent) 20%, transparent);
+    font-size: var(--fs-small);
+  }
+  .pack {
+    font-family: var(--display);
+    font-size: 1.25rem;
+    font-weight: 500;
+  }
+  .allergens,
+  .muted {
+    margin-top: var(--s-2);
+    color: var(--ink-2);
+  }
+  .specs {
+    display: grid;
+    grid-template-columns: 9rem 1fr;
+    margin: 0;
+  }
+  .specs dt,
+  .specs dd {
+    margin: 0;
+    padding: 0.6rem 0;
+    border-top: 1px solid var(--line);
+    font-size: var(--fs-small);
+  }
+  .specs dt {
+    color: var(--ink-2);
+  }
+  .related {
+    margin-top: var(--s-16);
+  }
+  .related ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .related a {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    transition: background 0.2s, transform 0.2s, border-color 0.2s;
+    min-height: var(--tap);
+    padding: 0 var(--s-4);
+    border: 1px solid var(--line);
+    border-radius: var(--r-pill);
+    color: var(--ink);
   }
-
-  .pill:hover {
-    background: rgba(255, 255, 255, 0.18);
-    border-color: rgba(255, 255, 255, 0.3);
-    transform: translateY(-1px);
-  }
-
-  .pill.ghost {
-    background: transparent;
+  .related a:hover {
+    border-color: var(--accent);
   }
 </style>
-
-<script>
-  function setupDetailPage() {
-    // Unconditionally unlock body scroll if set from Studio
-    document.body.classList.remove("in-detail");
-    (window as any).renolScroll?.unlock("studio-detail");
-
-    const dlg = document.getElementById("dlg") as HTMLDialogElement | null;
-    const reqDetail = document.getElementById("reqDetail");
-    const reqClosing = document.getElementById("reqClosing");
-    const dlgCancel = document.getElementById("dlgCancel");
-    const dlgClose = document.getElementById("dlgClose");
-    const sampleForm = document.getElementById("sampleForm") as HTMLFormElement | null;
-
-    const openModal = () => {
-      if (!dlg) return;
-      const fForm = document.getElementById("fForm");
-      const fDone = document.getElementById("fDone");
-      if (fForm) fForm.hidden = false;
-      if (fDone) fDone.hidden = true;
-      sampleForm?.reset();
-      dlg.showModal();
-    };
-
-    reqDetail?.addEventListener("click", openModal);
-    reqClosing?.addEventListener("click", openModal);
-    dlgCancel?.addEventListener("click", () => dlg?.close());
-    dlgClose?.addEventListener("click", () => dlg?.close());
-    dlg?.addEventListener("click", (e) => {
-      if (e.target === dlg) dlg.close();
-    });
-
-    sampleForm?.addEventListener("submit", (e) => {
-      e.preventDefault();
-      const fd = new FormData(sampleForm);
-      const name = fd.get("n") || "partner";
-      const product = fd.get("p") || "food powder";
-      const fDoneTxt = document.getElementById("fDoneTxt");
-      if (fDoneTxt) {
-        fDoneTxt.textContent = `Thanks ${name}. Your ${product} sample inquiry is noted. Our technical team in Bavla will follow up with batch dispatch details.`;
-      }
-      const fForm = document.getElementById("fForm");
-      const fDone = document.getElementById("fDone");
-      if (fForm) fForm.hidden = true;
-      if (fDone) fDone.hidden = false;
-    });
-  }
-
-  document.addEventListener("astro:page-load", setupDetailPage);
-  if (document.readyState === "complete" || document.readyState === "interactive") {
-    setupDetailPage();
-  } else {
-    document.addEventListener("DOMContentLoaded", setupDetailPage);
-  }
-</script>

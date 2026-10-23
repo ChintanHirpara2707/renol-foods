@@ -19,8 +19,8 @@ const cookiesHref = nav.legal.find((l) => l.label === "Cookies")?.href ?? "/cook
   .notice {
     position: fixed;
     z-index: var(--z-notice);
-    inset-inline: var(--s-3);
-    inset-block-end: calc(var(--bar-h) + env(safe-area-inset-bottom, 0px) + var(--s-3));
+    inset-inline: var(--s-3) calc(var(--stack-size) + var(--stack-offset) + var(--s-3));
+    inset-block-end: calc(var(--s-3) + env(safe-area-inset-bottom, 0px));
     display: flex;
     align-items: center;
     gap: var(--s-4);

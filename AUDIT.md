@@ -1,3 +1,5 @@
+> **Historical.** Written before the decision to remove all forms and the "Request a Sample" button. The live rules are in `CLAUDE.md`.
+
 # AUDIT.md — Renol Foods (branch `redesign-v2`)
 
 Read-only audit of the current build. No application code was changed. Date: 2026-10-23.

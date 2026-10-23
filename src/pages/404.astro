@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import ChatLink from "../components/ChatLink.astro";
 import { siteConfig } from "../data/site";
 ---
 
@@ -48,9 +49,7 @@ import { siteConfig } from "../data/site";
         <a href="/products" class="btn-secondary min-h-[44px]">
           Explore Products
         </a>
-        <a href="/request-sample" class="btn-secondary min-h-[44px]">
-          Request a Sample
-        </a>
+        <ChatLink class="btn-secondary min-h-[44px]" />
       </div>
 
       <!-- Quick Directory Links -->

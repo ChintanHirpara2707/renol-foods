@@ -1,132 +1,48 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import SectionHeading from "../components/SectionHeading.astro";
-import { siteConfig } from "../data/site";
 ---
 
 <BaseLayout
-  title="Cookie Policy & Notice | Renol Foods"
-  description="Learn about the essential cookies and technical data handling used on the Renol Foods website."
+  title="Cookie Notice | Renol Foods"
+  description="What the Renol Foods website stores in your browser: no analytics or advertising cookies, and no form data."
 >
-  <!-- Hero Section -->
-  <section class="relative py-20 lg:py-28 border-b border-white/10 overflow-hidden font-body">
-    <!-- Ambient Radial Glow -->
-    <div
-      class="pointer-events-none absolute left-1/2 top-10 -translate-x-1/2 w-[700px] h-[350px] rounded-full blur-[140px] opacity-20"
-      style="background: radial-gradient(circle, #f59e0b 0%, transparent 70%);"
-      aria-hidden="true"
-    ></div>
-
-    <div class="section-container relative z-10">
+  <section class="relative py-20 lg:py-28 border-b border-white/10 font-body">
+    <div class="section-container max-w-4xl relative z-10">
       <SectionHeading
         level={1}
-        eyebrow="Compliance & Privacy"
-        title="Cookie Notice & Data Usage"
-        subtitle="Transparent details on the cookies, browser storage, and technical mechanisms utilized across Renol Foods' digital services."
+        eyebrow="Legal"
+        title="Cookie Notice"
+        subtitle="This website uses no analytics or advertising cookies and collects no form data."
+        align="left"
       />
 
-      <!-- Hero Primary Action Button (1 per hero) -->
-      <div class="mt-8 flex justify-center">
-        <a href="/request-sample" class="btn-accent min-h-[44px]">
-          Request a Sample
-        </a>
-      </div>
-
-      <!-- Policy Content Card -->
-      <div class="mt-14 max-w-4xl mx-auto bg-[#121214] border border-white/10 rounded-3xl p-8 sm:p-12 space-y-8 text-white/70 leading-relaxed font-body">
-        <div>
-          <h2 class="font-display text-xl sm:text-2xl font-bold text-white mb-3">
-            What Are Cookies?
-          </h2>
+      <div class="mt-12 bg-[#121214] p-8 sm:p-10 rounded-3xl border border-white/10 text-white/70 space-y-8 text-sm sm:text-base leading-relaxed">
+        <section aria-labelledby="c-stored">
+          <h2 id="c-stored" class="font-display text-xl font-bold text-white mb-2">What is stored in your browser</h2>
           <p>
-            Cookies and local browser storage are small text files placed on your device to ensure core website functionality, remember preference settings, and securely process commercial B2B sample requests.
+            One entry, <code class="text-white">renol_notice_seen</code>, remembers that you have dismissed the cookie notice so
+            it is not shown again. It stays on your device and is never sent to us. There are no forms on this website, so no
+            form data is stored or collected.
           </p>
-        </div>
+        </section>
 
-        <div class="space-y-4">
-          <h2 class="font-display text-xl sm:text-2xl font-bold text-white mb-2">
-            Categories of Cookies We Use
-          </h2>
-          
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="p-6 rounded-2xl bg-[#18181c] border border-white/5 space-y-2">
-              <div class="flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-                <h3 class="font-display text-base font-bold text-white">Strictly Necessary Cookies</h3>
-              </div>
-              <p class="text-xs sm:text-sm text-white/70 leading-relaxed">
-                Essential for core site navigation, responsive UI state persistence, security tokens, and ensuring smooth Lenis scroll behaviors.
-              </p>
-            </div>
-
-            <div class="p-6 rounded-2xl bg-[#18181c] border border-white/5 space-y-2">
-              <div class="flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-amber-400"></span>
-                <h3 class="font-display text-base font-bold text-white">Preference & Inquiry Storage</h3>
-              </div>
-              <p class="text-xs sm:text-sm text-white/70 leading-relaxed">
-                Stores your cookie consent choice (`renol_cookie_consent`) so you are not prompted on every page load, and temporarily holds form session data.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div class="pt-4 border-t border-white/10 space-y-4">
-          <h2 class="font-display text-xl sm:text-2xl font-bold text-white">
-            Managing Your Cookie Preferences
-          </h2>
+        <section aria-labelledby="c-third">
+          <h2 id="c-third" class="font-display text-xl font-bold text-white mb-2">Other services</h2>
           <p>
-            You can reset your cookie consent choice at any time. Clicking the button below will clear your stored preference and reopen the cookie consent banner.
+            The Contact page shows an embedded Google Map, and the contact buttons open WhatsApp, your phone's dialler or Google
+            Maps. Those services may use their own cookies under their own policies.
           </p>
-          <div class="pt-2">
-            <button
-              type="button"
-              id="reset-cookie-consent"
-              class="btn-secondary min-h-[44px]"
-            >
-              Reset Cookie Preferences
-            </button>
-            <span id="reset-success" class="ml-4 text-xs font-mono text-emerald-400 hidden">
-              Preferences reset. Banner reopened.
-            </span>
-          </div>
-        </div>
+        </section>
 
-        <div class="pt-4 border-t border-white/10 text-xs text-white/50 space-y-1">
-          <p>Effective Date: {new Date().getFullYear()} &bull; {siteConfig.name} Legal Compliance</p>
-          <p>Questions? Contact our compliance desk at Bavla, Ahmedabad.</p>
-        </div>
+        <section aria-labelledby="c-manage">
+          <h2 id="c-manage" class="font-display text-xl font-bold text-white mb-2">Managing storage</h2>
+          <p>
+            You can clear site data for this website in your browser settings at any time. The cookie notice will then appear
+            again on your next visit. See also the <a href="/privacy" class="underline text-white">Privacy Policy</a>.
+          </p>
+        </section>
       </div>
-
-    </div>
-  </section>
-
-  <!-- One Closing CTA Section Near the End of the Page -->
-  <section class="py-20 bg-[#0e0e12] text-white text-center border-t border-white/10">
-    <div class="section-container max-w-3xl">
-      <span class="text-xs uppercase font-bold tracking-widest text-white/60 block mb-3 font-mono">B2B Food Ingredients</span>
-      <h2 class="font-display text-3xl sm:text-4xl font-extrabold mb-4 tracking-tight">
-        Need product specifications or evaluation samples?
-      </h2>
-      <p class="text-white/70 text-sm sm:text-base mb-8 max-w-xl mx-auto leading-relaxed font-body">
-        Our commercial manufacturing desk in Bavla, Gujarat is ready to assist your team.
-      </p>
-      <a href="/request-sample" class="btn-accent min-h-[44px]">
-        Request a Sample
-      </a>
     </div>
   </section>
 </BaseLayout>
-
-<script>
-  document.getElementById("reset-cookie-consent")?.addEventListener("click", () => {
-    localStorage.removeItem("renol_cookie_consent");
-    const banner = document.getElementById("cookie-notice");
-    if (banner) {
-      banner.classList.remove("translate-y-full", "opacity-0", "pointer-events-none");
-      banner.classList.add("translate-y-0", "opacity-100", "pointer-events-auto");
-    }
-    const msg = document.getElementById("reset-success");
-    if (msg) msg.classList.remove("hidden");
-  });
-</script>

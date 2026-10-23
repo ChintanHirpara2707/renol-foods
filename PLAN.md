@@ -1,3 +1,5 @@
+> **Historical.** Written before the decision to remove all forms and the "Request a Sample" button. The live rules are in `CLAUDE.md`.
+
 # PLAN.md — Renol Foods redesign (branch `redesign-v2`)
 
 Status: **draft for approval. No code has been changed.** Findings behind this plan are in `AUDIT.md`.

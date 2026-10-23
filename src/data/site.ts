@@ -1,5 +1,5 @@
 import { CONFIRM } from "./public";
-import { products, productTheme } from "./products";
+import { products, productTheme, type Product } from "./products";
 import { nav } from "./nav";
 
 const phones = [
@@ -37,7 +37,8 @@ export const site = {
   /** Digits only, for wa.me links. */
   whatsapp: WHATSAPP_NUMBER.replace(/\D/g, ""),
   whatsappMessage: "Hello Renol Foods, I would like to talk about your food powders.",
-  hours: CONFIRM("office hours"),
+  /** "[ADD]" until the client provides office hours; hidden publicly. */
+  hours: "[ADD]",
   /** Open questions for the client, mirrored in TODO_CONTENT.md. Never rendered. */
   confirm: {
     whatsapp: CONFIRM("it is WhatsApp-enabled"),
@@ -45,6 +46,17 @@ export const site = {
   },
   pending: ["email", "address spelling", "WhatsApp-enabled number", "office hours", "production domain"],
 };
+
+/** WhatsApp chat link. Pass a message to override the default (product pages name the product). */
+export const whatsappLink = (message: string = site.whatsappMessage): string =>
+  `https://wa.me/${site.whatsapp}?text=${encodeURIComponent(message)}`;
+
+/** Phone link for the primary line: tel:+<digits>. */
+export const callLink = `tel:${site.phones[0].tel}`;
+
+/** WhatsApp text for a product page: names the product and the shared packaging. */
+export const productChatMessage = (p: Product): string =>
+  `Hello Renol Foods, I would like to ask about ${p.name} (${p.packaging}).`;
 
 /** Compatibility shape for pages that predate the redesign. Prefer `site`. */
 export const siteConfig = {

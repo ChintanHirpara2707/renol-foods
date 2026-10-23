@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import ChatLink from "../components/ChatLink.astro";
 import SectionHeading from "../components/SectionHeading.astro";
 ---
 
@@ -26,9 +27,7 @@ import SectionHeading from "../components/SectionHeading.astro";
 
       <!-- Hero Primary Action Button (1 per hero) -->
       <div class="mt-8 flex justify-center">
-        <a href="/request-sample" class="btn-accent min-h-[44px]">
-          Request a Sample
-        </a>
+        <ChatLink class="btn-accent min-h-[44px]" />
       </div>
 
       <!-- Export Capabilities Grid: 3 cols desktop, 2 tablet, 1 mobile -->
@@ -138,14 +137,12 @@ import SectionHeading from "../components/SectionHeading.astro";
     <div class="section-container max-w-3xl">
       <span class="text-xs uppercase font-bold tracking-widest text-white/60 block mb-3 font-mono">International Buyers</span>
       <h2 class="font-display text-3xl sm:text-4xl font-extrabold mb-4 tracking-tight">
-        Request export quotation or evaluation samples
+        Talk to us about export supply
       </h2>
       <p class="text-white/70 text-sm sm:text-base mb-8 max-w-xl mx-auto leading-relaxed font-body">
         Our export desk provides CIF and FOB rate indications, shipping lead times, and dispatch coordination for overseas ports.
       </p>
-      <a href="/request-sample" class="btn-accent min-h-[44px]">
-        Request a Sample
-      </a>
+      <ChatLink class="btn-accent min-h-[44px]" />
     </div>
   </section>
 </BaseLayout>

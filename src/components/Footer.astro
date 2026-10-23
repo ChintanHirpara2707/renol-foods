@@ -1,5 +1,6 @@
 ---
 import Logo from "./ui/Logo.astro";
+import LicenceBadges from "./LicenceBadges.astro";
 import { nav } from "../data/nav";
 import { site } from "../data/site";
 import { categories } from "../data/categories";
@@ -15,6 +16,7 @@ const companyLinks = [...nav.primary.filter((l) => l.href !== "/products"), ...n
       <a href="/" aria-label="Renol Foods, home"><Logo /></a>
       <p>{site.description}</p>
       <p class="site-footer__founded">Founded {site.foundedYear}</p>
+      <div class="site-footer__licences"><LicenceBadges /></div>
     </div>
 
     <nav aria-labelledby="footer-products">
@@ -60,6 +62,9 @@ const companyLinks = [...nav.primary.filter((l) => l.href !== "/products"), ...n
             </li>
           )
         }
+        <li>
+          <a href={site.mapUrl} target="_blank" rel="noopener noreferrer">Open in Google Maps</a>
+        </li>
       </ul>
       <address>
         {site.address.street}<br />
@@ -87,6 +92,7 @@ const companyLinks = [...nav.primary.filter((l) => l.href !== "/products"), ...n
   .site-footer {
     margin-top: auto;
     padding-top: var(--s-16);
+    padding-bottom: calc(var(--stack-h) + env(safe-area-inset-bottom, 0px)); /* the contact stack never hides the last row */
     background: var(--panel);
     border-top: 1px solid var(--line-soft);
     color: var(--ink-2);
@@ -110,6 +116,9 @@ const companyLinks = [...nav.primary.filter((l) => l.href !== "/products"), ...n
   .site-footer__brand p {
     margin-top: var(--s-4);
     max-width: 32ch;
+  }
+  .site-footer__licences {
+    margin-top: var(--s-4);
   }
   .site-footer__brand .site-footer__founded {
     margin-top: var(--s-2);

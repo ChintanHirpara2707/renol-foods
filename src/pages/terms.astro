@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import ChatLink from "../components/ChatLink.astro";
 import SectionHeading from "../components/SectionHeading.astro";
 import { siteConfig } from "../data/site";
 ---
@@ -22,15 +23,13 @@ import { siteConfig } from "../data/site";
         level={1}
         eyebrow="Commercial Standards"
         title="Terms of Supply"
-        subtitle="Standard operating guidelines for sample requests, quotations, and commercial order fulfillment."
+        subtitle="Standard operating guidelines for commercial orders and supply."
         align="left"
       />
 
       <!-- Hero Primary Action Button (1 per hero) -->
       <div class="mt-8 flex justify-start">
-        <a href="/request-sample" class="btn-accent min-h-[44px]">
-          Request a Sample
-        </a>
+        <ChatLink class="btn-accent min-h-[44px]" />
       </div>
 
       <div class="mt-12 bg-[#121214] p-8 sm:p-10 rounded-3xl border border-white/10 text-white/70 space-y-6 text-sm sm:text-base leading-relaxed">
@@ -79,9 +78,7 @@ import { siteConfig } from "../data/site";
       <p class="text-white/70 text-sm sm:text-base mb-8 max-w-xl mx-auto leading-relaxed font-body">
         Connect directly with our manufacturing desk in Bavla, Gujarat.
       </p>
-      <a href="/request-sample" class="btn-accent min-h-[44px]">
-        Request a Sample
-      </a>
+      <ChatLink class="btn-accent min-h-[44px]" />
     </div>
   </section>
 </BaseLayout>

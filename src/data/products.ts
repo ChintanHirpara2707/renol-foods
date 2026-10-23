@@ -82,7 +82,7 @@ const build = (s: Seed): Product => {
   };
 };
 
-const CONTACT = "Contact us for specifications and samples.";
+const CONTACT = "Contact us for specifications.";
 
 export const products: Product[] = [
   /* ---------- Fruit ---------- */

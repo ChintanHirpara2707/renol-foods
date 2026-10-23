@@ -15,8 +15,6 @@ export default defineConfig({
     inlineStylesheets: 'never',
   },
   redirects: {
-    '/quote': '/request-sample',
-    '/request-quote': '/request-sample',
     '/legal/privacy': '/privacy',
     '/legal/terms': '/terms',
   },

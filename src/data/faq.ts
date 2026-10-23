@@ -1,6 +1,6 @@
 export interface FAQItem {
   id: string;
-  category: "Ordering & Samples" | "Product Specs" | "Logistics & Export" | "Packaging";
+  category: "Ordering" | "Product Specs" | "Logistics & Export" | "Packaging";
   question: string;
   answer: string;
   isPlaceholder?: boolean;
@@ -9,18 +9,10 @@ export interface FAQItem {
 export const faqs: FAQItem[] = [
   {
     id: "faq-moq",
-    category: "Ordering & Samples",
+    category: "Ordering",
     question: "What is the Minimum Order Quantity (MOQ) for production batches?",
     answer:
       "Our standard minimum order quantity is [ADD: confirm answer with Renol - e.g. 100 kg per product or 500 kg for custom runs]. Trial batch quantities may be evaluated upon request with our sales desk.",
-    isPlaceholder: true,
-  },
-  {
-    id: "faq-samples",
-    category: "Ordering & Samples",
-    question: "How can businesses request product samples for trial evaluation?",
-    answer:
-      "Samples can be requested through our website form or by contacting our sales desk directly. Dispatch timelines and sample availability are subject to [ADD: confirm answer with Renol - e.g. 48 to 72 hours of receiving company and application details].",
     isPlaceholder: true,
   },
   {

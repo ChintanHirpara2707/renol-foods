@@ -1,11 +1,8 @@
 /**
- * The only call to action on the site. Render it with <CtaButton placement="..." />.
- * Allowed placements (see CLAUDE.md): header (>=1024px), hero (one), closing (one),
- * bar (mobile bottom bar, <768px).
+ * Calls to action. The site has no forms: visitors contact Renol Foods directly by WhatsApp,
+ * phone or Google Maps (links live in site.ts and the ContactStack component).
  */
 export const CTA = {
-  label: "Request a Sample",
-  href: "/request-sample",
+  chat: { label: "Chat on WhatsApp" },
+  products: { label: "View Products", href: "/products" },
 } as const;
-
-export type CtaPlacement = "header" | "hero" | "closing" | "bar";

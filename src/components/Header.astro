@@ -1,8 +1,9 @@
 ---
-import CtaButton from "./ui/CtaButton.astro";
+import Button from "./ui/Button.astro";
 import Logo from "./ui/Logo.astro";
 import { nav } from "../data/nav";
-import { site } from "../data/site";
+import { site, whatsappLink } from "../data/site";
+import { CTA } from "../data/cta";
 
 const path = Astro.url.pathname.replace(/\/$/, "") || "/";
 const isActive = (href: string) => path === href || path.startsWith(`${href}/`);
@@ -31,7 +32,7 @@ const menuLinks = [...nav.primary, ...nav.secondary];
 
     <div class="site-header__actions">
       <div class="site-header__cta">
-        <CtaButton placement="header" />
+        <Button href={whatsappLink()} target="_blank" rel="noopener noreferrer">{CTA.chat.label}</Button>
       </div>
       <button
         type="button"
@@ -76,12 +77,18 @@ const menuLinks = [...nav.primary, ...nav.secondary];
     </nav>
 
     <div class="menu-panel__foot">
-      <p>Call sales</p>
+      <p>Contact</p>
       <ul>
+        <li>
+          <a href={whatsappLink()} target="_blank" rel="noopener noreferrer">{CTA.chat.label}</a>
+        </li>
+        <li>
+          <a href={site.mapUrl} target="_blank" rel="noopener noreferrer">Open in Google Maps</a>
+        </li>
         {
           site.phones.map((p) => (
             <li>
-              <a href={`tel:${p.tel}`}>{p.display}</a>
+              <a href={`tel:${p.tel}`}>Call {p.display}</a>
             </li>
           ))
         }

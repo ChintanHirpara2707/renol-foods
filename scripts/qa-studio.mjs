@@ -16,7 +16,7 @@ const settle = (page) => page.waitForTimeout(2000); // software WebGL (SwiftShad
 // Poll for a product change instead of sleeping: software WebGL can delay the tweens by seconds.
 const untilChanged = async (page, from) => {
   for (let i = 0; i < 24 && (await active(page)) === from; i++) await page.waitForTimeout(250);
-  await page.waitForTimeout(700);
+  await page.waitForTimeout(1500);
 };
 // Lenis keeps its own target; reset it too or it scrolls back down after an instant scrollTo.
 const toTop = (page) => page.evaluate(() => { window.renolLenis?.scrollTo(0, { immediate: true }); scrollTo({ top: 0, behavior: "instant" }); });
@@ -63,13 +63,12 @@ for (const vp of [
   const info = await page.evaluate(() => {
     const ps = document.querySelector(".ps").getBoundingClientRect();
     const header = document.querySelector("[data-site-header]").getBoundingClientRect();
-    const bar = getComputedStyle(document.querySelector('nav[aria-label="Quick contact"]')).display !== "none";
     const cardRect = (el) => el.getBoundingClientRect();
     const cards = [...document.querySelectorAll(".ps-card")];
     const current = cards.find((c) => c.getAttribute("aria-current") === "true");
     const name = document.querySelector(".ps-nameblock").getBoundingClientRect();
     const cue = document.querySelector(".ps-cue").getBoundingClientRect();
-    const cta = document.querySelector("[data-cta=hero]").getBoundingClientRect();
+    const cta = document.querySelector(".ps-cta").getBoundingClientRect();
     const canvases = [...document.querySelectorAll("canvas.ps-fruit")];
     const pixels = (cv) => {
       const d = cv.getContext("2d").getImageData(0, 0, cv.width, cv.height).data;
@@ -83,7 +82,7 @@ for (const vp of [
       drawn: canvases.filter((cv) => pixels(cv) > 20).length,
       studioBottom: ps.bottom,
       headerBottom: header.bottom,
-      barHeight: bar ? document.querySelector('nav[aria-label="Quick contact"]').getBoundingClientRect().height : 0,
+      barHeight: 0, // no bottom bar any more
       vh: innerHeight,
       activeBottom: current ? cardRect(current).bottom : 0,
       nameTop: name.top,
@@ -130,7 +129,7 @@ for (const vp of [
   const y = Math.round(vp.height * 0.25);
   await page.mouse.move(vp.width * 0.8, y);
   await page.mouse.down();
-  await page.mouse.move(vp.width * 0.5, y + 4, { steps: 8 });
+  await page.mouse.move(vp.width * 0.35, y + 4, { steps: 8 });
   await page.mouse.up();
   await untilChanged(page, afterKey);
   check(where, (await active(page)) !== afterKey, "horizontal drag did not move the carousel");
