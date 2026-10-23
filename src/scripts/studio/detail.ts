@@ -3,6 +3,7 @@ import overlayCss from "./overlay.css?raw";
 import { CTA } from "../../data/cta";
 import { scrollLock } from "../scroll";
 import { PowderFx, sampleSource } from "./powder-fx";
+import { getTier } from "./quality";
 import type { FruitRenderer } from "./fruit-gl";
 import type { StudioProduct } from "./data";
 
@@ -229,6 +230,12 @@ export function createProductDetail(host: DetailHost): ProductDetail {
       return;
     }
 
+    // STATIC tier: no turn-to-powder effect, the detail simply fades in.
+    if (getTier() === "STATIC") {
+      reveal(i, { x: r.left + r.width / 2, y: r.bottom }, { push: true, fade: true });
+      return;
+    }
+
     gsap.to(host.hud, { opacity: 0, duration: 0.3, pointerEvents: "none" });
     gsap.to(cards.filter((_, k) => k !== i), { opacity: 0.1, duration: 0.5 });
 
@@ -264,7 +271,7 @@ export function createProductDetail(host: DetailHost): ProductDetail {
   }
 
   /* ---------- circular reveal ---------- */
-  function reveal(i: number, o: { x: number; y: number }, opts: { instant?: boolean; push?: boolean }): void {
+  function reveal(i: number, o: { x: number; y: number }, opts: { instant?: boolean; push?: boolean; fade?: boolean }): void {
     mode = "detail";
     previousTitle = previousTitle || document.title;
     fill(i);
@@ -283,6 +290,24 @@ export function createProductDetail(host: DetailHost): ProductDetail {
     };
     if (opts.instant) {
       done();
+      return;
+    }
+
+    if (opts.fade) {
+      ov.style.clipPath = "none";
+      gsap.fromTo(
+        ov,
+        { opacity: 0 },
+        {
+          opacity: 1,
+          duration: T(0.25),
+          ease: "power1.out",
+          onComplete: () => {
+            ov.style.opacity = "";
+            done();
+          },
+        },
+      );
       return;
     }
 
@@ -312,18 +337,22 @@ export function createProductDetail(host: DetailHost): ProductDetail {
     gsap.set(host.hud, { clearProps: "all" });
     host.restore();
 
-    const active = host.active();
-    const card = cards[active].getBoundingClientRect();
-    const ox = card.left + card.width / 2;
-    const oy = card.top + card.height / 2;
-    const maxR = Math.hypot(Math.max(ox, innerWidth - ox), Math.max(oy, innerHeight - oy)) + 10;
-    gsap.set(ov, { clipPath: `circle(${maxR}px at ${ox}px ${oy}px)` });
-    gsap.to(ov, {
-      clipPath: `circle(0px at ${ox}px ${oy}px)`,
-      duration: T(0.8),
-      ease: "power2.inOut",
-      onComplete: finishClose,
-    });
+    if (getTier() === "STATIC") {
+      gsap.to(ov, { opacity: 0, duration: T(0.25), ease: "power1.in", onComplete: finishClose });
+    } else {
+      const active = host.active();
+      const card = cards[active].getBoundingClientRect();
+      const ox = card.left + card.width / 2;
+      const oy = card.top + card.height / 2;
+      const maxR = Math.hypot(Math.max(ox, innerWidth - ox), Math.max(oy, innerHeight - oy)) + 10;
+      gsap.set(ov, { clipPath: `circle(${maxR}px at ${ox}px ${oy}px)` });
+      gsap.to(ov, {
+        clipPath: `circle(0px at ${ox}px ${oy}px)`,
+        duration: T(0.8),
+        ease: "power2.inOut",
+        onComplete: finishClose,
+      });
+    }
     restoreRest();
     if (previousTitle) document.title = previousTitle;
   }
@@ -331,6 +360,7 @@ export function createProductDetail(host: DetailHost): ProductDetail {
   function finishClose(): void {
     ov.style.display = "none";
     ov.style.clipPath = "";
+    ov.style.opacity = "";
     ov.inert = true;
     scrollLock.unlock(LOCK);
     mode = "browse";

@@ -4,6 +4,8 @@
  * -aligned canvas is created on start and removed on stop.
  */
 
+import { TIER_CONFIG, getTier } from "./quality";
+
 export interface PowderProduct {
   powder: string;
   particles: string[];
@@ -23,15 +25,9 @@ export interface FxInfo {
   cx: number;
 }
 
-/** Few cores or little memory: fewer grains so the effect stays smooth. */
-export function isLowPower(): boolean {
-  const nav = navigator as Navigator & { deviceMemory?: number };
-  return (nav.hardwareConcurrency ?? 8) <= 4 || (nav.deviceMemory ?? 8) <= 4;
-}
-
+/** Grain count follows the quality tier: 1500 HIGH, 900 MID, 500 LOW, 0 STATIC. */
 export function grainCount(): number {
-  if (isLowPower()) return 600;
-  return innerWidth < 700 ? 900 : 1500;
+  return TIER_CONFIG[getTier()].particles;
 }
 
 interface SampleOptions {
@@ -122,6 +118,7 @@ export class PowderFx {
    */
   start(r: DOMRect, p: PowderProduct, smp: PowderSamples | null, bounds: DOMRect): FxInfo {
     this.stop();
+    if (grainCount() === 0) return { ground: r.bottom, Hp: r.height * 0.5, cx: r.left + r.width / 2 };
     const left = Math.max(0, bounds.left);
     const top = Math.max(0, bounds.top);
     const width = Math.max(1, Math.min(innerWidth, bounds.right) - left);
