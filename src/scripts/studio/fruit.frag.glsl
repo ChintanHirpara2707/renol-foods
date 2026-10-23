@@ -13,7 +13,8 @@ float w=.55*pow(sin(3.14159*pow(t,.75)),.8)+.002;float cz=.25*p.x*p.x-.1*p.y*p.y
 float d=max((abs(p.x)-w)*.6,abs(p.z-cz)-.03);d=max(d,abs(p.y-.05)-.95);
 d=min(d,cap(p,vec3(0,-1.15,-.1),vec3(0,-.85,-.1),.035));return d*s;}
 vec3 ob(vec3 p){float a=(K>1.5&&K<2.5)?.7*sin(A):A;p.xz=rt(a)*p.xz;p.yz=rt(.28)*p.yz;return p;}
-float SC(){return K<1.5?1.:K<2.5?1.12:K<3.5?1.3:1.2;}
+float SC(){return K<1.5?1.:K<2.5?1.12:K<3.5?1.3:K<4.5?1.2:K<5.5?1.08:1.3;}
+float cb(vec3 p,vec3 c,float ay,float ax,float az){vec3 q=p-c;q.xz=rt(ay)*q.xz;q.yz=rt(ax)*q.yz;q.xy=rt(az)*q.xy;vec3 d=abs(q)-vec3(.3);return length(max(d,0.))+min(max(d.x,max(d.y,d.z)),0.)-.11;}
 vec2 mp(vec3 p){
 if(K<.5){float a=atan(p.z,p.x),r=length(p.xz);
 float d=(length(p*vec3(1.,1.12,1.))-.86-.03*cos(a*5.)*(1.-p.y*p.y))*.8;
@@ -28,8 +29,19 @@ d=sm(d,cap(p,vec3(-.05,.05,.02),vec3(.25,.68,.06),.19),.22);
 d=sm(d,cap(p,vec3(.32,.02,0.),vec3(.88,-.3,.08),.2),.2);
 d=sm(d,cap(p,vec3(-.38,-.05,0.),vec3(-.28,-.62,-.04),.17),.2);
 d-=.012*sin(p.x*30.+p.y*6.);return vec2(d*.75,0.);}
-vec3 q=p;q.y+=.5*q.x*q.x-.18;q.z*=1.5;float r=.23*(.8+.2*cos(q.x*9.));
+if(K<4.5){vec3 q=p;q.y+=.5*q.x*q.x-.18;q.z*=1.5;float r=.23*(.8+.2*cos(q.x*9.));
 return vec2(cap(q,vec3(-.9,0.,0.),vec3(.9,0.,0.),r)*.6,0.);}
+if(K<5.5){float a=atan(p.z,p.x),r=length(p.xz);vec3 q=p;q.xz*=1.-.09*q.y;
+float d=(length(q*vec3(1.,1.1,1.))-.9-.04*cos(a*5.)*(1.-smoothstep(-.6,.15,p.y)))*.75;
+d+=.26*exp(-5.*r*r)*smoothstep(0.,.55,p.y);
+d+=.12*exp(-9.*r*r)*smoothstep(0.,.55,-p.y);
+vec3 s=p;float u=max(p.y-.45,0.);s.x-=.4*u*u;
+float c=cap(s,vec3(0,.42,0),vec3(0,1.02,0),.04);
+return c<d?vec2(c,1.):vec2(d,0.);}
+float d=cb(p,vec3(-.46,-.3,.06),.55,.12,.05);
+d=sm(d,cb(p,vec3(.44,-.28,-.12),-.4,-.1,.08),.05);
+d=sm(d,cb(p,vec3(0.,.36,.1),.2,.18,-.12),.05);
+return vec2(d*.9,0.);}
 vec2 M(vec3 p){float k=SC();vec2 r=mp(ob(p)*k);return vec2(r.x/k,r.y);}
 vec3 nrm(vec3 p){vec2 e=vec2(.002,0);return normalize(vec3(M(p+e.xyy).x-M(p-e.xyy).x,M(p+e.yxy).x-M(p-e.yxy).x,M(p+e.yyx).x-M(p-e.yyx).x));}
 vec3 col(vec3 q,float id,out float pw,out float ks){
@@ -43,14 +55,24 @@ if(K<2.5){pw=26.;ks=.28;float v=pow(abs(sin(q.y*9.+abs(q.x)*9.)),24.)*.5+exp(-ab
 return (mix(vec3(.05,.28,.05),vec3(.2,.5,.1),f)+v*vec3(.1,.18,.04))*(.9+.2*f2);}
 if(K<3.5){pw=10.;ks=.12;vec3 c=mix(vec3(.62,.43,.24),vec3(.8,.62,.38),f);
 c*=1.-smoothstep(.3,.7,sin(q.x*42.+f*6.))*.18;return c*(.85+.3*f2);}
-pw=18.;ks=.2;return mix(vec3(.3,.16,.08),vec3(.5,.3,.17),f)*(.65+.7*f2);}
+if(K<4.5){pw=18.;ks=.2;return mix(vec3(.3,.16,.08),vec3(.5,.3,.17),f)*(.65+.7*f2);}
+if(K<5.5){if(id>.5){pw=8.;ks=.05;return mix(vec3(.24,.15,.06),vec3(.36,.26,.1),f);}
+pw=70.;ks=1.1;float a=atan(q.z,q.x);
+float g=clamp(.5+.6*q.x+.25*q.y+(f-.5)*.8,0.,1.);
+vec3 c=mix(vec3(.66,.7,.16),vec3(.78,.07,.08),smoothstep(.2,.62,g));
+float st=pow(abs(sin(a*13.+f*7.)),4.)*(.4+.6*f2);
+c=mix(c,vec3(.42,.02,.05),st*.4*smoothstep(.25,.7,g));
+c=mix(c,vec3(.7,.72,.2),smoothstep(.45,.85,abs(q.y))*.5);
+c=mix(c,vec3(.95,.85,.55),step(.88,ns(q*60.))*.4);
+return c*(.92+.16*f2);}
+pw=90.;ks=1.3;return mix(vec3(.3,.085,.012),vec3(.68,.3,.045),clamp(f*1.5,0.,1.))*(.88+.24*f2);}
 void main(){
 vec2 uv=(gl_FragCoord.xy-.5*R)/R.y*2.;vec3 ro=vec3(0,0,4.2),rd=normalize(vec3(uv*.31,-1.));
 float t=2.,md=9.;vec3 pm=ro;bool hit=false;
 for(int i=0;i<80;i++){vec3 p=ro+rd*t;float d=M(p).x;if(d<md){md=d;pm=p;}if(d<.0012){hit=true;pm=p;break;}t+=d;if(t>7.)break;}
 if(!hit&&md>.006){gl_FragColor=vec4(0.);return;}
 float al=hit?1.:1.-smoothstep(0.,.006,md);
-vec3 N=nrm(pm);float BS=K<.5?.6:K<1.5?1.4:K<2.5?1.2:K<3.5?3.:3.5,F=K<.5?30.:K<1.5?22.:K<2.5?26.:K<3.5?18.:20.;
+vec3 N=nrm(pm);float BS=K<.5?.6:K<1.5?1.4:K<2.5?1.2:K<3.5?3.:K<4.5?3.5:K<5.5?.4:.45,F=K<.5?30.:K<1.5?22.:K<2.5?26.:K<3.5?18.:K<4.5?20.:K<5.5?36.:30.;
 float b0=fb(ob(pm)*F);
 vec3 g=vec3(fb(ob(pm+vec3(.02,0,0))*F),fb(ob(pm+vec3(0,.02,0))*F),fb(ob(pm+vec3(0,0,.02))*F))-b0;
 N=normalize(N-g*BS);
@@ -66,5 +88,6 @@ vec3 amb=mix(vec3(.07,.06,.08),vec3(.22,.25,.3),N.y*.5+.5);
 vec3 o=c*(amb*ao+vec3(1.,.95,.88)*dif*1.15*ao+vec3(.35,.45,.6)*d2*.35);
 o+=vec3(sp+bx*.6)+c*fr*.45+vec3(.8,.9,1.)*fr*ks*.25;
 if(K>1.5&&K<2.5)o+=c*pow(max(dot(N,-L),0.),2.)*.35;
+if(K>5.5)o+=vec3(1.,.42,.06)*pow(max(dot(N,-L),0.),1.6)*.55+vec3(.9,.35,.05)*fr*.18;
 o=pow(o*1.05/(1.+.18*o),vec3(.4545));
 gl_FragColor=vec4(o*al,al);}

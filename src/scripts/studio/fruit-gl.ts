@@ -8,7 +8,7 @@ import fragmentSource from "./fruit.frag.glsl?raw";
  */
 
 /** Scene id passed to the shader as uniform K. */
-export const GL_KIND: Record<string, number> = { tomato: 0, mango: 1, spinach: 2, ginger: 3, tamarind: 4 };
+export const GL_KIND: Record<string, number> = { tomato: 0, mango: 1, spinach: 2, ginger: 3, tamarind: 4, apple: 5, caramel: 6 };
 
 const VERTEX_SOURCE = "attribute vec2 P;void main(){gl_Position=vec4(P,0.,1.);}";
 

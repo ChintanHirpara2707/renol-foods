@@ -6,7 +6,7 @@ import { chromium } from "playwright";
 import sharp from "sharp";
 import { mkdir, readFile } from "node:fs/promises";
 
-const KINDS = { tomato: 0, mango: 1, spinach: 2, ginger: 3, tamarind: 4 };
+const KINDS = { tomato: 0, mango: 1, spinach: 2, ginger: 3, tamarind: 4, apple: 5, caramel: 6 };
 const ANGLE = 0.55; // same still angle the prototype uses for its snapshots
 const W = 400;
 const H = 480;

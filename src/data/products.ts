@@ -108,8 +108,8 @@ const build = (s: Seed): ProductItem => ({
 /**
  * Palette, blurbs and uses for the first six products come from the client's
  * prototype (reference/powder-studio.html). Caramel and Apple are not in the
- * prototype: their blurbs are neutral and their uses hidden until the client
- * supplies copy (TODO_CONTENT.md).
+ * prototype: their blurbs and uses are neutral wording pending client copy
+ * (TODO_CONTENT.md); ingredients stay [ADD] and hidden.
  */
 export const products: ProductItem[] = [
   build({
@@ -208,8 +208,8 @@ export const products: ProductItem[] = [
     pouch: "#8a4313",
     powder: "#b36628",
     particles: ["#c67d36", "#9c4f17", "#e29d52", "#7a380e"],
-    blurb: "Caramel powder for colour and flavour in food manufacturing.",
-    uses: [],
+    blurb: "Caramel powder, a colouring agent and flavour enhancer for food manufacturers.",
+    uses: ["Bakery", "Beverages", "Confectionery", "Sauces"],
     ingredientsNote: "ingredients, caramel class and carrier (no client copy yet)",
   }),
   build({
@@ -222,8 +222,8 @@ export const products: ProductItem[] = [
     pouch: "#99221b",
     powder: "#c94d43",
     particles: ["#e8655b", "#b52f26", "#f28c84", "#8a1d16"],
-    blurb: "Apple powder for food manufacturers.",
-    uses: [],
+    blurb: "Apple powder with mild natural sweetness for food manufacturers.",
+    uses: ["Beverages", "Bakery", "Snacks", "Cereals"],
     ingredientsNote: "ingredients (no client copy yet)",
   }),
 ];
