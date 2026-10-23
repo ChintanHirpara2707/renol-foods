@@ -17,6 +17,8 @@ export interface Category {
   /** URL-safe key, same as id. */
   slug: string;
   name: string;
+  /** URL hash used by the catalogue filter, e.g. "fruit-powders". */
+  hash: string;
   /** Number of products in the category, computed from products.ts. */
   count: number;
 }
@@ -24,6 +26,7 @@ export interface Category {
 export const categories: Category[] = definitions.map((d) => ({
   ...d,
   slug: d.id,
+  hash: d.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""),
   count: products.filter((p) => p.category === d.id).length,
 }));
 

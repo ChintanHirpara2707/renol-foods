@@ -90,7 +90,7 @@ function inspectPage() {
     if (m) leaks.push(m[0].slice(0, 60));
   }
 
-  const forms = document.querySelectorAll("form, input, textarea, select").length;
+  const forms = document.querySelectorAll("form, textarea, select, input:not([type=search])").length;
 
   const chrome = ["[data-site-header]", "footer", ".contact-stack", "#cookie-notice"];
   const small = [];

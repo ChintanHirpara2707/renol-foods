@@ -1,4 +1,6 @@
 ---
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import Breadcrumb from "../../components/ui/Breadcrumb.astro";
 import Button from "../../components/ui/Button.astro";
@@ -11,11 +13,13 @@ import { productChatMessage, site } from "../../data/site";
 import { CTA } from "../../data/cta";
 
 export async function getStaticPaths() {
-  return products.map((product) => ({
+  return products.map((product, i) => ({
     params: { slug: product.slug },
     props: {
       product,
       related: products.filter((p) => p.category === product.category && p.slug !== product.slug).slice(0, 4),
+      prev: products[(i - 1 + products.length) % products.length],
+      next: products[(i + 1) % products.length],
     },
   }));
 }
@@ -23,22 +27,41 @@ export async function getStaticPaths() {
 interface Props {
   product: Product;
   related: Product[];
+  prev: Product;
+  next: Product;
 }
 
-const { product, related } = Astro.props;
+const { product, related, prev, next } = Astro.props;
 const theme = productTheme(product);
 const category = categoryById(product.category);
 const specs = publicSpecs(product);
 const chatMessage = productChatMessage(product);
 const origin = Astro.site ?? new URL(Astro.url.origin);
+const pageUrl = new URL(`/products/${product.slug}/`, origin).href;
+
+// Studio products show the fruit as rendered in the Powder Studio (still); others use the product image.
+const art = product.slug.replace(/-powder$/, "");
+const posterFile = `/images/fruit/${art}-powder.webp`;
+const poster = product.studio && existsSync(join(process.cwd(), "public", posterFile)) ? posterFile : null;
+
+// Carton label: product name wrapped to short lines
+const labelLines: string[] = [];
+for (const word of product.name.split(" ")) {
+  const last = labelLines[labelLines.length - 1];
+  if (last && (last + " " + word).length <= 14) labelLines[labelLines.length - 1] = `${last} ${word}`;
+  else labelLines.push(word);
+}
+const labelSize = labelLines.length > 2 ? 12 : 14;
+const labelTop = 150 - ((labelLines.length - 1) * labelSize * 1.2) / 2;
 
 const productSchema = {
   "@context": "https://schema.org/",
   "@type": "Product",
   name: product.name,
   description: product.description,
-  image: new URL(product.image, origin).href,
+  image: new URL(poster ?? product.image, origin).href,
   category: category.name,
+  url: pageUrl,
   brand: { "@type": "Brand", name: site.name },
   manufacturer: {
     "@type": "Organization",
@@ -52,13 +75,22 @@ const productSchema = {
     },
   },
 };
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Home", item: new URL("/", origin).href },
+    { "@type": "ListItem", position: 2, name: "Products", item: new URL("/products/", origin).href },
+    { "@type": "ListItem", position: 3, name: product.name, item: pageUrl },
+  ],
+};
 ---
 
 <BaseLayout
-  title={`${product.name} | ${site.name}`}
-  description={product.summary}
-  ogImage={product.image}
-  jsonLd={[productSchema]}
+  title={`${product.name} | ${category.name} | ${site.name}`}
+  description={`${product.summary} ${product.packaging}.`}
+  ogImage={poster ?? product.image}
+  jsonLd={[productSchema, breadcrumbSchema]}
   chatMessage={chatMessage}
 >
   <article class="product" style={`--accent: ${theme.accent}; --glow: ${theme.glow};`}>
@@ -72,8 +104,14 @@ const productSchema = {
       />
 
       <div class="product__grid">
-        <div class="product__media">
-          <img src={product.image} alt={product.name} width="800" height="800" decoding="async" fetchpriority="high" />
+        <div class:list={["product__media", { "product__media--studio": Boolean(poster) }]}>
+          {
+            poster ? (
+              <img src={poster} alt={product.name} width="400" height="480" decoding="async" fetchpriority="high" />
+            ) : (
+              <img src={product.image} alt={product.name} width="800" height="800" decoding="async" fetchpriority="high" />
+            )
+          }
         </div>
 
         <div class="product__body">
@@ -105,10 +143,31 @@ const productSchema = {
           )
         }
 
-        <section aria-labelledby="pack-title">
+        <section class="packaging" aria-labelledby="pack-title">
           <h2 id="pack-title">Packaging</h2>
-          <p class="pack">{product.packaging}</p>
-          {product.allergens.length > 0 && <p class="allergens">Contains: {product.allergens.join(", ")}.</p>}
+          <div class="packaging__row">
+            <svg class="carton" viewBox="0 0 320 250" role="img" aria-label={`${product.name} in a ${product.packaging}`}>
+              <polygon points="64,86 104,62 296,62 256,86" fill="#d6a566" />
+              <polygon points="256,86 296,62 296,182 256,214" fill="#8f6531" />
+              <rect x="64" y="86" width="192" height="128" fill="#b98a52" />
+              <rect x="150" y="62" width="20" height="24" fill="#e9d3a8" fill-opacity=".75" />
+              <path d="M64 100H256M64 114H256M64 128H256M64 142H256M64 156H256M64 170H256M64 184H256M64 198H256" stroke="#7a5528" stroke-opacity=".18" />
+              <rect x="86" y="108" width="148" height="84" rx="6" fill="#fff" fill-opacity=".95" />
+              <text x="160" y="124" text-anchor="middle" font-size="10" fill="#6b5a45" style="font-family:var(--body);letter-spacing:.08em">{site.name.toUpperCase()}</text>
+              {
+                labelLines.map((line, i) => (
+                  <text x="160" y={labelTop + 8 + i * labelSize * 1.2} text-anchor="middle" font-size={labelSize} font-weight="800" fill="#17120b" style="font-family:var(--display)">
+                    {line}
+                  </text>
+                ))
+              }
+              <text x="160" y="184" text-anchor="middle" font-size="11" fill="#17120b" fill-opacity=".7" style="font-family:var(--body)">{product.packaging}</text>
+            </svg>
+            <div>
+              <p class="pack">{product.packaging}</p>
+              {product.allergens.length > 0 && <p class="allergens">Contains: {product.allergens.join(", ")}.</p>}
+            </div>
+          </div>
         </section>
 
         <section aria-labelledby="specs-title">
@@ -137,13 +196,21 @@ const productSchema = {
             <ul>
               {related.map((p) => (
                 <li>
-                  <a href={`/products/${p.slug}`}>{p.name}</a>
+                  <a href={`/products/${p.slug}`}>
+                    <img src={p.image} alt="" width="800" height="800" loading="lazy" decoding="async" />
+                    <span>{p.name}</span>
+                  </a>
                 </li>
               ))}
             </ul>
           </section>
         )
       }
+
+      <nav class="pn" aria-label="Previous and next product">
+        <a href={`/products/${prev.slug}`} rel="prev"><span aria-hidden="true">&larr;</span> {prev.name}</a>
+        <a href={`/products/${next.slug}`} rel="next">{next.name} <span aria-hidden="true">&rarr;</span></a>
+      </nav>
     </div>
   </article>
 </BaseLayout>
@@ -172,10 +239,18 @@ const productSchema = {
     max-width: 34rem;
     height: auto;
     margin-inline: auto;
-    border-radius: var(--r-panel);
     border: 1px solid var(--line-soft);
+    border-radius: var(--r-panel);
     aspect-ratio: 1;
     object-fit: cover;
+  }
+  /* Studio products: the rendered fruit on the product's glow */
+  .product__media--studio img {
+    padding: var(--s-6);
+    border-color: transparent;
+    background: radial-gradient(62% 58% at 50% 44%, color-mix(in srgb, var(--glow) 80%, transparent), transparent), var(--panel);
+    object-fit: contain;
+    filter: drop-shadow(0 28px 36px rgba(0, 0, 0, 0.45));
   }
   .product__body h1 {
     margin-top: var(--s-4);
@@ -186,7 +261,6 @@ const productSchema = {
   }
   .product__summary {
     margin-top: var(--s-4);
-    color: var(--ink);
     font-size: 1.125rem;
   }
   .product__description {
@@ -229,6 +303,17 @@ const productSchema = {
     background: color-mix(in srgb, var(--accent) 20%, transparent);
     font-size: var(--fs-small);
   }
+  .packaging__row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s-4);
+  }
+  .carton {
+    width: min(100%, 15rem);
+    height: auto;
+    filter: drop-shadow(0 16px 20px rgba(0, 0, 0, 0.4));
+  }
   .pack {
     font-family: var(--display);
     font-size: 1.25rem;
@@ -258,23 +343,58 @@ const productSchema = {
     margin-top: var(--s-16);
   }
   .related ul {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--s-2);
+    display: grid;
+    gap: var(--s-4);
     margin: 0;
     padding: 0;
     list-style: none;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  @media (min-width: 768px) {
+    .related ul {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
   }
   .related a {
-    display: inline-flex;
-    align-items: center;
-    min-height: var(--tap);
-    padding: 0 var(--s-4);
-    border: 1px solid var(--line);
-    border-radius: var(--r-pill);
-    color: var(--ink);
+    display: block;
+    overflow: hidden;
+    border: 1px solid var(--line-soft);
+    border-radius: var(--r-card);
+    background: var(--surface);
   }
   .related a:hover {
     border-color: var(--accent);
+  }
+  .related img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1;
+    object-fit: cover;
+  }
+  .related span {
+    display: block;
+    padding: var(--s-3) var(--s-4);
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+  .pn {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--s-4);
+    margin-top: var(--s-16);
+    padding-top: var(--s-4);
+    border-top: 1px solid var(--line);
+  }
+  .pn a {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-2);
+    min-height: var(--tap);
+    color: var(--ink-2);
+  }
+  .pn a:hover {
+    color: var(--ink);
   }
 </style>

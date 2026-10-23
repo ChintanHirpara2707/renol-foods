@@ -25,7 +25,7 @@ const companyLinks = [...nav.primary.filter((l) => l.href !== "/products"), ...n
         {
           categories.map((c) => (
             <li>
-              <a href={`/products?category=${c.slug}`}>{c.name}</a>
+              <a href={`/products#${c.hash}`}>{c.name}</a>
             </li>
           ))
         }

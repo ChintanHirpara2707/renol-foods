@@ -1,136 +1,238 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import ChatLink from "../components/ChatLink.astro";
+import Tag from "../components/ui/Tag.astro";
 import SectionHeading from "../components/SectionHeading.astro";
-import { legacyProducts as products } from "../data/legacy";
-import { isPublic } from "../data/public";
+import { products } from "../data/products";
+import { categories, categoryById } from "../data/categories";
+
+const searchText = (p: (typeof products)[number]) =>
+  [p.name, categoryById(p.category).name, p.summary, ...p.uses].join(" ").toLowerCase();
 ---
 
 <BaseLayout
-  title="Industrial Food Powders Catalog | Renol Foods Bavla"
-  description="Explore Renol Foods' 8 commercial food powders: Tomato, Tamarind, Caramel, Lemon, Mango, Spinach, Ginger, and Apple powder."
+  title="Products | Renol Foods"
+  description={`Browse ${products.length} food powders from Renol Foods: fruit, vegetable, food colour, dairy, seasoning and beverage powders. Every product ships in a 20 kg corrugated box.`}
 >
-  <!-- Hero Section -->
-  <section class="relative py-20 lg:py-28 border-b border-white/10 overflow-hidden">
-    <!-- Ambient Radial Glow -->
-    <div
-      class="pointer-events-none absolute left-1/2 top-10 -translate-x-1/2 w-[700px] h-[350px] rounded-full blur-[140px] opacity-20"
-      style="background: radial-gradient(circle, #ffe14a 0%, transparent 70%);"
-      aria-hidden="true"
-    ></div>
-
-    <div class="section-container relative z-10">
+  <section class="catalogue" data-products>
+    <div class="container">
       <SectionHeading
         level={1}
-        eyebrow="Commercial Product Portfolio"
-        title="Industrial Food Powders"
-        subtitle="Precision dehydrated and spray-dried fruit, vegetable, and culinary powders produced in Bavla for industrial food processing, seasoning blends, and export."
+        eyebrow="Catalogue"
+        title="Food Powders"
+        subtitle="Fruit, vegetable, food colour, dairy, seasoning and beverage powders for food manufacturers."
+        align="left"
       />
 
-      <!-- Hero Primary Action Button (1 per hero) -->
-      <div class="mt-8 flex justify-center">
-        <ChatLink class="btn-accent min-h-[44px]" />
+      <div class="toolbar">
+        <div class="chips" role="group" aria-label="Filter by category">
+          <button type="button" class="chip" data-filter="all" aria-pressed="true">All <span>{products.length}</span></button>
+          {
+            categories.map((c) => (
+              <button type="button" class="chip" data-filter={c.hash} aria-pressed="false">
+                {c.name} <span>{c.count}</span>
+              </button>
+            ))
+          }
+        </div>
+
+        <div class="search" role="search">
+          <label class="sr-only" for="product-search">Search products</label>
+          <input id="product-search" type="search" placeholder="Search products" autocomplete="off" data-search />
+        </div>
       </div>
 
-      <!-- Product Cards Grid: 2 columns on desktop/tablet, 1 on mobile -->
-      <div class="mt-16 grid grid-cols-1 md:grid-cols-2 gap-8">
+      <p class="status" data-status aria-live="polite">Showing {products.length} of {products.length} products</p>
+
+      <ul class="grid">
         {
-          products.map((product) => {
-            // Filter any specs that do not contain [ADD
-            const validSpecs = Object.entries(product.specs).filter(
-              ([_, val]) => val && !val.includes("[ADD")
-            );
-
+          products.map((p, i) => {
+            const category = categoryById(p.category);
             return (
-              <div
-                id={product.slug}
-                class="group relative p-7 sm:p-9 rounded-3xl bg-[#121214] border border-white/10 hover:border-white/25 transition-all duration-300 flex flex-col justify-between overflow-hidden"
-              >
-                <!-- Subtle Accent Border Accent Glow -->
-                <div
-                  class="absolute top-0 left-0 bottom-0 w-1.5"
-                  style={{ backgroundColor: product.accentColor }}
-                ></div>
-
-                <div>
-                  <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
-                    <h2 class="font-display text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-                      {product.name}
-                    </h2>
-                    <span
-                      class="px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider border border-white/15"
-                      style={{ color: `color-mix(in srgb, ${product.accentColor} 65%, white)`, backgroundColor: "rgba(255,255,255,0.05)" }}
-                    >
-                      {product.cat} powder
-                    </span>
+              <li class="pcard" data-card data-category={category.hash} data-haystack={searchText(p)}>
+                <a class="pcard__media" href={`/products/${p.slug}`} tabindex="-1" aria-hidden="true">
+                  <img
+                    src={p.image}
+                    alt=""
+                    width="800"
+                    height="800"
+                    loading={i < 4 ? "eager" : "lazy"}
+                    decoding="async"
+                  />
+                </a>
+                <div class="pcard__body">
+                  <h2>{p.name}</h2>
+                  <div class="pcard__tags">
+                    <Tag>{category.name}</Tag>
+                    <Tag>{p.packaging}</Tag>
                   </div>
-
-                  <p class="text-white/70 text-sm leading-relaxed font-body">
-                    {product.longDescription || product.blurb}
-                  </p>
-
-                  <!-- Applications snippet -->
-                  <div class="mt-5">
-                    <p class="text-xs font-bold text-white/50 uppercase tracking-wider mb-2 font-mono">
-                      Industrial Applications
-                    </p>
-                    <div class="flex flex-wrap gap-2">
-                      {product.applications.slice(0, 3).map((app) => (
-                        <span class="px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-xs text-white/80 font-body">
-                          {app}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  <!-- Technical Specifications snippet (unconfirmed rows hidden) -->
-                  <div class="mt-6 p-4 rounded-2xl bg-[#18181c] border border-white/10 text-xs font-mono">
-                    {validSpecs.length > 0 ? (
-                      <div class="grid grid-cols-2 gap-2 text-white/80">
-                        {validSpecs.slice(0, 4).map(([key, val]) => (
-                          <div class="truncate">
-                            <span class="text-white/60 capitalize">{key}:</span> {val}
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <div class="flex items-center justify-between text-white/60">
-                        <span>Full specifications on request</span>
-                      </div>
-                    )}
-                  </div>
+                  <a class="pcard__link" href={`/products/${p.slug}`} aria-label={`View details: ${p.name}`}>View details</a>
                 </div>
-
-                <!-- Product card action: 1 text link per card ("View details →") -->
-                <div class="mt-8 pt-5 border-t border-white/10 flex items-center justify-between">
-                  <a
-                    href={`/products/${product.slug}`}
-                    class="text-sm font-semibold text-amber-400 hover:text-amber-300 transition-colors inline-flex items-center gap-1.5 min-h-[44px]"
-                  >
-                    <span>View details</span>
-                    <span aria-hidden="true">&rarr;</span>
-                  </a>
-                  {isPublic(product.packagingSizes) && <span class="text-xs text-white/70 font-mono">Pack: {product.packagingSizes}</span>}
-                </div>
-              </div>
+              </li>
             );
           })
         }
-      </div>
-    </div>
-  </section>
+      </ul>
 
-  <!-- One Closing CTA Section Near the End of the Page -->
-  <section class="py-20 bg-[#0e0e12] text-white text-center border-t border-white/10">
-    <div class="section-container max-w-3xl">
-      <span class="text-xs uppercase font-bold tracking-widest text-white/60 block mb-3 font-mono">Formulation Inquiries</span>
-      <h2 class="font-display text-3xl sm:text-4xl font-extrabold mb-4 tracking-tight">
-        Need custom mesh sizing?
-      </h2>
-      <p class="text-white/70 text-sm sm:text-base mb-8 max-w-xl mx-auto leading-relaxed font-body">
-        Tell us about your production application and target mesh requirements.
-      </p>
-      <ChatLink class="btn-accent min-h-[44px]" />
+      <p class="empty" data-empty hidden>No products match your search.</p>
     </div>
   </section>
 </BaseLayout>
+
+<script>
+  import "../scripts/products-filter";
+</script>
+
+<style>
+  .catalogue {
+    padding-block: var(--s-16) var(--section-y);
+  }
+  .toolbar {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-4);
+    margin-top: var(--s-8);
+  }
+  @media (min-width: 900px) {
+    .toolbar {
+      flex-direction: row;
+      align-items: flex-start;
+      justify-content: space-between;
+    }
+  }
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2);
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-2);
+    min-height: var(--tap);
+    padding: 0 var(--s-4);
+    border: 1px solid var(--line);
+    border-radius: var(--r-pill);
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--ink);
+    font: inherit;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color var(--dur-1) var(--ease-out), border-color var(--dur-1) var(--ease-out);
+  }
+  .chip span {
+    color: var(--ink-2);
+    font-size: var(--fs-small);
+  }
+  .chip:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+  .chip[aria-pressed="true"] {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--on-accent);
+  }
+  .chip[aria-pressed="true"] span {
+    color: var(--on-accent);
+  }
+  .search input {
+    width: 100%;
+    min-width: 16rem;
+    min-height: var(--tap);
+    padding: 0 var(--s-4);
+    border: 1px solid var(--line);
+    border-radius: var(--r-pill);
+    background: var(--surface);
+    color: var(--ink);
+    font: inherit;
+  }
+  .search input::placeholder {
+    color: var(--ink-3);
+  }
+  .status {
+    margin-top: var(--s-6);
+    color: var(--ink-3);
+    font-size: var(--fs-small);
+  }
+  .grid {
+    display: grid;
+    gap: var(--s-4);
+    margin: var(--s-4) 0 0;
+    padding: 0;
+    list-style: none;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  @media (min-width: 768px) {
+    .grid {
+      gap: var(--s-6);
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1100px) {
+    .grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+  .pcard {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid var(--line-soft);
+    border-radius: var(--r-card);
+    background: var(--surface);
+    /* skip rendering cards that are far off screen */
+    content-visibility: auto;
+    contain-intrinsic-size: auto 22rem;
+  }
+  .pcard[hidden] {
+    display: none;
+  }
+  .pcard__media {
+    display: block;
+    aspect-ratio: 1;
+    background: var(--panel);
+  }
+  .pcard__media img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .pcard__body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: var(--s-3);
+    padding: var(--s-4);
+  }
+  .pcard h2 {
+    font-size: 1.05rem;
+    font-weight: 800;
+    line-height: 1.2;
+  }
+  .pcard__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2);
+  }
+  .pcard__tags :global(.tag) {
+    padding: 0.15rem 0.6rem;
+    font-size: 0.75rem;
+  }
+  .pcard__link {
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+    min-height: var(--tap);
+    margin-top: auto;
+    color: var(--ink);
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 0.25em;
+    text-decoration-color: var(--accent);
+  }
+  .empty {
+    margin-top: var(--s-8);
+    color: var(--ink-2);
+  }
+</style>
