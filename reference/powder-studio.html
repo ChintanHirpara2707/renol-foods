@@ -991,11 +991,100 @@
             }
             const bgMain = buildBgs($('#bgs')), bgDetail = buildBgs($('#dbgs'));
 
+/* ---------- real-fruit renderer: WebGL ray-marched, resolution independent ---------- */
+            const NS = 'http://www.w3.org/2000/svg', GK = { tomato: 0, mango: 1, spinach: 2, ginger: 3, tamarind: 4 };
+            const gc = document.createElement('canvas'), gl = gc.getContext('webgl', { alpha: true, premultipliedAlpha: true, antialias: false, preserveDrawingBuffer: true });
+            let glOK = false, uK, uA, uR;
+            (function initGL() {
+                if (!gl) return;
+                const mk = (t, src) => { const o = gl.createShader(t); gl.shaderSource(o, src); gl.compileShader(o); if (!gl.getShaderParameter(o, gl.COMPILE_STATUS)) { console.warn(gl.getShaderInfoLog(o)); return null; } return o; };
+                const v = mk(gl.VERTEX_SHADER, 'attribute vec2 P;void main(){gl_Position=vec4(P,0.,1.);}');
+                const f = mk(gl.FRAGMENT_SHADER, `precision highp float;
+uniform vec2 R;uniform float K,A;
+float hs(vec3 p){p=50.*fract(p*.3183099+vec3(.71,.113,.419));return fract(p.x*p.y*p.z*(p.x+p.y+p.z));}
+float ns(vec3 x){vec3 i=floor(x),f=fract(x);f=f*f*(3.-2.*f);
+return mix(mix(mix(hs(i),hs(i+vec3(1,0,0)),f.x),mix(hs(i+vec3(0,1,0)),hs(i+vec3(1,1,0)),f.x),f.y),
+mix(mix(hs(i+vec3(0,0,1)),hs(i+vec3(1,0,1)),f.x),mix(hs(i+vec3(0,1,1)),hs(i+vec3(1,1,1)),f.x),f.y),f.z);}
+float fb(vec3 p){float s=0.,a=.5;for(int i=0;i<4;i++){s+=a*ns(p);p=p*2.03+7.1;a*=.5;}return s;}
+mat2 rt(float a){float c=cos(a),s=sin(a);return mat2(c,-s,s,c);}
+float sm(float a,float b,float k){float h=clamp(.5+.5*(b-a)/k,0.,1.);return mix(b,a,h)-k*h*(1.-h);}
+float cap(vec3 p,vec3 a,vec3 b,float r){vec3 pa=p-a,ba=b-a;float h=clamp(dot(pa,ba)/dot(ba,ba),0.,1.);return length(pa-ba*h)-r;}
+float lf(vec3 p,float r,vec2 o,float s){p.xy=rt(r)*(p.xy-o);p/=s;float t=clamp((p.y+.9)/1.9,0.,1.);
+float w=.55*pow(sin(3.14159*pow(t,.75)),.8)+.002;float cz=.25*p.x*p.x-.1*p.y*p.y+.06*sin(p.y*3.);
+float d=max((abs(p.x)-w)*.6,abs(p.z-cz)-.03);d=max(d,abs(p.y-.05)-.95);
+d=min(d,cap(p,vec3(0,-1.15,-.1),vec3(0,-.85,-.1),.035));return d*s;}
+vec3 ob(vec3 p){float a=(K>1.5&&K<2.5)?.7*sin(A):A;p.xz=rt(a)*p.xz;p.yz=rt(.28)*p.yz;return p;}
+float SC(){return K<1.5?1.:K<2.5?1.12:K<3.5?1.3:1.2;}
+vec2 mp(vec3 p){
+if(K<.5){float a=atan(p.z,p.x),r=length(p.xz);
+float d=(length(p*vec3(1.,1.12,1.))-.86-.03*cos(a*5.)*(1.-p.y*p.y))*.8;
+d+=.2*exp(-8.*r*r)*smoothstep(.1,.6,p.y);
+float c=max(r-.46*(.4+.6*pow(abs(cos(a*2.5)),1.6)),abs(p.y-(.72-.6*r*r))-.022);
+c=min(c,cap(p,vec3(0,.7,0),vec3(0,.98,0),.035));return c<d?vec2(c,1.):vec2(d,0.);}
+if(K<1.5){p.xy=rt(.4)*p.xy;vec3 q=p;q.x+=.14*q.y*q.y;q*=vec3(1.1,.82,1.45);
+float d=(length(q)-.82)*.75;d+=.1*exp(-9.*dot(q.xz,q.xz))*smoothstep(0.,.6,q.y);return vec2(d,0.);}
+if(K<2.5){float d=lf(p,0.,vec2(0,-.05),1.);d=sm(d,lf(p,.55,vec2(-.45,-.25),.78),.05);d=sm(d,lf(p,-.6,vec2(.5,-.2),.8),.05);return vec2(d*.7,0.);}
+if(K<3.5){p.xy=rt(.45)*p.xy;float d=cap(p,vec3(-.62,-.08,0.),vec3(.45,.06,0.),.27);
+d=sm(d,cap(p,vec3(-.05,.05,.02),vec3(.25,.68,.06),.19),.22);
+d=sm(d,cap(p,vec3(.32,.02,0.),vec3(.88,-.3,.08),.2),.2);
+d=sm(d,cap(p,vec3(-.38,-.05,0.),vec3(-.28,-.62,-.04),.17),.2);
+d-=.012*sin(p.x*30.+p.y*6.);return vec2(d*.75,0.);}
+vec3 q=p;q.y+=.5*q.x*q.x-.18;q.z*=1.5;float r=.23*(.8+.2*cos(q.x*9.));
+return vec2(cap(q,vec3(-.9,0.,0.),vec3(.9,0.,0.),r)*.6,0.);}
+vec2 M(vec3 p){float k=SC();vec2 r=mp(ob(p)*k);return vec2(r.x/k,r.y);}
+vec3 nrm(vec3 p){vec2 e=vec2(.002,0);return normalize(vec3(M(p+e.xyy).x-M(p-e.xyy).x,M(p+e.yxy).x-M(p-e.yxy).x,M(p+e.yyx).x-M(p-e.yyx).x));}
+vec3 col(vec3 q,float id,out float pw,out float ks){
+float f=fb(q*3.),f2=fb(q*14.);
+if(K<.5){if(id>.5){pw=8.;ks=.05;return mix(vec3(.1,.33,.05),vec3(.25,.5,.1),f);}
+pw=110.;ks=.9;vec3 c=mix(vec3(.6,.02,.02),vec3(.93,.17,.05),clamp(f*1.3*(.6+q.y*.4),0.,1.));return c*(.9+.2*f2);}
+if(K<1.5){pw=36.;ks=.5;float g=clamp(.5+.9*(q.x*.5+q.y*.45)+(f-.5)*.9,0.,1.);
+vec3 c=mix(vec3(.82,.72,.1),vec3(.95,.45,.08),g);c=mix(c,vec3(.8,.12,.08),smoothstep(.55,1.,g)*.6);
+c*=.92+.16*f2;return mix(c,vec3(1.,.9,.5),step(.86,ns(q*38.))*.35);}
+if(K<2.5){pw=26.;ks=.28;float v=pow(abs(sin(q.y*9.+abs(q.x)*9.)),24.)*.5+exp(-abs(q.x)*30.)*.5;
+return (mix(vec3(.05,.28,.05),vec3(.2,.5,.1),f)+v*vec3(.1,.18,.04))*(.9+.2*f2);}
+if(K<3.5){pw=10.;ks=.12;vec3 c=mix(vec3(.62,.43,.24),vec3(.8,.62,.38),f);
+c*=1.-smoothstep(.3,.7,sin(q.x*42.+f*6.))*.18;return c*(.85+.3*f2);}
+pw=18.;ks=.2;return mix(vec3(.3,.16,.08),vec3(.5,.3,.17),f)*(.65+.7*f2);}
+void main(){
+vec2 uv=(gl_FragCoord.xy-.5*R)/R.y*2.;vec3 ro=vec3(0,0,4.2),rd=normalize(vec3(uv*.31,-1.));
+float t=2.,md=9.;vec3 pm=ro;bool hit=false;
+for(int i=0;i<80;i++){vec3 p=ro+rd*t;float d=M(p).x;if(d<md){md=d;pm=p;}if(d<.0012){hit=true;pm=p;break;}t+=d;if(t>7.)break;}
+if(!hit&&md>.006){gl_FragColor=vec4(0.);return;}
+float al=hit?1.:1.-smoothstep(0.,.006,md);
+vec3 N=nrm(pm);float BS=K<.5?.6:K<1.5?1.4:K<2.5?1.2:K<3.5?3.:3.5,F=K<.5?30.:K<1.5?22.:K<2.5?26.:K<3.5?18.:20.;
+float b0=fb(ob(pm)*F);
+vec3 g=vec3(fb(ob(pm+vec3(.02,0,0))*F),fb(ob(pm+vec3(0,.02,0))*F),fb(ob(pm+vec3(0,0,.02))*F))-b0;
+N=normalize(N-g*BS);
+float oc=0.,sc=1.;for(int i=1;i<5;i++){float h=.05*float(i);oc+=(h-M(pm+N*h).x)*sc;sc*=.7;}
+float ao=clamp(1.-1.8*oc,.15,1.);
+float pw,ks;vec3 c=col(ob(pm),M(pm).y,pw,ks);
+vec3 V=-rd,L=normalize(vec3(-.55,.75,.65)),L2=normalize(vec3(.8,.1,.3));
+float dif=clamp((dot(N,L)+.3)/1.3,0.,1.),d2=max(dot(N,L2),0.);
+float sp=pow(max(dot(N,normalize(L+V)),0.),pw)*ks;
+vec3 r=reflect(-V,N);float bx=smoothstep(0.,.25,.28-abs(r.x+.3))*smoothstep(0.,.25,.3-abs(r.y-.55))*step(0.,r.z)*ks;
+float fr=pow(1.-max(dot(N,V),0.),3.);
+vec3 amb=mix(vec3(.07,.06,.08),vec3(.22,.25,.3),N.y*.5+.5);
+vec3 o=c*(amb*ao+vec3(1.,.95,.88)*dif*1.15*ao+vec3(.35,.45,.6)*d2*.35);
+o+=vec3(sp+bx*.6)+c*fr*.45+vec3(.8,.9,1.)*fr*ks*.25;
+if(K>1.5&&K<2.5)o+=c*pow(max(dot(N,-L),0.),2.)*.35;
+o=pow(o*1.05/(1.+.18*o),vec3(.4545));
+gl_FragColor=vec4(o*al,al);}`);
+                if (!v || !f) return;
+                const pr = gl.createProgram(); gl.attachShader(pr, v); gl.attachShader(pr, f); gl.linkProgram(pr);
+                if (!gl.getProgramParameter(pr, gl.LINK_STATUS)) { console.warn(gl.getProgramInfoLog(pr)); return; }
+                gl.useProgram(pr);
+                gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+                gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+                const l = gl.getAttribLocation(pr, 'P'); gl.enableVertexAttribArray(l); gl.vertexAttribPointer(l, 2, gl.FLOAT, false, 0, 0);
+                uK = gl.getUniformLocation(pr, 'K'); uA = gl.getUniformLocation(pr, 'A'); uR = gl.getUniformLocation(pr, 'R');
+                glOK = true;
+            })();
+
             const cards = data.map((p, i) => {
                 const c = document.createElement('button');
                 c.type = 'button'; c.className = 'card'; c.setAttribute('aria-label', p.name + ' powder');
                 c.innerHTML = p.spin ? '<canvas class="fruit" width="400" height="480" aria-hidden="true"></canvas>'
-                    : '<svg class="fruit" viewBox="0 0 200 240" aria-hidden="true"><use href="#f-' + p.id + '"/></svg>';
+                    : glOK ? '<canvas class="fruit" aria-hidden="true"></canvas>' : '<svg class="fruit" viewBox="0 0 200 240" aria-hidden="true"><use href="#f-' + p.id + '"/></svg>';
                 c.addEventListener('click', e => { if (e.detail === 0) activateCard(i); });
                 ring.appendChild(c);
                 return c;
@@ -1006,7 +1095,7 @@
             const lemonIdx = data.findIndex(p => p.spin);
             const lemonCv = lemonIdx >= 0 ? cards[lemonIdx].querySelector('canvas.fruit') : null;
             const lctx = lemonCv ? lemonCv.getContext('2d') : null;
-            const FN = 36, IDLE = 10;
+            const FN = 36, IDLE = 10; if (lctx) lctx.imageSmoothingQuality = 'high';
             const sp = { f: IDLE };
             let frames = [];
             try { frames = JSON.parse($('#lemonFrames').textContent).map(src => { const im = new Image(); im.src = src; return im; }); } catch (err) { }
@@ -1045,6 +1134,53 @@
                 return list.length ? { list, u0, u1, v0, v1 } : null;
             }
 
+            const spins = data.map(p => p.spin ? sp : { f: 0 });
+            function drawFruit(i, snap) {
+                if (!glOK || data[i].spin) return;
+                const cv = cards[i].querySelector('canvas.fruit'); if (!cv && !snap) return;
+                gl.uniform1f(uK, GK[data[i].id]); gl.uniform1f(uA, snap ? 0.55 : spins[i].f * Math.PI * 2 / FN); gl.uniform2f(uR, gc.width, gc.height);
+                gl.drawArrays(gl.TRIANGLES, 0, 3);
+                if (snap) return;
+                const x = cv.getContext('2d'); x.clearRect(0, 0, cv.width, cv.height); x.drawImage(gc, 0, 0);
+            }
+            function sizeGL() {
+                if (!glOK) return;
+                const w = Math.min(960, Math.round((cards[0].offsetWidth || 400) * Math.min(window.devicePixelRatio || 1, 2))), h = Math.round(w * 1.2);
+                gc.width = w; gc.height = h; gl.viewport(0, 0, w, h);
+                cards.forEach((c, i) => { const cv = c.querySelector('canvas.fruit'); if (!data[i].spin && cv) { cv.width = w; cv.height = h; } drawFruit(i); });
+            }
+            const drawActive = () => { if (data[active].spin) drawLemon(); else drawFruit(active); };
+            function detailArt(i) {
+                const p = data[i]; if (p.spin || !glOK) return '#f-' + p.id;
+                let s = document.getElementById('r-' + p.id);
+                if (!s) { s = document.createElementNS(NS, 'symbol'); s.id = 'r-' + p.id; s.setAttribute('viewBox', '0 0 200 240'); s.innerHTML = '<image x="0" y="0" width="200" height="240"/>'; document.querySelector('symbol').parentNode.appendChild(s); }
+                drawFruit(i, true); s.firstChild.setAttribute('href', gc.toDataURL('image/png'));
+                return '#r-' + p.id;
+            }
+            function cardSamples(i) {
+                const cvs = cards[i].querySelector('canvas.fruit'); if (!cvs) return null;
+                const W = 100, H = 120, oc = document.createElement('canvas'); oc.width = W; oc.height = H;
+                const o = oc.getContext('2d'); o.drawImage(cvs, 0, 0, W, H);
+                const d = o.getImageData(0, 0, W, H).data, list = [];
+                let u0 = 1, u1 = 0, v0 = 1, v1 = 0;
+                for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+                    const k = (y * W + x) * 4; if (d[k + 3] < 200) continue;
+                    const u = (x + 0.5) / W, v = (y + 0.5) / H, m = 0.2 + Math.random() * 0.35;
+                    u0 = Math.min(u0, u); u1 = Math.max(u1, u); v0 = Math.min(v0, v); v1 = Math.max(v1, v);
+                    list.push({ u, v, c: 'rgb(' + Math.round(d[k] + (245 - d[k]) * m) + ',' + Math.round(d[k + 1] + (235 - d[k + 1]) * m) + ',' + Math.round(d[k + 2] + (200 - d[k + 2]) * m) + ')' });
+                }
+                return list.length ? { list, u0, u1, v0, v1 } : null;
+            }
+            let lt = 0, fc = 0;
+            function loop(now) {
+                requestAnimationFrame(loop);
+                const dt = Math.min(0.05, (now - lt) / 1000); lt = now; fc++;
+                if (!glOK || mode === 'detail' || document.hidden) return;
+                if (mode === 'browse' && !drag && !RM && !data[active].spin && !gsap.isTweening(spins[active])) spins[active].f += dt * 0.9;
+                for (let i = 0; i < n; i++) { if (data[i].spin || Math.abs(offset(i)) > 2.6) continue; if (i === active || (fc + i) % 4 === 0) drawFruit(i); }
+            }
+            requestAnimationFrame(loop);
+
             const dotsEl = $('#dots');
             const dots = data.map((p, i) => {
                 const b = document.createElement('button');
@@ -1063,7 +1199,7 @@
                 const S = spacing();
                 cards.forEach((c, i) => {
                     const o = offset(i), a = Math.abs(o);
-                    const s = Math.max(0.34, 1 - a * 0.24);
+                    const s = Math.max(0.3, 1.1 - a * 0.3);
                     const op = a < 1 ? 1 - a * 0.45 : a < 2 ? 0.55 - (a - 1) * 0.33 : Math.max(0, 0.22 - (a - 2) * 0.22);
                     const y = Math.pow(a, 1.6) * 20;
                     c.style.transform = 'translate(-50%,-50%) translate3d(' + (o * S) + 'px,' + y + 'px,0) rotateY(' + (-o * 16) + 'deg) rotate(' + (o * 5) + 'deg) scale(' + s + ')';
@@ -1085,7 +1221,7 @@
                 ghost.textContent = p.name.toUpperCase();
                 nameEl.textContent = p.name;
                 subEl.textContent = p.cat + ' powder';
-                hintTxt.textContent = p.spin ? 'Drag the lemon to spin it. Click it to turn it into powder' : 'Click or tap the ' + p.name.toLowerCase() + ' to turn it into powder';
+                hintTxt.textContent = 'Drag the ' + p.name.toLowerCase() + ' to turn it. Click it to turn it into powder';
                 if (p.spin) setTimeout(introSpin, 800);
                 if (!firstTheme && !RM) {
                     gsap.fromTo([nameEl, subEl], { yPercent: 40, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.6, ease: 'power3.out', stagger: 0.05, overwrite: true });
@@ -1109,8 +1245,8 @@
                 if (mode !== 'browse' || e.target.closest('.ui')) return;
                 gsap.killTweensOf(st);
                 let spin = false;
-                if (data[active].spin) {
-                    gsap.killTweensOf(sp);
+                {
+                    gsap.killTweensOf(spins[active]);
                     const rr = cards[active].getBoundingClientRect();
                     spin = e.clientX >= rr.left && e.clientX <= rr.right && e.clientY >= rr.top && e.clientY <= rr.bottom;
                 }
@@ -1125,10 +1261,10 @@
                     const ddx = e.clientX - drag.lx, ddy = e.clientY - drag.ly;
                     const dd = Math.abs(ddx) >= Math.abs(ddy) ? ddx : ddy;
                     const now = performance.now(), dt = Math.max(1, now - drag.lt), df = dd / 11;
-                    sp.f += df;
+                    spins[active].f += df;
                     drag.sv = 0.8 * drag.sv + 0.2 * (df / dt * 1000);
                     drag.lx = e.clientX; drag.ly = e.clientY; drag.lt = now;
-                    drawLemon(); return;
+                    drawActive(); return;
                 }
                 const dx = e.clientX - drag.x;
                 if (Math.abs(dx) > 6) drag.moved = true;
@@ -1142,7 +1278,7 @@
                 if (!drag) return;
                 const d = drag; drag = null;
                 if (d.spin && d.moved) {
-                    gsap.to(sp, { f: sp.f + Math.max(-14, Math.min(14, d.sv * 0.35)), duration: T(1.1), ease: 'power3.out', overwrite: true, onUpdate: drawLemon });
+                    const S = spins[active]; gsap.to(S, { f: S.f + Math.max(-14, Math.min(14, d.sv * 0.35)), duration: T(1.1), ease: 'power3.out', overwrite: true, onUpdate: drawActive });
                     return;
                 }
                 if (!d.moved) {
@@ -1258,7 +1394,7 @@
             function transform() {
                 if (mode !== 'browse') return;
                 mode = 'transform';
-                gsap.killTweensOf(sp); sp.f = Math.round(sp.f); drawLemon();
+                const SS = spins[active]; gsap.killTweensOf(SS); SS.f = Math.round(SS.f); drawActive();
                 const p = data[active], card = cards[active], fr = card.querySelector('.fruit');
                 const r = fr.getBoundingClientRect();
                 gsap.to('.hudfade', { opacity: 0, duration: 0.3, pointerEvents: 'none' });
@@ -1272,7 +1408,7 @@
                     .to(fr, { rotation: -4, duration: 0.12 })
                     .to(fr, { rotation: 0, duration: 0.1 });
                 let info;
-                tl.add(() => { info = startFx(r, p, p.spin ? lemonSamples() : null); }, 0.42);
+                tl.add(() => { info = startFx(r, p, p.spin ? lemonSamples() : cardSamples(active)); }, 0.42);
                 tl.to(fr, { scale: 0.82, opacity: 0, filter: 'blur(8px)', duration: 0.9, ease: 'power2.in' }, 0.42);
                 tl.to([nameEl, subEl], { opacity: 0, duration: 0.2 }, 1.5);
                 tl.add(() => { nameEl.textContent = p.name + ' Powder'; subEl.textContent = 'Ready to use'; }, 1.7);
@@ -1293,8 +1429,9 @@
                 $('#dCat').textContent = p.cat + ' powder';
                 $('#dInside').innerHTML = p.inside.map(x => '<li>' + x + '</li>').join('');
                 $('#dUses').innerHTML = p.uses.map(x => '<li>' + x + '</li>').join('');
-                $('#pouchFruit').setAttribute('href', '#f-' + p.id);
-                $('#bigFruit').setAttribute('href', '#f-' + p.id);
+                const art = detailArt(i);
+                $('#pouchFruit').setAttribute('href', art);
+                $('#bigFruit').setAttribute('href', art);
                 $('#pouchName').textContent = p.name;
                 $('#pouchSub').textContent = p.cat + ' powder';
                 $('#dPrevN').textContent = data[mod(i - 1, n)].name;
@@ -1328,7 +1465,7 @@
                 stage.style.visibility = 'visible'; stage.inert = false;
                 cards.forEach(c => gsap.set(c.querySelector('.fruit'), { clearProps: 'all' }));
                 gsap.killTweensOf(cards); gsap.set('.hudfade', { clearProps: 'all' });
-                render(); applyTheme(); drawLemon();
+                render(); applyTheme(); drawActive();
                 const card = cards[active].getBoundingClientRect();
                 const ox = card.left + card.width / 2, oy = card.top + card.height / 2;
                 const maxR = Math.hypot(Math.max(ox, innerWidth - ox), Math.max(oy, innerHeight - oy)) + 10;
@@ -1375,9 +1512,9 @@
             });
 
             /* ---------- boot ---------- */
-            function resize() { sizeCanvas(); if (mode === 'browse') render(); }
+            function resize() { sizeCanvas(); sizeGL(); if (mode === 'browse') render(); }
             window.addEventListener('resize', resize);
-            sizeCanvas(); render(); applyTheme();
+            sizeCanvas(); sizeGL(); render(); applyTheme();
 
             const h = location.hash.slice(1), hi = data.findIndex(p => p.id === h);
             if (hi >= 0) {

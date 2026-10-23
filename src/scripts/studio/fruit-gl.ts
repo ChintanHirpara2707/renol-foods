@@ -19,6 +19,8 @@ export interface FruitRenderer {
   resize(cssWidth: number, dpr: number): { width: number; height: number };
   /** Draws one fruit and, if `target` is given, copies the result into its 2D context. */
   draw(kind: number, angle: number, target?: HTMLCanvasElement): void;
+  /** Draws one fruit on the shared canvas and returns it as a PNG data URL (detail view art). */
+  snapshot(kind: number, angle: number): string;
   dispose(): void;
 }
 
@@ -108,6 +110,11 @@ export function createFruitRenderer(onLost?: () => void): FruitRenderer {
         context.clearRect(0, 0, target.width, target.height);
         context.drawImage(canvas, 0, 0);
       }
+    },
+    snapshot(kind, angle) {
+      if (!ok || !gl) return "";
+      this.draw(kind, angle);
+      return canvas.toDataURL("image/png");
     },
     dispose() {
       canvas.removeEventListener("webglcontextlost", handleLost);

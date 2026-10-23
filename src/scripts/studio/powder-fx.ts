@@ -1,7 +1,90 @@
-import type { ProductItem } from "../../data/products";
-import type { SampleResult, PixelSample } from "./spin";
+/**
+ * Powder effect: the fruit crumbles into grains sampled from its own pixels, the grains fall and
+ * build a heap (a height map of columns). Ported from the prototype's startFx(). One full-viewport
+ * -aligned canvas is created on start and removed on stop.
+ */
 
-export interface FxParticle {
+export interface PowderProduct {
+  powder: string;
+  particles: string[];
+}
+
+export interface PowderSamples {
+  list: { u: number; v: number; c: string }[];
+  u0: number;
+  u1: number;
+  v0: number;
+  v1: number;
+}
+
+export interface FxInfo {
+  ground: number;
+  Hp: number;
+  cx: number;
+}
+
+/** Few cores or little memory: fewer grains so the effect stays smooth. */
+export function isLowPower(): boolean {
+  const nav = navigator as Navigator & { deviceMemory?: number };
+  return (nav.hardwareConcurrency ?? 8) <= 4 || (nav.deviceMemory ?? 8) <= 4;
+}
+
+export function grainCount(): number {
+  if (isLowPower()) return 600;
+  return innerWidth < 700 ? 900 : 1500;
+}
+
+interface SampleOptions {
+  /** Pale powder tone the pixel colours are blended towards. */
+  tone?: [number, number, number];
+  /** Blend amount: lo + random * span. */
+  lo?: number;
+  span?: number;
+}
+
+/** Downscales a fruit canvas/image to 100x120, keeps opaque pixels and tints them towards powder. */
+export function sampleSource(source: CanvasImageSource, options: SampleOptions = {}): PowderSamples | null {
+  const { tone = [245, 235, 200], lo = 0.2, span = 0.35 } = options;
+  const W = 100;
+  const H = 120;
+  const canvas = document.createElement("canvas");
+  canvas.width = W;
+  canvas.height = H;
+  const ctx = canvas.getContext("2d", { willReadFrequently: true });
+  if (!ctx) return null;
+  try {
+    ctx.drawImage(source, 0, 0, W, H);
+  } catch {
+    return null;
+  }
+  const d = ctx.getImageData(0, 0, W, H).data;
+  const list: PowderSamples["list"] = [];
+  let u0 = 1;
+  let u1 = 0;
+  let v0 = 1;
+  let v1 = 0;
+  for (let y = 0; y < H; y++) {
+    for (let x = 0; x < W; x++) {
+      const k = (y * W + x) * 4;
+      if (d[k + 3] < 200) continue;
+      const u = (x + 0.5) / W;
+      const v = (y + 0.5) / H;
+      const m = lo + Math.random() * span;
+      u0 = Math.min(u0, u);
+      u1 = Math.max(u1, u);
+      v0 = Math.min(v0, v);
+      v1 = Math.max(v1, v);
+      list.push({
+        u,
+        v,
+        c: `rgb(${Math.round(d[k] + (tone[0] - d[k]) * m)},${Math.round(d[k + 1] + (tone[1] - d[k + 1]) * m)},${Math.round(d[k + 2] + (tone[2] - d[k + 2]) * m)})`,
+      });
+    }
+  }
+  return list.length ? { list, u0, u1, v0, v1 } : null;
+}
+
+interface Grain {
   x: number;
   y: number;
   vx: number;
@@ -12,10 +95,10 @@ export interface FxParticle {
   rest: boolean;
 }
 
-export interface FxState {
+interface Run {
   t0: number;
   last: number;
-  parts: FxParticle[];
+  parts: Grain[];
   h: Float32Array;
   cols: number;
   colW: number;
@@ -23,297 +106,170 @@ export interface FxState {
   ground: number;
   inc: number;
   Hp: number;
-  product: ProductItem;
-  raf: number;
+  powder: string;
 }
 
-export class PowderFxManager {
-  private cv: HTMLCanvasElement;
-  private ctx: CanvasRenderingContext2D | null;
-  private fx: FxState | null = null;
-  private isTabVisible = true;
-  private svgSamplesCache = new Map<string, SampleResult>();
-
-  constructor(canvas: HTMLCanvasElement) {
-    this.cv = canvas;
-    this.ctx = canvas.getContext("2d");
-    this.setupVisibilityListener();
-  }
-
-  private setupVisibilityListener() {
-    document.addEventListener("visibilitychange", () => {
-      this.isTabVisible = !document.hidden;
-    });
-  }
-
-  public sizeCanvas() {
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    this.cv.width = window.innerWidth * dpr;
-    this.cv.height = window.innerHeight * dpr;
-    this.cv.style.width = `${window.innerWidth}px`;
-    this.cv.style.height = `${window.innerHeight}px`;
-    if (this.ctx) {
-      this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    }
-  }
+export class PowderFx {
+  private canvas: HTMLCanvasElement | null = null;
+  private ctx: CanvasRenderingContext2D | null = null;
+  private bounds = { left: 0, top: 0, width: 0, height: 0 };
+  private raf = 0;
+  private run: Run | null = null;
 
   /**
-   * Rasterize any SVG fruit symbol to offscreen canvas and sample real pixels
+   * @param r      viewport rect of the fruit
+   * @param bounds viewport rect the effect may draw in (the studio); grains outside are clipped
    */
-  public async getSvgFruitSamples(fruitId: string): Promise<SampleResult | null> {
-    if (this.svgSamplesCache.has(fruitId)) {
-      return this.svgSamplesCache.get(fruitId)!;
-    }
-
-    try {
-      const defsEl = document.getElementById("fruit-svg-defs");
-      const defsMarkup = defsEl ? defsEl.innerHTML : "";
-
-      const svgData = `
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 240" width="120" height="144">
-          <defs>${defsMarkup}</defs>
-          <use href="#f-${fruitId}"/>
-        </svg>
-      `;
-
-      const blob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" });
-      const url = URL.createObjectURL(blob);
-      const img = new Image();
-
-      const sampleResult = await new Promise<SampleResult | null>((resolve) => {
-        img.onload = () => {
-          URL.revokeObjectURL(url);
-          const W = 100;
-          const H = 120;
-          const oc = document.createElement("canvas");
-          oc.width = W;
-          oc.height = H;
-          const o = oc.getContext("2d");
-          if (!o) {
-            resolve(null);
-            return;
-          }
-
-          o.drawImage(img, 0, 0, W, H);
-          const d = o.getImageData(0, 0, W, H).data;
-          const list: PixelSample[] = [];
-          let u0 = 1,
-            u1 = 0,
-            v0 = 1,
-            v1 = 0;
-
-          for (let y = 0; y < H; y++) {
-            for (let x = 0; x < W; x++) {
-              const k = (y * W + x) * 4;
-              if (d[k + 3] < 180) continue; // transparent background
-              const u = (x + 0.5) / W;
-              const v = (y + 0.5) / H;
-              const m = 0.25 + Math.random() * 0.35;
-              u0 = Math.min(u0, u);
-              u1 = Math.max(u1, u);
-              v0 = Math.min(v0, v);
-              v1 = Math.max(v1, v);
-              list.push({
-                u,
-                v,
-                c: `rgb(${Math.round(d[k] + (248 - d[k]) * m)}, ${Math.round(
-                  d[k + 1] + (236 - d[k + 1]) * m
-                )}, ${Math.round(d[k + 2] + (170 - d[k + 2]) * m)})`,
-              });
-            }
-          }
-
-          resolve(list.length ? { list, u0, u1, v0, v1 } : null);
-        };
-        img.onerror = () => {
-          URL.revokeObjectURL(url);
-          resolve(null);
-        };
-        img.src = url;
-      });
-
-      if (sampleResult) {
-        this.svgSamplesCache.set(fruitId, sampleResult);
-      }
-      return sampleResult;
-    } catch {
-      return null;
-    }
-  }
-
-  public stop() {
-    if (this.fx) {
-      cancelAnimationFrame(this.fx.raf);
-      this.fx = null;
-    }
-    if (this.ctx) {
-      this.ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
-    }
-  }
-
-  public start(
-    rect: DOMRect,
-    product: ProductItem,
-    sample: SampleResult | null
-  ): { ground: number; Hp: number; cx: number } {
+  start(r: DOMRect, p: PowderProduct, smp: PowderSamples | null, bounds: DOMRect): FxInfo {
     this.stop();
-    if (!this.ctx) return { ground: rect.bottom, Hp: rect.height * 0.5, cx: rect.left + rect.width / 2 };
+    const left = Math.max(0, bounds.left);
+    const top = Math.max(0, bounds.top);
+    const width = Math.max(1, Math.min(innerWidth, bounds.right) - left);
+    const height = Math.max(1, Math.min(innerHeight, bounds.bottom) - top);
+    this.bounds = { left, top, width, height };
 
-    const bx0 = sample ? sample.u0 : 0.1;
-    const bx1 = sample ? sample.u1 : 0.9;
-    const by0 = sample ? sample.v0 : 0.1;
-    const by1 = sample ? sample.v1 : 0.9;
+    const DPR = Math.min(window.devicePixelRatio || 1, 2);
+    const canvas = document.createElement("canvas");
+    canvas.setAttribute("aria-hidden", "true");
+    canvas.width = Math.round(width * DPR);
+    canvas.height = Math.round(height * DPR);
+    canvas.style.cssText = `position:fixed;left:${left}px;top:${top}px;width:${width}px;height:${height}px;z-index:30;pointer-events:none`;
+    document.body.appendChild(canvas);
+    const ctx = canvas.getContext("2d");
+    if (!ctx) {
+      canvas.remove();
+      return { ground: r.bottom, Hp: r.height * 0.5, cx: r.left + r.width / 2 };
+    }
+    // Draw in viewport coordinates.
+    ctx.setTransform(DPR, 0, 0, DPR, -left * DPR, -top * DPR);
+    this.canvas = canvas;
+    this.ctx = ctx;
 
-    const bw = (bx1 - bx0) * rect.width;
-    const bh = (by1 - by0) * rect.height;
-    const cx = rect.left + ((bx0 + bx1) / 2) * rect.width;
-    const cy = rect.top + ((by0 + by1) / 2) * rect.height;
-
+    const bx0 = smp ? smp.u0 : 0;
+    const bx1 = smp ? smp.u1 : 1;
+    const by0 = smp ? smp.v0 : 0;
+    const by1 = smp ? smp.v1 : 1;
+    const bw = (bx1 - bx0) * r.width;
+    const bh = (by1 - by0) * r.height;
+    const cx = r.left + ((bx0 + bx1) / 2) * r.width;
+    const cy = r.top + ((by0 + by1) / 2) * r.height;
     const colW = 3;
-    const R = (sample ? bw : rect.width) * 0.62;
-    const left = cx - R;
+    const R = (smp ? bw : r.width) * 0.62;
+    const fxLeft = cx - R;
     const cols = Math.ceil((2 * R) / colW);
-    const ground = rect.top + by1 * rect.height + 4;
-    const Hp = (sample ? bh : rect.height) * 0.5;
-
-    // Cap particles on small screens and mobile devices (Rule 6)
-    const isSmallMobile = window.innerWidth < 480;
-    const isMobile = window.innerWidth < 768;
-    const isLowPower =
-      (typeof navigator !== "undefined" &&
-        navigator.hardwareConcurrency &&
-        navigator.hardwareConcurrency <= 2) ||
-      isMobile;
-    const N = isSmallMobile ? 350 : isLowPower ? 550 : 1200;
-
+    const ground = r.top + by1 * r.height + 4;
+    const Hp = (smp ? bh : r.height) * 0.5;
+    const N = grainCount();
     const inc = (R * Hp) / (N * colW);
     const h = new Float32Array(cols);
 
-    const parts: FxParticle[] = Array.from({ length: N }, () => {
-      let x = 0;
-      let y = 0;
-      let col = product.particles[0];
-
-      if (sample && sample.list.length) {
-        const q = sample.list[(Math.random() * sample.list.length) | 0];
-        x = rect.left + q.u * rect.width;
-        y = rect.top + q.v * rect.height;
-        col = q.c;
+    const parts: Grain[] = Array.from({ length: N }, () => {
+      let x: number;
+      let y: number;
+      let c: string;
+      if (smp) {
+        const q = smp.list[(Math.random() * smp.list.length) | 0];
+        x = r.left + q.u * r.width;
+        y = r.top + q.v * r.height;
+        c = q.c;
       } else {
         const a = Math.random() * Math.PI * 2;
         const rr = Math.sqrt(Math.random());
-        x = cx + Math.cos(a) * rr * rect.width * 0.38;
-        y = cy + Math.sin(a) * rr * rect.height * 0.4;
-        col = product.particles[(Math.random() * product.particles.length) | 0];
+        x = cx + Math.cos(a) * rr * r.width * 0.38;
+        y = cy + Math.sin(a) * rr * r.height * 0.4;
+        c = p.particles[(Math.random() * p.particles.length) | 0];
       }
-
       const dx = x - cx;
       const dy = y - cy;
       const d = Math.hypot(dx, dy) || 1;
       const speed = 0.4 + Math.random() * 2.2;
-
       return {
         x,
         y,
         vx: (dx / d) * speed * (0.6 + Math.random()),
         vy: (dy / d) * speed * 0.5 - Math.random() * 1.6,
         s: 1.3 + Math.random() * 2.2,
-        c: col,
-        delay: ((y - (cy - bh * 0.5)) / (bh || 1)) * 420 + Math.random() * 160,
+        c,
+        delay: ((y - (cy - bh * 0.5)) / bh) * 420 + Math.random() * 160,
         rest: false,
       };
     });
 
     const now = performance.now();
-    this.fx = {
-      t0: now,
-      last: now,
-      parts,
-      h,
-      cols,
-      colW,
-      left,
-      ground,
-      inc,
-      Hp,
-      product,
-      raf: 0,
-    };
-
-    const loop = (timestamp: number) => {
-      if (!this.fx) return;
-      if (!this.isTabVisible) {
-        this.fx.last = timestamp;
-        this.fx.raf = requestAnimationFrame(loop);
-        return;
-      }
-
-      const k = Math.min(2.5, (timestamp - this.fx.last) / 16.67);
-      this.fx.last = timestamp;
-      const t = timestamp - this.fx.t0;
-
-      const ctx = this.ctx!;
-      ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
-
-      for (const q of this.fx.parts) {
-        if (q.rest || t < q.delay) continue;
-        q.vy += 0.22 * k;
-        q.vx *= 0.992;
-        q.vy *= 0.995;
-        q.x += q.vx * k;
-        q.y += q.vy * k;
-
-        let c = Math.floor((q.x - this.fx.left) / this.fx.colW);
-        c = Math.max(0, Math.min(this.fx.cols - 1, c));
-
-        if (q.y >= this.fx.ground - this.fx.h[c]) {
-          for (let m = 0; m < 12; m++) {
-            const l = c > 0 ? this.fx.h[c - 1] : 1e9;
-            const rt = c < this.fx.cols - 1 ? this.fx.h[c + 1] : 1e9;
-            if (this.fx.h[c] - l > this.fx.colW * 0.9 && l <= rt) c--;
-            else if (this.fx.h[c] - rt > this.fx.colW * 0.9) c++;
-            else break;
-          }
-          this.fx.h[c] += this.fx.inc;
-          q.rest = true;
-        }
-      }
-
-      // Smooth heap curve
-      const hs = (i: number) =>
-        (this.fx!.h[Math.max(0, i - 1)] +
-          2 * this.fx!.h[i] +
-          this.fx!.h[Math.min(this.fx!.cols - 1, i + 1)]) /
-        4;
-
-      ctx.beginPath();
-      ctx.moveTo(this.fx.left, this.fx.ground + 2);
-      for (let i = 0; i < this.fx.cols; i++) {
-        ctx.lineTo(this.fx.left + i * this.fx.colW, this.fx.ground - hs(i));
-      }
-      ctx.lineTo(this.fx.left + this.fx.cols * this.fx.colW, this.fx.ground + 2);
-      ctx.closePath();
-      ctx.fillStyle = this.fx.product.powder;
-      ctx.fill();
-
-      // Top highlight gradient on pile
-      const g = ctx.createLinearGradient(0, this.fx.ground - this.fx.Hp, 0, this.fx.ground);
-      g.addColorStop(0, "rgba(255,255,255,0.3)");
-      g.addColorStop(1, "rgba(0,0,0,0.28)");
-      ctx.fillStyle = g;
-      ctx.fill();
-
-      // Flying powder grains
-      for (const q of this.fx.parts) {
-        if (q.rest || t < q.delay) continue;
-        ctx.fillStyle = q.c;
-        ctx.fillRect(q.x, q.y, q.s, q.s);
-      }
-
-      this.fx.raf = requestAnimationFrame(loop);
-    };
-
-    this.fx.raf = requestAnimationFrame(loop);
+    this.run = { t0: now, last: now, parts, h, cols, colW, left: fxLeft, ground, inc, Hp, powder: p.powder };
+    this.raf = requestAnimationFrame(this.loop);
     return { ground, Hp, cx };
+  }
+
+  private loop = (now: number): void => {
+    const fx = this.run;
+    const ctx = this.ctx;
+    if (!fx || !ctx) return;
+    const k = Math.min(2.5, (now - fx.last) / 16.67);
+    fx.last = now;
+    const t = now - fx.t0;
+    const b = this.bounds;
+    ctx.clearRect(b.left, b.top, b.width, b.height);
+
+    for (const q of fx.parts) {
+      if (q.rest || t < q.delay) continue;
+      q.vy += 0.22 * k;
+      q.vx *= 0.992;
+      q.vy *= 0.995;
+      q.x += q.vx * k;
+      q.y += q.vy * k;
+      let c = Math.floor((q.x - fx.left) / fx.colW);
+      c = Math.max(0, Math.min(fx.cols - 1, c));
+      if (q.y >= fx.ground - fx.h[c]) {
+        for (let m = 0; m < 12; m++) {
+          const l = c > 0 ? fx.h[c - 1] : 1e9;
+          const rt = c < fx.cols - 1 ? fx.h[c + 1] : 1e9;
+          if (fx.h[c] - l > fx.colW * 0.9 && l <= rt) c--;
+          else if (fx.h[c] - rt > fx.colW * 0.9) c++;
+          else break;
+        }
+        fx.h[c] += fx.inc;
+        q.rest = true;
+      }
+    }
+
+    // heap
+    const hs = (i: number) => (fx.h[Math.max(0, i - 1)] + 2 * fx.h[i] + fx.h[Math.min(fx.cols - 1, i + 1)]) / 4;
+    ctx.beginPath();
+    ctx.moveTo(fx.left, fx.ground + 2);
+    for (let i = 0; i < fx.cols; i++) ctx.lineTo(fx.left + i * fx.colW, fx.ground - hs(i));
+    ctx.lineTo(fx.left + fx.cols * fx.colW, fx.ground + 2);
+    ctx.closePath();
+    ctx.fillStyle = fx.powder;
+    ctx.fill();
+    const g = ctx.createLinearGradient(0, fx.ground - fx.Hp, 0, fx.ground);
+    g.addColorStop(0, "rgba(255,255,255,.3)");
+    g.addColorStop(1, "rgba(0,0,0,.28)");
+    ctx.fillStyle = g;
+    ctx.fill();
+
+    // flying grains
+    for (const q of fx.parts) {
+      if (q.rest || t < q.delay) continue;
+      ctx.fillStyle = q.c;
+      ctx.fillRect(q.x, q.y, q.s, q.s);
+    }
+    this.raf = requestAnimationFrame(this.loop);
+  };
+
+  /** Stops the loop, clears the canvas and removes it. Safe to call repeatedly. */
+  stop(): void {
+    cancelAnimationFrame(this.raf);
+    this.raf = 0;
+    this.run = null;
+    if (this.canvas && this.ctx) {
+      this.ctx.save();
+      this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      this.ctx.restore();
+    }
+    this.canvas?.remove();
+    this.canvas = null;
+    this.ctx = null;
   }
 }

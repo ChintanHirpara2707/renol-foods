@@ -375,6 +375,7 @@ const initial = items[Math.min(2, items.length - 1)];
   import { createFruitRenderer } from "../../scripts/studio/fruit-gl";
   import type { StudioProduct } from "../../scripts/studio/data";
   import { onPageLoad } from "../../scripts/lifecycle";
+  import { createProductDetail, type ProductDetail } from "../../scripts/studio/detail";
 
   const FN = 36; // lemon frames, and the unit the idle rotation is expressed in
   const mod = (a: number, b: number) => ((a % b) + b) % b;
@@ -598,7 +599,7 @@ const initial = items[Math.min(2, items.length - 1)];
       b.type = "button";
       b.className = "ps-dot";
       b.setAttribute("aria-label", `Show ${p.name}`);
-      b.addEventListener("click", () => goTo(st.pos + offset(i)), { signal });
+      b.addEventListener("click", () => browsing() && goTo(st.pos + offset(i)), { signal });
       dotsEl.appendChild(b);
       return b;
     });
@@ -636,20 +637,26 @@ const initial = items[Math.min(2, items.length - 1)];
     function goTo(target: number): void {
       gsap.to(st, { pos: target, duration: T(0.9), ease: "power3.out", overwrite: true, onUpdate() { render(); sync(); } });
     }
-    const step = (d: number) => goTo(Math.round(st.pos) + d);
+    // The carousel is only interactive while no powder effect / detail view is running.
+    let detail: ProductDetail | undefined;
+    const browsing = () => !detail || detail.mode === "browse";
+    const step = (d: number) => {
+      if (browsing()) goTo(Math.round(st.pos) + d);
+    };
 
     q<HTMLButtonElement>("[data-prev]").addEventListener("click", () => step(-1), { signal });
     q<HTMLButtonElement>("[data-next]").addEventListener("click", () => step(1), { signal });
 
     function activateCard(i: number): void {
+      if (!browsing() || !detail) return;
       const o = offset(i);
-      if (Math.abs(o) < 0.5) location.assign(`/products/${data[i].slug}/`);
+      if (Math.abs(o) < 0.5) detail.open(i);
       else goTo(Math.round(st.pos + o));
     }
 
     /* ---------- pointer: only horizontal drags are taken over ---------- */
     stage.addEventListener("pointerdown", (e) => {
-      if ((e.target as HTMLElement).closest(".ps-ui")) return;
+      if (!browsing() || (e.target as HTMLElement).closest(".ps-ui")) return;
       if (e.pointerType === "mouse" && e.button !== 0) return;
       gsap.killTweensOf(st);
       gsap.killTweensOf(spins[active]);
@@ -722,7 +729,7 @@ const initial = items[Math.min(2, items.length - 1)];
     // Horizontal-dominant wheel/trackpad gestures only; vertical wheel is never touched or prevented.
     let lastWheel = 0;
     stage.addEventListener("wheel", (e) => {
-      if (Math.abs(e.deltaX) <= Math.abs(e.deltaY) || Math.abs(e.deltaX) <= 20) return;
+      if (!browsing() || Math.abs(e.deltaX) <= Math.abs(e.deltaY) || Math.abs(e.deltaX) <= 20) return;
       const now = performance.now();
       if (now - lastWheel < 500) return;
       lastWheel = now;
@@ -731,7 +738,7 @@ const initial = items[Math.min(2, items.length - 1)];
 
     let visible = true;
     window.addEventListener("keydown", (e) => {
-      if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+      if (!browsing() || e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
       if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
       const t = e.target as HTMLElement;
       if (t.closest("input, textarea, select, [contenteditable], dialog, [role='dialog']")) return;
@@ -748,8 +755,8 @@ const initial = items[Math.min(2, items.length - 1)];
       const dt = Math.min(0.05, (now - lastTime) / 1000);
       lastTime = now;
       frame++;
-      if (!glOK) return;
-      if (!RM && !drag && !data[active].frames && !gsap.isTweening(spins[active])) {
+      if (!glOK || detail?.mode === "detail") return;
+      if (!RM && !drag && browsing() && !data[active].frames && !gsap.isTweening(spins[active])) {
         spins[active].f += dt * 0.9;
         dirty = true;
       }
@@ -787,9 +794,41 @@ const initial = items[Math.min(2, items.length - 1)];
     applyTheme();
     sizeGL();
     render();
+    detail = createProductDetail({
+      root,
+      stage,
+      data,
+      cards,
+      hud: Array.from(root.querySelectorAll<HTMLElement>(".ps-arrow, .ps-dots, .ps-hint, .ps-cue, .ps-cta")),
+      nameEl,
+      subEl,
+      renderer,
+      glOK: () => glOK,
+      reducedMotion: RM,
+      fruit: (i) => cards[i].querySelector<HTMLElement>(".ps-fruit"),
+      freeze: (i) => {
+        const S = spins[i];
+        gsap.killTweensOf(S);
+        S.f = Math.round(S.f);
+        drawActive();
+      },
+      restore: () => {
+        render();
+        applyTheme();
+        drawActive();
+      },
+      select: (j) => {
+        active = j;
+        st.pos = j + n * Math.round((st.pos - j) / n);
+        render();
+        applyTheme();
+      },
+      active: () => active,
+    });
     syncLoop();
 
     teardown = () => {
+      detail?.destroy();
       controller.abort();
       cancelAnimationFrame(raf);
       io.disconnect();

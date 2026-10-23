@@ -1,6 +1,7 @@
 import { existsSync } from "node:fs";
 import { join } from "node:path";
-import { products } from "../../data/products";
+import { products, publicSpecs } from "../../data/products";
+import { publicList } from "../../data/public";
 import { GL_KIND } from "./fruit-gl";
 
 /**
@@ -20,6 +21,10 @@ export interface StudioProduct {
   powder: string;
   particles: string[];
   blurb: string;
+  /** Confirmed uses only. */
+  uses: string[];
+  /** Confirmed spec rows only; empty means "Full specifications on request". */
+  specs: { label: string; value: string }[];
   /** WebGL scene id, or null when the fruit is not a shader scene. */
   kind: number | null;
   /** Photographed rotation frames (lemon), or null. */
@@ -55,6 +60,8 @@ export function studioData(): StudioData {
       powder: p.powder,
       particles: p.particles,
       blurb: p.blurb,
+      uses: publicList(p.uses),
+      specs: publicSpecs(p),
       kind: GL_KIND[p.id] ?? null,
       frames: p.spin ? { folder: p.framesFolder ?? "/frames/lemon/", count: p.spinFrames ?? 36, idle: 10 } : null,
       poster: existsSync(join(POSTER_DIR, posterFile)) ? `/images/fruit/${posterFile}` : null,
