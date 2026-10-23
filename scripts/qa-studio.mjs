@@ -89,7 +89,7 @@ for (const vp of [
       touchAction: getComputedStyle(document.querySelector(".ps-stage")).touchAction,
     };
   });
-  check(where, info.cards === 6, `expected 6 cards (caramel/apple have no art yet), got ${info.cards}`);
+  check(where, info.cards === 8, `expected 8 cards, got ${info.cards}`);
   check(where, info.drawn >= 3, `only ${info.drawn}/${info.canvases} canvases have pixels`);
   check(where, !info.overflow, "horizontal overflow");
   check(where, info.touchAction === "pan-y", `touch-action ${info.touchAction}`);
@@ -140,15 +140,15 @@ for (const vp of [
   await context.close();
 }
 
-// no WebGL: posters, still 6 cards, no errors
+// no WebGL: posters, still 8 cards, no errors
 {
   const { context, page, errors } = await open({ width: 1366, height: 636 }, { noWebGL: true });
   const info = await page.evaluate(() => ({
     cards: document.querySelectorAll(".ps-card").length,
     posters: [...document.querySelectorAll("img.ps-fruit")].filter((i) => i.complete && i.naturalWidth > 0).length,
   }));
-  check("no-webgl", info.cards === 6, `expected 6 cards, got ${info.cards}`);
-  check("no-webgl", info.posters >= 5, `only ${info.posters} posters loaded`);
+  check("no-webgl", info.cards === 8, `expected 8 cards, got ${info.cards}`);
+  check("no-webgl", info.posters >= 7, `only ${info.posters} posters loaded`);
   check("no-webgl", errors.length === 0, `errors: ${errors.slice(0, 3).join(" | ")}`);
   await context.close();
 }
