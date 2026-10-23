@@ -11,7 +11,8 @@ import Stat from "../components/ui/Stat.astro";
 import Field from "../components/ui/Field.astro";
 import Accordion from "../components/ui/Accordion.astro";
 import Breadcrumb from "../components/ui/Breadcrumb.astro";
-import { products } from "../data/products";
+import { products, productTheme } from "../data/products";
+import { categoryById } from "../data/categories";
 import { site } from "../data/site";
 
 const swatches = [
@@ -48,15 +49,15 @@ const swatches = [
       <Button type="button" variant="ghost">Button element</Button>
     </div>
     <div class="row">
-      {products.map((p) => <Tag accent={p.accent}>{p.fullName}</Tag>)}
+      {products.slice(0, 8).map((p) => <Tag accent={productTheme(p).accent}>{p.name}</Tag>)}
     </div>
   </Section>
 
   <Section id="kit-cards" title="Cards and stats" tone="panel">
     <div class="grid">
       {products.slice(0, 3).map((p) => (
-        <Card title={p.fullName} eyebrow={p.cat} accent={p.accent} href={`/products/${p.slug}`}>
-          <p>{p.blurb}</p>
+        <Card title={p.name} eyebrow={categoryById(p.category).name} accent={productTheme(p).accent} href={`/products/${p.slug}`}>
+          <p>{p.summary}</p>
         </Card>
       ))}
     </div>
@@ -70,7 +71,7 @@ const swatches = [
     <div class="grid">
       <Field label="Full name" name="name" required autocomplete="name" />
       <Field label="Work email" name="email" type="email" required autocomplete="email" hint="We reply to this address." />
-      <Field label="Product" name="product" type="select" options={products.map((p) => p.fullName)} />
+      <Field label="Product" name="product" type="select" options={products.map((p) => p.name)} />
       <Field label="Phone" name="phone" type="tel" autocomplete="tel" error="Enter a phone number with country code." />
     </div>
     <Field label="Message" name="message" type="textarea" />
@@ -81,7 +82,7 @@ const swatches = [
       name="kit"
       items={[
         { question: "Where are you based?", answer: `${site.address.street}, ${site.address.city}, ${site.address.state}.` },
-        { question: "Which powders do you make?", answer: products.map((p) => p.fullName).join(", ") + "." },
+        { question: "Which powders do you make?", answer: products.slice(0, 8).map((p) => p.name).join(", ") + " and more." },
       ]}
     />
   </Section>

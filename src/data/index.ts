@@ -1,5 +1,7 @@
 export * from "./site";
 export * from "./products";
+export * from "./categories";
+export * from "./licences";
 export * from "./industries";
 export * from "./process";
 export * from "./faq";

@@ -1,7 +1,7 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import FruitDefs from "../../components/studio/FruitDefs.astro";
-import { products, type ProductItem } from "../../data/products";
+import { legacyProducts as products, type LegacyProduct as ProductItem } from "../../data/legacy";
 
 export async function getStaticPaths() {
   return products.map((product, index) => {

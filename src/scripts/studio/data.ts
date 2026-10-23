@@ -1,18 +1,22 @@
 import { existsSync } from "node:fs";
 import { join } from "node:path";
-import { products, publicSpecs } from "../../data/products";
+import { products, productTheme, publicSpecs, shortName } from "../../data/products";
+import { categoryById } from "../../data/categories";
 import { publicList } from "../../data/public";
 import { GL_KIND } from "./fruit-gl";
 
 /**
- * Build-time only (runs in the Astro frontmatter): turns src/data/products.ts into the visual
- * data the Powder Studio needs and serialises it into the page. The client script imports the
- * type only, so none of the product data module ships in the JS bundle.
+ * Build-time only (runs in the Astro frontmatter): turns the studio products of
+ * src/data/products.ts into the visual data the Powder Studio needs and serialises it into the
+ * page. The client script imports the type only, so none of the product data ships in the JS bundle.
  */
 export interface StudioProduct {
+  /** Short key ("apple"): slug without the trailing "-powder". */
   id: string;
   slug: string;
+  /** Short name ("Apple"). */
   name: string;
+  /** Category label for the sub line ("Fruit"). */
   cat: string;
   accent: string;
   glow: string;
@@ -36,9 +40,9 @@ export interface StudioProduct {
 const POSTER_DIR = join(process.cwd(), "public", "images", "fruit");
 
 export interface StudioData {
-  /** Products that can be drawn (shader, frames or poster). */
+  /** Studio products that can be drawn (shader, frames or poster). */
   items: StudioProduct[];
-  /** Products with no artwork yet; listed in TODO_CONTENT.md. */
+  /** Studio products with no artwork yet (need a shader scene or a poster); see TODO_CONTENT.md. */
   missingArt: string[];
 }
 
@@ -46,24 +50,20 @@ export function studioData(): StudioData {
   const items: StudioProduct[] = [];
   const missingArt: string[] = [];
 
-  for (const p of products) {
+  for (const p of products.filter((x) => x.studio)) {
+    const id = p.slug.replace(/-powder$/, "");
     const posterFile = `${p.slug}.webp`;
     const entry: StudioProduct = {
-      id: p.id,
+      id,
       slug: p.slug,
-      name: p.name,
-      cat: p.cat,
-      accent: p.accent,
-      glow: p.glow,
-      base: p.base,
-      pouch: p.pouch,
-      powder: p.powder,
-      particles: p.particles,
-      blurb: p.blurb,
+      name: shortName(p),
+      cat: categoryById(p.category).name.replace(/ Powders$/, ""),
+      ...productTheme(p),
+      blurb: p.summary,
       uses: publicList(p.uses),
       specs: publicSpecs(p),
-      kind: GL_KIND[p.id] ?? null,
-      frames: p.spin ? { folder: p.framesFolder ?? "/frames/lemon/", count: p.spinFrames ?? 36, idle: 10 } : null,
+      kind: GL_KIND[id] ?? null,
+      frames: id === "lemon" ? { folder: "/frames/lemon/", count: 36, idle: 10 } : null,
       poster: existsSync(join(POSTER_DIR, posterFile)) ? `/images/fruit/${posterFile}` : null,
     };
     if (entry.kind !== null || entry.frames || entry.poster) items.push(entry);

@@ -2,7 +2,7 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import PowderStudio from "../components/studio/PowderStudio.astro";
 import { siteConfig } from "../data/site";
-import { products } from "../data/products";
+import { legacyProducts as products } from "../data/legacy";
 import { industries } from "../data/industries";
 import { manufacturingProcess } from "../data/process";
 import { isPublic } from "../data/public";
@@ -169,14 +169,6 @@ const faqs = allFaqs.filter((f) => isPublic(f.a));---
                     {ind.description}
                   </p>
                   
-                  <div class="space-y-2 mb-6">
-                    {ind.keyBenefits.map((b) => (
-                      <p class="flex items-start gap-2.5 text-xs text-white/70 font-body">
-                        <span class="mt-1 w-1.5 h-1.5 rounded-full flex-none" style="background-color: var(--accent, #ffe14a);"></span>
-                        <span>{b}</span>
-                      </p>
-                    ))}
-                  </div>
                 </div>
 
                 <div class="pt-5 border-t border-white/10 flex items-center justify-between">

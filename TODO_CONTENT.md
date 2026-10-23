@@ -115,3 +115,41 @@ The following ingredients, application tags, and blurb claims originated from th
 | **Ginger Ingredients** | Ginger Powder (`inside: ['Dried ginger']`) | Confirm 100% single-ingredient status without processing aids. |
 | **Caramel Ingredients** | Caramel Powder (`inside: ['Caramelized sugar']`) | Confirm class (Class I / Class III / Class IV) and carrier if present. |
 | **Apple Ingredients** | Apple Powder (`inside: ['Dried apples']`) | Confirm single-ingredient purity vs. anti-caking additives. |
+
+
+---
+
+## 7. Catalogue rebuild (products.ts, categories.ts, industries.ts, licences.ts, site.ts)
+
+All of the following are drafted general copy or placeholders. Nothing below has been confirmed by the client.
+
+### Copy that needs client review before launch
+- **Every product `summary`, `description` and `uses` list** (35 products in `src/data/products.ts`). Written to be general and factual: no health or nutrition claims, no numbers, no drying-method or testing statements. The client must confirm each product's uses and wording.
+- **Industry descriptions** (6, in `src/data/industries.ts`): one-line drafts.
+- **Category names** (6, in `src/data/categories.ts`) come from the client brief; counts are computed from the product data.
+- **Allergens**: `milk` on Skimmed Milk Powder, Milk Powder, Butter Powder; `soy` on Soya HVP Powder. Confirm these, and confirm whether any other product needs an allergen statement.
+- **Packaging**: "20 kg corrugated box" is applied to every product (one shared constant). Confirm per product.
+- **Specs** (`moisture`, `particleSize`, `shelfLife`, `storage`): `[ADD]` for all 35 products, hidden publicly. Public pages show "Full specifications on request".
+- **Ingredients lists** are not stored at all. The old prototype lists (for example silicon dioxide in tomato, sulphites in mango, "organic" spinach) must not return without client proof.
+
+### Licences (`src/data/licences.ts`)
+- FSSAI licence number: `[ADD]`.
+- ISO 22000:2018 certificate number: `[ADD]`.
+- Neither is shown publicly until a number is supplied (`publicLicences` is empty).
+
+### Contact (`src/data/site.ts`)
+- WhatsApp: `+919979977396` is used for now. `[CONFIRM it is WhatsApp-enabled]`.
+- Address spelling: "Plot No. 616, Kerala GIDC, Bavla, Ahmedabad" `[CONFIRM]`. The Google Maps link (`site.mapUrl`) is built from this text, so correct the text and the link follows.
+- Email and office hours: still `[CONFIRM]`.
+
+### Images that must be supplied (files do not exist yet)
+- 35 product images at `/public/images/products/<slug>.webp`.
+- 6 industry images at `/public/images/industries/<slug>.webp`.
+
+### Powder Studio
+- Products flagged `studio: true`: Apple, Orange, Pomegranate, Strawberry, White Guava, Blueberry, Beetroot. Their accent and glow colours are draft choices.
+- Only **Apple** has a renderer today. Orange, Pomegranate, Strawberry, White Guava, Blueberry and Beetroot need a shader scene (or at least a poster in `/public/images/fruit/<slug>.webp`) before they appear in the carousel. Until then the studio shows Apple only.
+- The previous studio fruits (tomato, mango, spinach, ginger, tamarind, caramel, lemon) are no longer flagged for the studio. Their shader scenes and posters still exist.
+
+### Pages still on the old schema
+- Home, `/products`, product pages, `/downloads`, `/request-sample`, `/industries` read the catalogue through `src/data/legacy.ts` until they are rebuilt. Delete that file with them.

@@ -2,7 +2,7 @@
 import Logo from "./ui/Logo.astro";
 import { nav } from "../data/nav";
 import { site } from "../data/site";
-import { products } from "../data/products";
+import { categories } from "../data/categories";
 import { isPublic } from "../data/public";
 
 const year = new Date().getFullYear();
@@ -21,9 +21,9 @@ const companyLinks = [...nav.primary.filter((l) => l.href !== "/products"), ...n
       <h2 id="footer-products">Products</h2>
       <ul>
         {
-          products.map((p) => (
+          categories.map((c) => (
             <li>
-              <a href={`/products/${p.slug}`}>{p.fullName}</a>
+              <a href={`/products?category=${c.slug}`}>{c.name}</a>
             </li>
           ))
         }

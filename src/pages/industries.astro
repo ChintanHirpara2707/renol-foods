@@ -2,7 +2,6 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import SectionHeading from "../components/SectionHeading.astro";
 import { industries } from "../data/industries";
-import { products } from "../data/products";
 ---
 
 <BaseLayout
@@ -48,17 +47,6 @@ import { products } from "../data/products";
                 <p class="text-sm text-white/70 leading-relaxed font-body">
                   {item.description}
                 </p>
-
-                {item.relevantProductSlugs.length > 0 && (
-                  <div class="mt-4 pt-3 border-t border-white/5">
-                    <span class="text-[11px] font-mono uppercase tracking-wider text-white/60 block mb-1.5">
-                      Key Powders
-                    </span>
-                    <p class="text-xs text-white/60 font-body">
-                      {item.relevantProductSlugs.slice(0, 3).map((slug) => products.find((p) => p.slug === slug)?.name).filter(Boolean).join(", ")}
-                    </p>
-                  </div>
-                )}
               </div>
 
               <!-- Industry card action: 1 text link per card ("View details →") -->
