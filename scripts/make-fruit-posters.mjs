@@ -1,12 +1,12 @@
 // Renders a still poster of every shader fruit with the Powder Studio's own fragment shader
 // (src/scripts/studio/fruit.frag.glsl) and writes public/images/fruit/<slug>.webp.
-// The lemon poster is its idle photo frame. Posters are the no-WebGL fallback.
+// Posters are the no-WebGL fallback.
 // Run: node scripts/make-fruit-posters.mjs   (needs Playwright's Chromium)
 import { chromium } from "playwright";
 import sharp from "sharp";
 import { mkdir, readFile } from "node:fs/promises";
 
-const KINDS = { tomato: 0, mango: 1, spinach: 2, ginger: 3, tamarind: 4, apple: 5, caramel: 6 };
+const KINDS = { beetroot: 0, apple: 1, pomegranate: 2, blueberry: 3, strawberry: 4, orange: 5, "white-guava": 6 };
 const ANGLE = 0.55; // same still angle the prototype uses for its snapshots
 const W = 400;
 const H = 480;
@@ -62,5 +62,3 @@ for (const [name, dataUrl] of Object.entries(pngs)) {
   await sharp(buffer).webp({ quality: 88, alphaQuality: 100 }).toFile(`${out}/${name}-powder.webp`);
   console.log(`wrote ${out}/${name}-powder.webp`);
 }
-await sharp("public/frames/lemon/10.webp").webp({ quality: 88, alphaQuality: 100 }).toFile(`${out}/lemon-powder.webp`);
-console.log(`wrote ${out}/lemon-powder.webp (frame 10)`);

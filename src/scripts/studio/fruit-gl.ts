@@ -8,7 +8,7 @@ import fragmentSource from "./fruit.frag.glsl?raw";
  */
 
 /** Scene id passed to the shader as uniform K. */
-export const GL_KIND: Record<string, number> = { tomato: 0, mango: 1, spinach: 2, ginger: 3, tamarind: 4, apple: 5, caramel: 6 };
+export const GL_KIND: Record<string, number> = { beetroot: 0, apple: 1, pomegranate: 2, blueberry: 3, strawberry: 4, orange: 5, "white-guava": 6 };
 
 const VERTEX_SOURCE = "attribute vec2 P;void main(){gl_Position=vec4(P,0.,1.);}";
 
@@ -33,7 +33,7 @@ function compile(gl: WebGLRenderingContext, type: number, source: string): WebGL
   gl.shaderSource(shader, source);
   gl.compileShader(shader);
   if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-    console.warn(gl.getShaderInfoLog(shader));
+    console.warn("[fruit-gl] shader compile error:\n" + gl.getShaderInfoLog(shader));
     return null;
   }
   return shader;
@@ -74,7 +74,7 @@ export function createFruitRenderer(onLost?: () => void): FruitRenderer {
           uR = gl.getUniformLocation(program, "R");
           ok = true;
         } else {
-          console.warn(gl.getProgramInfoLog(program));
+          console.warn("[fruit-gl] program link error:\n" + gl.getProgramInfoLog(program));
         }
       }
     }
