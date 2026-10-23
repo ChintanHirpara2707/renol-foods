@@ -6,10 +6,11 @@ const phones = [
   { tel: "+919979977396", display: "+91 9979977396" },
   { tel: "+919979977395", display: "+91 9979977395" },
   { tel: "+919979977392", display: "+91 9979977392" },
+  { mail: "Info@renolfoods.com", display: "Info@renolfoods.com" }
 ];
 
 /** Spelling not confirmed by the client yet (see `confirm.addressSpelling`). */
-const ADDRESS_LINE = "Plot No. 616, Kerala GIDC, Bavla, Ahmedabad";
+const ADDRESS_LINE = "Plot No. 616, GIDC, Kerala, Bavla, Gujarat 382220";
 
 const WHATSAPP_NUMBER = "+919979977396";
 
@@ -28,7 +29,8 @@ export const site = {
     country: "India",
     countryCode: "IN",
   },
-  mapUrl: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ADDRESS_LINE)}`,
+  /** The client's Google Maps share link: every "location" button opens this. */
+  mapUrl: "https://maps.app.goo.gl/AvTviu73BBb27tRG7",
   phones,
   /** Not confirmed by the client: hidden until replaced with a real value. */
   email: CONFIRM("primary sales email"),
