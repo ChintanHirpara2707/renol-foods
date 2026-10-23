@@ -21,6 +21,7 @@ const web3FormsKey = import.meta.env.PUBLIC_WEB3FORMS_ACCESS_KEY || "";
 
     <div class="section-container relative z-10">
       <SectionHeading
+        level={1}
         eyebrow="B2B Commercial Inquiries"
         title="Request a Commercial Quote"
         subtitle="Submit your target powder specifications, required volume, and application details. Our sales desk in Bavla will prepare a formal price indication and sample dispatch plan."
@@ -51,9 +52,9 @@ const web3FormsKey = import.meta.env.PUBLIC_WEB3FORMS_ACCESS_KEY || "";
           <div class="space-y-4">
             <div class="flex items-center gap-3 pb-2 border-b border-white/10">
               <span class="w-6 h-6 rounded-full bg-amber-400 text-[#140a00] font-bold text-xs flex items-center justify-center shrink-0">1</span>
-              <h3 class="font-display text-lg sm:text-xl font-bold text-white tracking-tight">
+              <h2 class="font-display text-lg sm:text-xl font-bold text-white tracking-tight">
                 Product & Application Specifications
-              </h3>
+              </h2>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
@@ -64,6 +65,7 @@ const web3FormsKey = import.meta.env.PUBLIC_WEB3FORMS_ACCESS_KEY || "";
                 <select
                   id="q-product"
                   name="product"
+                  aria-label="Product of interest"
                   required
                   class="w-full px-4 py-3 rounded-xl bg-[#18181c] border border-white/15 text-sm text-white focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 min-h-[44px]"
                 >
@@ -102,7 +104,7 @@ const web3FormsKey = import.meta.env.PUBLIC_WEB3FORMS_ACCESS_KEY || "";
                 name="application"
                 required
                 placeholder="e.g. Extruded snack topical dusting, instant soup mix, biscuit flavoring"
-                class="w-full px-4 py-3 rounded-xl bg-[#18181c] border border-white/15 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 min-h-[44px]"
+                class="w-full px-4 py-3 rounded-xl bg-[#18181c] border border-white/15 text-sm text-white placeholder:text-white/60 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 min-h-[44px]"
               />
             </div>
           </div>
@@ -111,9 +113,9 @@ const web3FormsKey = import.meta.env.PUBLIC_WEB3FORMS_ACCESS_KEY || "";
           <div class="space-y-4">
             <div class="flex items-center gap-3 pb-2 border-b border-white/10">
               <span class="w-6 h-6 rounded-full bg-amber-400 text-[#140a00] font-bold text-xs flex items-center justify-center shrink-0">2</span>
-              <h3 class="font-display text-lg sm:text-xl font-bold text-white tracking-tight">
+              <h2 class="font-display text-lg sm:text-xl font-bold text-white tracking-tight">
                 Volume & Packaging Requirements
-              </h3>
+              </h2>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
@@ -156,9 +158,9 @@ const web3FormsKey = import.meta.env.PUBLIC_WEB3FORMS_ACCESS_KEY || "";
           <div class="space-y-4">
             <div class="flex items-center gap-3 pb-2 border-b border-white/10">
               <span class="w-6 h-6 rounded-full bg-amber-400 text-[#140a00] font-bold text-xs flex items-center justify-center shrink-0">3</span>
-              <h3 class="font-display text-lg sm:text-xl font-bold text-white tracking-tight">
+              <h2 class="font-display text-lg sm:text-xl font-bold text-white tracking-tight">
                 Company & Contact Verification
-              </h3>
+              </h2>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
@@ -173,7 +175,7 @@ const web3FormsKey = import.meta.env.PUBLIC_WEB3FORMS_ACCESS_KEY || "";
                   required
                   autocomplete="name"
                   placeholder="Full name"
-                  class="w-full px-4 py-3 rounded-xl bg-[#18181c] border border-white/15 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 min-h-[44px]"
+                  class="w-full px-4 py-3 rounded-xl bg-[#18181c] border border-white/15 text-sm text-white placeholder:text-white/60 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 min-h-[44px]"
                 />
               </div>
 
@@ -188,7 +190,7 @@ const web3FormsKey = import.meta.env.PUBLIC_WEB3FORMS_ACCESS_KEY || "";
                   required
                   autocomplete="organization"
                   placeholder="Company name"
-                  class="w-full px-4 py-3 rounded-xl bg-[#18181c] border border-white/15 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 min-h-[44px]"
+                  class="w-full px-4 py-3 rounded-xl bg-[#18181c] border border-white/15 text-sm text-white placeholder:text-white/60 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 min-h-[44px]"
                 />
               </div>
             </div>
@@ -205,7 +207,7 @@ const web3FormsKey = import.meta.env.PUBLIC_WEB3FORMS_ACCESS_KEY || "";
                   required
                   autocomplete="email"
                   placeholder="procurement@company.com"
-                  class="w-full px-4 py-3 rounded-xl bg-[#18181c] border border-white/15 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 min-h-[44px]"
+                  class="w-full px-4 py-3 rounded-xl bg-[#18181c] border border-white/15 text-sm text-white placeholder:text-white/60 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 min-h-[44px]"
                 />
               </div>
 
@@ -220,7 +222,7 @@ const web3FormsKey = import.meta.env.PUBLIC_WEB3FORMS_ACCESS_KEY || "";
                   required
                   autocomplete="tel"
                   placeholder="+91 98765 43210"
-                  class="w-full px-4 py-3 rounded-xl bg-[#18181c] border border-white/15 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 min-h-[44px]"
+                  class="w-full px-4 py-3 rounded-xl bg-[#18181c] border border-white/15 text-sm text-white placeholder:text-white/60 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 min-h-[44px]"
                 />
               </div>
             </div>
@@ -234,7 +236,7 @@ const web3FormsKey = import.meta.env.PUBLIC_WEB3FORMS_ACCESS_KEY || "";
                 id="q-destination"
                 name="destination"
                 placeholder="e.g. Mumbai, India or FOB Mundra / CIF Dubai"
-                class="w-full px-4 py-3 rounded-xl bg-[#18181c] border border-white/15 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 min-h-[44px]"
+                class="w-full px-4 py-3 rounded-xl bg-[#18181c] border border-white/15 text-sm text-white placeholder:text-white/60 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 min-h-[44px]"
               />
             </div>
           </div>
@@ -246,7 +248,7 @@ const web3FormsKey = import.meta.env.PUBLIC_WEB3FORMS_ACCESS_KEY || "";
             Submit Commercial Quote Request
           </button>
 
-          <p class="text-xs text-center text-white/40 pt-1 font-body">
+          <p class="text-xs text-center text-white/60 pt-1 font-body">
             Strictly B2B commercial supply. Price indications and sample dispatches are subject to manufacturing review.
           </p>
         </form>
@@ -258,14 +260,14 @@ const web3FormsKey = import.meta.env.PUBLIC_WEB3FORMS_ACCESS_KEY || "";
   <!-- One Closing CTA Section Near the End of the Page -->
   <section class="py-20 bg-[#0e0e12] text-white text-center border-t border-white/10">
     <div class="section-container max-w-3xl">
-      <span class="text-xs uppercase font-bold tracking-widest text-white/40 block mb-3 font-mono">Factory Support</span>
+      <span class="text-xs uppercase font-bold tracking-widest text-white/60 block mb-3 font-mono">Factory Support</span>
       <h2 class="font-display text-3xl sm:text-4xl font-extrabold mb-4 tracking-tight">
         Prefer direct coordination with sales engineers?
       </h2>
       <p class="text-white/70 text-sm sm:text-base mb-8 max-w-xl mx-auto leading-relaxed font-body">
         Our commercial desk in Bavla, Ahmedabad is available Monday to Saturday for direct phone and email correspondence.
       </p>
-      <a href="/contact#sample-quote" class="btn-accent min-h-[44px]">
+      <a href="/request-sample" class="btn-accent min-h-[44px]">
         Request a Sample
       </a>
     </div>

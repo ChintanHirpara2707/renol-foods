@@ -72,3 +72,8 @@ export const faqs: FAQItem[] = [
     isPlaceholder: true,
   },
 ];
+
+/** FAQ entries whose answers are confirmed; placeholders never reach public pages. */
+export const publicFaqs: FAQItem[] = faqs.filter(
+  (f) => !f.isPlaceholder && !/\[(ADD|CONFIRM)/i.test(f.answer),
+);

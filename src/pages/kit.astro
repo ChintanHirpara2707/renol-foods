@@ -1,0 +1,124 @@
+---
+// Internal component kit. noindex, excluded from the sitemap and disallowed in robots.txt.
+// Remove before launch (final phase).
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Section from "../components/ui/Section.astro";
+import Card from "../components/ui/Card.astro";
+import Button from "../components/ui/Button.astro";
+import CtaButton from "../components/ui/CtaButton.astro";
+import Tag from "../components/ui/Tag.astro";
+import Stat from "../components/ui/Stat.astro";
+import Field from "../components/ui/Field.astro";
+import Accordion from "../components/ui/Accordion.astro";
+import Breadcrumb from "../components/ui/Breadcrumb.astro";
+import { products } from "../data/products";
+import { site } from "../data/site";
+
+const swatches = [
+  ["bg", "var(--bg)"],
+  ["panel", "var(--panel)"],
+  ["surface", "var(--surface)"],
+  ["accent", "var(--accent)"],
+];
+---
+
+<BaseLayout title="Component kit" description="Internal component kit for the Renol Foods site." noindex>
+  <h1 class="container" style="font-size: var(--fs-h1); padding-top: var(--s-12);">Component kit</h1>
+  <Section id="kit-intro" eyebrow="Internal" title="Overview" lede="Every shared component in one place. Not linked from the site.">
+    <Breadcrumb items={[{ label: "Home", href: "/" }, { label: "Kit" }]} />
+  </Section>
+
+  <Section id="kit-colour" title="Colour and type" tone="panel">
+    <ul class="swatches">
+      {swatches.map(([name, value]) => (
+        <li><span class="swatch" style={`background:${value}`}></span>{name}</li>
+      ))}
+    </ul>
+    <p style="font-size: var(--fs-display); font-family: var(--display); font-weight: 800; line-height: 1;">Display</p>
+    <h3>Heading three</h3>
+    <p>Body copy in Instrument Sans at the fluid body size. The secondary tone is used for supporting text.</p>
+    <p style="color: var(--ink-3)">Tertiary text, the lowest allowed tone.</p>
+  </Section>
+
+  <Section id="kit-buttons" title="Buttons and tags">
+    <div class="row">
+      <CtaButton placement="hero" size="lg" />
+      <Button variant="ghost" href="/products">View products</Button>
+      <Button variant="link" href="/contact">Contact</Button>
+      <Button type="button" variant="ghost">Button element</Button>
+    </div>
+    <div class="row">
+      {products.map((p) => <Tag accent={p.accent}>{p.fullName}</Tag>)}
+    </div>
+  </Section>
+
+  <Section id="kit-cards" title="Cards and stats" tone="panel">
+    <div class="grid">
+      {products.slice(0, 3).map((p) => (
+        <Card title={p.fullName} eyebrow={p.cat} accent={p.accent} href={`/products/${p.slug}`}>
+          <p>{p.blurb}</p>
+        </Card>
+      ))}
+    </div>
+    <div class="row stats">
+      <Stat value={String(site.foundedYear)} label="Founded" />
+      <Stat value={String(products.length)} label="Powders" />
+    </div>
+  </Section>
+
+  <Section id="kit-form" title="Form fields">
+    <div class="grid">
+      <Field label="Full name" name="name" required autocomplete="name" />
+      <Field label="Work email" name="email" type="email" required autocomplete="email" hint="We reply to this address." />
+      <Field label="Product" name="product" type="select" options={products.map((p) => p.fullName)} />
+      <Field label="Phone" name="phone" type="tel" autocomplete="tel" error="Enter a phone number with country code." />
+    </div>
+    <Field label="Message" name="message" type="textarea" />
+  </Section>
+
+  <Section id="kit-faq" title="Accordion" tone="panel">
+    <Accordion
+      name="kit"
+      items={[
+        { question: "Where are you based?", answer: `${site.address.street}, ${site.address.city}, ${site.address.state}.` },
+        { question: "Which powders do you make?", answer: products.map((p) => p.fullName).join(", ") + "." },
+      ]}
+    />
+  </Section>
+</BaseLayout>
+
+<style>
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s-4);
+    margin-block: var(--s-6);
+  }
+  .grid {
+    display: grid;
+    gap: var(--s-6);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+    margin-bottom: var(--s-6);
+  }
+  .stats {
+    gap: var(--s-12);
+  }
+  .swatches {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-4);
+    margin: 0 0 var(--s-6);
+    padding: 0;
+    list-style: none;
+    color: var(--ink-2);
+  }
+  .swatch {
+    display: block;
+    inline-size: 4rem;
+    block-size: 4rem;
+    margin-bottom: var(--s-2);
+    border: 1px solid var(--line);
+    border-radius: var(--r-card);
+  }
+</style>

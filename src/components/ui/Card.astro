@@ -1,0 +1,61 @@
+---
+interface Props {
+  title: string;
+  href?: string;
+  eyebrow?: string;
+  accent?: string;
+  headingLevel?: 2 | 3 | 4;
+}
+
+const { title, href, eyebrow, accent, headingLevel = 3 } = Astro.props;
+const Heading = `h${headingLevel}` as "h2" | "h3" | "h4";
+---
+
+<article class:list={["card", { "card--link": Boolean(href) }]} style={accent ? `--accent:${accent}` : undefined}>
+  {eyebrow && <p class="card__eyebrow">{eyebrow}</p>}
+  <Heading class="card__title">
+    {href ? <a href={href}>{title}</a> : title}
+  </Heading>
+  <div class="card__body"><slot /></div>
+</article>
+
+<style>
+  .card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-2);
+    padding: var(--s-6);
+    border: 1px solid var(--line-soft);
+    border-radius: var(--r-card);
+    background: var(--surface);
+    transition: border-color var(--dur-1) var(--ease-out), transform var(--dur-1) var(--ease-out);
+  }
+  .card--link:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+  .card__eyebrow {
+    color: var(--accent);
+    font-size: var(--fs-eyebrow);
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .card__title {
+    font-size: var(--fs-h3);
+    font-weight: 800;
+    line-height: 1.15;
+  }
+  /* Whole card is clickable through the title link */
+  .card__title a::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+  }
+  .card__body {
+    color: var(--ink-2);
+    font-size: 0.975rem;
+  }
+</style>

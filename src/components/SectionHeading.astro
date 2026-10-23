@@ -6,6 +6,7 @@ interface Props {
   align?: "left" | "center";
   accentColor?: string;
   class?: string;
+  level?: 1 | 2;
 }
 
 const {
@@ -15,7 +16,9 @@ const {
   align = "center",
   accentColor,
   class: className = "",
+  level = 2,
 } = Astro.props;
+const Heading = `h${level}` as "h1" | "h2";
 
 const isCenter = align === "center";
 ---
@@ -43,9 +46,9 @@ const isCenter = align === "center";
     )
   }
 
-  <h2 class="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-[1.12]">
+  <Heading class="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-[1.12]">
     {title}
-  </h2>
+  </Heading>
 
   {
     subtitle && (

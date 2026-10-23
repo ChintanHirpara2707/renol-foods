@@ -3,3 +3,6 @@ export * from "./products";
 export * from "./industries";
 export * from "./process";
 export * from "./faq";
+export * from "./cta";
+export * from "./nav";
+export * from "./public";

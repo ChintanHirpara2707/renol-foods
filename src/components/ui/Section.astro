@@ -1,0 +1,72 @@
+---
+interface Props {
+  id?: string;
+  eyebrow?: string;
+  title?: string;
+  lede?: string;
+  align?: "left" | "center";
+  tone?: "base" | "panel";
+}
+
+const { id, eyebrow, title, lede, align = "left", tone = "base" } = Astro.props;
+const headingId = id && title ? `${id}-title` : undefined;
+---
+
+<section id={id} class:list={["section", `section--${tone}`]} aria-labelledby={headingId}>
+  <div class="container">
+    {
+      (eyebrow || title || lede) && (
+        <header class:list={["section__head", `section__head--${align}`]}>
+          {eyebrow && <p class="section__eyebrow">{eyebrow}</p>}
+          {title && (
+            <h2 id={headingId} class="section__title">
+              {title}
+            </h2>
+          )}
+          {lede && <p class="section__lede">{lede}</p>}
+        </header>
+      )
+    }
+    <slot />
+  </div>
+</section>
+
+<style>
+  .section {
+    padding-block: var(--section-y);
+  }
+  .section--panel {
+    background: var(--panel);
+    border-block: 1px solid var(--line-soft);
+  }
+  .section__head {
+    max-width: 48rem;
+    margin-bottom: var(--s-12);
+  }
+  .section__head--center {
+    margin-inline: auto;
+    text-align: center;
+  }
+  .section__eyebrow {
+    margin-bottom: var(--s-3);
+    color: var(--accent);
+    font-size: var(--fs-eyebrow);
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .section__title {
+    font-size: var(--fs-h2);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+  }
+  .section__lede {
+    margin-top: var(--s-4);
+    max-width: var(--prose);
+    color: var(--ink-2);
+  }
+  .section__head--center .section__lede {
+    margin-inline: auto;
+  }
+</style>

@@ -1,0 +1,28 @@
+---
+interface Props {
+  class?: string;
+}
+const { class: className } = Astro.props;
+---
+
+<img
+  class:list={["logo", className]}
+  src="/images/logo.png"
+  alt="Renol Foods"
+  width="436"
+  height="200"
+  decoding="async"
+/>
+
+<style>
+  .logo {
+    display: block;
+    height: 2.75rem;
+    width: auto;
+  }
+  @media (min-width: 1024px) {
+    .logo {
+      height: 3rem;
+    }
+  }
+</style>

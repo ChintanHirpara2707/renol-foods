@@ -19,6 +19,7 @@ import { products } from "../data/products";
 
     <div class="section-container relative z-10">
       <SectionHeading
+        level={1}
         eyebrow="Technical Resources"
         title="Downloads & Specification Sheets"
         subtitle="Access technical data, parameter sheets, and documentation checklists for our dehydrated and spray-dried food powder portfolio."
@@ -26,7 +27,7 @@ import { products } from "../data/products";
 
       <!-- Hero Primary Action Button (1 per hero) -->
       <div class="mt-8 flex justify-center">
-        <a href="/contact#sample-quote" class="btn-accent min-h-[44px]">
+        <a href="/request-sample" class="btn-accent min-h-[44px]">
           Request a Sample
         </a>
       </div>
@@ -38,19 +39,19 @@ import { products } from "../data/products";
             <div class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-amber-400 font-display font-bold text-lg mb-4">
               PDF
             </div>
-            <h3 class="font-display text-2xl font-bold text-white mb-2">
+            <h2 class="font-display text-2xl font-bold text-white mb-2">
               Corporate Product Catalog
-            </h3>
+            </h2>
             <p class="text-sm text-white/70 leading-relaxed font-body">
               Complete overview of our 8 core powders (Tomato, Tamarind, Caramel, Lemon, Mango, Spinach, Ginger, Apple) covering sensory notes, processing methods, and standard bulk packing.
             </p>
           </div>
           <div class="mt-6 pt-4 border-t border-white/10 flex items-center justify-between">
-            <a href="/contact#sample-quote" class="text-sm font-semibold text-amber-400 hover:text-amber-300 inline-flex items-center gap-1 min-h-[44px]">
+            <a href="/request-sample" class="text-sm font-semibold text-amber-400 hover:text-amber-300 inline-flex items-center gap-1 min-h-[44px]">
               <span>Request PDF Catalog</span>
               <span aria-hidden="true">&rarr;</span>
             </a>
-            <span class="text-xs text-white/40 font-mono">PDF &bull; 2.4 MB</span>
+            <span class="text-xs text-white/60 font-mono">PDF &bull; 2.4 MB</span>
           </div>
         </div>
 
@@ -59,19 +60,19 @@ import { products } from "../data/products";
             <div class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-amber-400 font-display font-bold text-lg mb-4">
               DOC
             </div>
-            <h3 class="font-display text-2xl font-bold text-white mb-2">
+            <h2 class="font-display text-2xl font-bold text-white mb-2">
               Sample COA Technical Template
-            </h3>
+            </h2>
             <p class="text-sm text-white/70 leading-relaxed font-body">
               Representative Certificate of Analysis format showing typical analytical metrics: moisture percentage, mesh distribution, bulk density, and organoleptic checks.
             </p>
           </div>
           <div class="mt-6 pt-4 border-t border-white/10 flex items-center justify-between">
-            <a href="/contact#sample-quote" class="text-sm font-semibold text-amber-400 hover:text-amber-300 inline-flex items-center gap-1 min-h-[44px]">
+            <a href="/request-sample" class="text-sm font-semibold text-amber-400 hover:text-amber-300 inline-flex items-center gap-1 min-h-[44px]">
               <span>Request Sample COA</span>
               <span aria-hidden="true">&rarr;</span>
             </a>
-            <span class="text-xs text-white/40 font-mono">B2B Verified</span>
+            <span class="text-xs text-white/60 font-mono">B2B Verified</span>
           </div>
         </div>
 
@@ -80,19 +81,19 @@ import { products } from "../data/products";
             <div class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-amber-400 font-display font-bold text-lg mb-4">
               SPEC
             </div>
-            <h3 class="font-display text-2xl font-bold text-white mb-2">
+            <h2 class="font-display text-2xl font-bold text-white mb-2">
               Packaging & Storage Guidelines
-            </h3>
+            </h2>
             <p class="text-sm text-white/70 leading-relaxed font-body">
               Storage recommendations, barrier liner handling, and warehouse temperature guidelines to maintain optimum powder flowability and shelf longevity.
             </p>
           </div>
           <div class="mt-6 pt-4 border-t border-white/10 flex items-center justify-between">
-            <a href="/contact#sample-quote" class="text-sm font-semibold text-amber-400 hover:text-amber-300 inline-flex items-center gap-1 min-h-[44px]">
+            <a href="/request-sample" class="text-sm font-semibold text-amber-400 hover:text-amber-300 inline-flex items-center gap-1 min-h-[44px]">
               <span>Request Guide</span>
               <span aria-hidden="true">&rarr;</span>
             </a>
-            <span class="text-xs text-white/40 font-mono">Handling Sheet</span>
+            <span class="text-xs text-white/60 font-mono">Handling Sheet</span>
           </div>
         </div>
       </div>
@@ -100,15 +101,15 @@ import { products } from "../data/products";
       <!-- Product-Specific Specification Sheets Table in responsive container -->
       <div class="mt-16 bg-[#121214] border border-white/10 rounded-3xl p-6 sm:p-8">
         <div class="mb-6">
-          <h3 class="font-display text-xl sm:text-2xl font-bold text-white">
+          <h2 class="font-display text-xl sm:text-2xl font-bold text-white">
             Product Specification Sheets (TDS)
-          </h3>
+          </h2>
           <p class="text-sm text-white/70 mt-1">
             Technical Data Sheets detailing mesh grading, dry solids content, and application compatibility.
           </p>
         </div>
 
-        <div class="table-responsive">
+        <div class="table-responsive" tabindex="0" role="region" aria-label="Table, scrolls horizontally on small screens">
           <table class="w-full text-left text-sm text-white/80 min-w-[540px]">
             <thead class="border-b border-white/10 text-xs uppercase text-white/50 font-mono bg-white/5">
               <tr>
@@ -127,10 +128,10 @@ import { products } from "../data/products";
                       <span>{p.name} Powder</span>
                     </td>
                     <td class="py-3.5 px-4 text-white/70 capitalize">{p.cat}</td>
-                    <td class="py-3.5 px-4 font-mono text-xs text-amber-300">{p.specs.particleSize || "40–100 mesh"}</td>
+                    <td class="py-3.5 px-4 font-mono text-xs text-amber-300">{p.specs.particleSize && !p.specs.particleSize.includes("[ADD") ? p.specs.particleSize : "On request"}</td>
                     <td class="py-3.5 px-4">
                       <a
-                        href="/contact#sample-quote"
+                        href="/request-sample"
                         class="text-xs font-semibold text-amber-400 hover:text-amber-300 underline inline-block py-1 min-h-[32px]"
                       >
                         Request Spec Sheet &rarr;
@@ -150,14 +151,14 @@ import { products } from "../data/products";
   <!-- One Closing CTA Section Near the End of the Page -->
   <section class="py-20 bg-[#0e0e12] text-white text-center border-t border-white/10">
     <div class="section-container max-w-3xl">
-      <span class="text-xs uppercase font-bold tracking-widest text-white/40 block mb-3 font-mono">Technical Assistance</span>
+      <span class="text-xs uppercase font-bold tracking-widest text-white/60 block mb-3 font-mono">Technical Assistance</span>
       <h2 class="font-display text-3xl sm:text-4xl font-extrabold mb-4 tracking-tight">
         Need custom analytical specifications or regulatory documentation?
       </h2>
       <p class="text-white/70 text-sm sm:text-base mb-8 max-w-xl mx-auto leading-relaxed font-body">
         Our technical team works with food scientists and quality audit teams to provide documentation packages tailored to your country and regulatory requirements.
       </p>
-      <a href="/contact#sample-quote" class="btn-accent min-h-[44px]">
+      <a href="/request-sample" class="btn-accent min-h-[44px]">
         Request a Sample
       </a>
     </div>

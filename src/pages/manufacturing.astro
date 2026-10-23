@@ -19,6 +19,7 @@ import { manufacturingProcess } from "../data/process";
 
     <div class="section-container relative z-10">
       <SectionHeading
+        level={1}
         eyebrow="Processing Infrastructure"
         title="Industrial Dehydration & Spray Drying"
         subtitle="General production stages engineered in Bavla for high-solids fruit juices, botanical leaves, and savory culinary purees."
@@ -26,7 +27,7 @@ import { manufacturingProcess } from "../data/process";
 
       <!-- Hero Primary Action Button (1 per hero) -->
       <div class="mt-8 flex justify-center">
-        <a href="/contact#sample-quote" class="btn-accent min-h-[44px]">
+        <a href="/request-sample" class="btn-accent min-h-[44px]">
           Request a Sample
         </a>
       </div>
@@ -41,14 +42,14 @@ import { manufacturingProcess } from "../data/process";
                   <span class="inline-block px-3 py-1 rounded-full bg-white/10 text-white/80 text-xs font-semibold uppercase tracking-wider font-mono">
                     Stage 0{step.stepNumber}
                   </span>
-                  <span class="font-display text-4xl font-black text-white/10 group-hover:text-white/20 transition-colors">
+                  <span class="font-display text-4xl font-black text-white/60 group-hover:text-white/60 transition-colors">
                     0{step.stepNumber}
                   </span>
                 </div>
 
-                <h3 class="font-display text-2xl font-bold text-white mb-1">
+                <h2 class="font-display text-2xl font-bold text-white mb-1">
                   {step.title}
-                </h3>
+                </h2>
                 <p class="text-xs font-semibold uppercase tracking-wider mb-3 text-amber-400 font-mono">
                   {step.subtitle}
                 </p>
@@ -68,15 +69,15 @@ import { manufacturingProcess } from "../data/process";
       <!-- Process Parameter Summary Table in responsive container -->
       <div class="mt-16 bg-[#121214] border border-white/10 rounded-3xl p-6 sm:p-8">
         <div class="mb-6">
-          <h3 class="font-display text-xl sm:text-2xl font-bold text-white">
+          <h2 class="font-display text-xl sm:text-2xl font-bold text-white">
             Standard Processing Parameters & Controls
-          </h3>
+          </h2>
           <p class="text-sm text-white/70 mt-1">
             General operating benchmarks maintained across industrial drying runs in Bavla.
           </p>
         </div>
 
-        <div class="table-responsive">
+        <div class="table-responsive" tabindex="0" role="region" aria-label="Table, scrolls horizontally on small screens">
           <table class="w-full text-left text-sm text-white/80 min-w-[560px]">
             <thead class="border-b border-white/10 text-xs uppercase text-white/50 font-mono bg-white/5">
               <tr>
@@ -128,14 +129,14 @@ import { manufacturingProcess } from "../data/process";
   <!-- One Closing CTA Section Near the End of the Page -->
   <section class="py-20 bg-[#0e0e12] text-white text-center border-t border-white/10">
     <div class="section-container max-w-3xl">
-      <span class="text-xs uppercase font-bold tracking-widest text-white/40 block mb-3 font-mono">Plant Audits & Inquiries</span>
+      <span class="text-xs uppercase font-bold tracking-widest text-white/60 block mb-3 font-mono">Plant Audits & Inquiries</span>
       <h2 class="font-display text-3xl sm:text-4xl font-extrabold mb-4 tracking-tight">
         Planning an audit or need custom processing parameters?
       </h2>
       <p class="text-white/70 text-sm sm:text-base mb-8 max-w-xl mx-auto leading-relaxed font-body">
         Technical representatives from commercial food manufacturers are welcome to schedule plant reviews in Bavla.
       </p>
-      <a href="/contact#sample-quote" class="btn-accent min-h-[44px]">
+      <a href="/request-sample" class="btn-accent min-h-[44px]">
         Request a Sample
       </a>
     </div>

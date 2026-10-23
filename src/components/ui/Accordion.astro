@@ -1,0 +1,60 @@
+---
+interface Props {
+  items: { question: string; answer: string }[];
+  name?: string;
+}
+const { items, name = "accordion" } = Astro.props;
+---
+
+<div class="accordion">
+  {
+    items.map((item) => (
+      <details name={name}>
+        <summary>
+          <span>{item.question}</span>
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path d="M5 8l5 5 5-5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </summary>
+        <p>{item.answer}</p>
+      </details>
+    ))
+  }
+</div>
+
+<style>
+  .accordion {
+    border-top: 1px solid var(--line-soft);
+  }
+  details {
+    border-bottom: 1px solid var(--line-soft);
+  }
+  summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-4);
+    min-height: 3.5rem;
+    padding-block: var(--s-3);
+    font-family: var(--display);
+    font-size: 1.125rem;
+    font-weight: 500;
+    cursor: pointer;
+    list-style: none;
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
+  summary svg {
+    flex: none;
+    transition: transform var(--dur-1) var(--ease-out);
+  }
+  details[open] summary svg {
+    transform: rotate(180deg);
+  }
+  details p {
+    max-width: var(--prose);
+    padding-bottom: var(--s-6);
+    color: var(--ink-2);
+  }
+</style>

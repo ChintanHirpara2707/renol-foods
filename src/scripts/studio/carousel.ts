@@ -48,12 +48,12 @@ export class PowderCarousel {
   private firstTheme = true;
 
   // Cleanup listeners
-  private boundPointerDown: (e: PointerEvent) => void;
-  private boundPointerMove: (e: PointerEvent) => void;
-  private boundPointerUp: (e: PointerEvent) => void;
-  private boundWheel: (e: WheelEvent) => void;
-  private boundKeyDown: (e: KeyboardEvent) => void;
-  private boundResize: () => void;
+  private boundPointerDown!: (e: PointerEvent) => void;
+  private boundPointerMove!: (e: PointerEvent) => void;
+  private boundPointerUp!: (e: PointerEvent) => void;
+  private boundWheel!: (e: WheelEvent) => void;
+  private boundKeyDown!: (e: KeyboardEvent) => void;
+  private boundResize!: () => void;
 
   constructor(container: HTMLElement, callbacks: CarouselCallbacks) {
     this.container = container;

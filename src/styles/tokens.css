@@ -1,0 +1,95 @@
+/* Design tokens. Single source of truth; Tailwind's @theme (bottom) maps the ones utilities need. */
+
+:root {
+  color-scheme: dark;
+
+  /* Surfaces and ink */
+  --bg: #0b0b0d;
+  --panel: #121214;
+  --surface: #1b1b1f;
+  --ink: #ffffff;
+  --ink-2: rgba(255, 255, 255, 0.72);
+  --ink-3: rgba(255, 255, 255, 0.62); /* lowest allowed text tone: 7.7:1 on --bg */
+  --line: rgba(255, 255, 255, 0.18);
+  --line-soft: rgba(255, 255, 255, 0.1);
+
+  /* Page accent: overridden per product / section with style="--accent: ..." */
+  --accent: #ffb020;
+  --on-accent: #140a00;
+  --glow: #7d6200;
+
+  /* Type */
+  --display: "Bricolage Grotesque", "Arial Narrow", Impact, sans-serif;
+  --body: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --fs-display: clamp(2.5rem, 1.2rem + 5.5vw, 6rem);
+  --fs-h1: clamp(2rem, 1.2rem + 3vw, 3.75rem);
+  --fs-h2: clamp(1.5rem, 1rem + 2vw, 2.5rem);
+  --fs-h3: clamp(1.25rem, 1.1rem + 0.6vw, 1.5rem);
+  --fs-body: clamp(1rem, 0.96rem + 0.2vw, 1.125rem);
+  --fs-small: 0.875rem;
+  --fs-eyebrow: 0.75rem;
+
+  /* Space (4px base) */
+  --s-1: 0.25rem;
+  --s-2: 0.5rem;
+  --s-3: 0.75rem;
+  --s-4: 1rem;
+  --s-6: 1.5rem;
+  --s-8: 2rem;
+  --s-12: 3rem;
+  --s-16: 4rem;
+  --s-24: 6rem;
+  --s-32: 8rem;
+  --gutter: clamp(1rem, 0.5rem + 2vw, 2rem);
+  --section-y: clamp(4rem, 3rem + 5vw, 8rem);
+  --container: 75rem;
+  --prose: 68ch;
+
+  /* Shape */
+  --r-pill: 999px;
+  --r-card: 1rem;
+  --r-panel: 1.5rem;
+
+  /* Layout chrome */
+  --header-h: 4rem;
+  --bar-h: 4.25rem;
+  --tap: 2.75rem; /* 44px minimum target */
+
+  /* Motion (0.3 to 0.8 s) */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-1: 0.3s;
+  --dur-2: 0.5s;
+  --dur-3: 0.8s;
+
+  /* Layering */
+  --z-header: 40;
+  --z-bar: 45;
+  --z-notice: 50;
+  --z-menu: 60;
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --header-h: 4.5rem;
+  }
+}
+
+@theme {
+  --color-bg: #0b0b0d;
+  --color-panel: #121214;
+  --color-surface: #1b1b1f;
+  --color-ink: #ffffff;
+  --color-line: rgba(255, 255, 255, 0.18);
+
+  --color-accent-tomato: #ff5a4d;
+  --color-accent-lemon: #ffe14a;
+  --color-accent-mango: #ffb020;
+  --color-accent-spinach: #4ade80;
+  --color-accent-ginger: #f0c48a;
+  --color-accent-tamarind: #d98b4e;
+  --color-accent-caramel: #d48238;
+  --color-accent-apple: #e0564c;
+
+  --font-display: "Bricolage Grotesque", "Arial Narrow", Impact, sans-serif;
+  --font-body: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+}

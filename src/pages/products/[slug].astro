@@ -26,7 +26,7 @@ interface Props {
 
 const { product, prevProduct, nextProduct } = Astro.props;
 
-// Filter out any spec row marked with [ADD...]
+// Unconfirmed spec rows are hidden
 const validSpecs = Object.entries(product.specs).filter(
   ([_, val]) => val && !val.includes("[ADD")
 );
@@ -46,11 +46,10 @@ const productSchema = {
   "@type": "Product",
   name: `${product.name} Powder`,
   image: new URL(
-    product.id === "lemon" ? "/frames/lemon/10.webp" : "/favicon.svg",
+    product.id === "lemon" ? "/frames/lemon/10.webp" : "/og-default.png",
     Astro.site || Astro.url.origin
   ).href,
   description: product.longDescription || product.blurb,
-  sku: `RENOL-${product.id.toUpperCase()}-001`,
   category: `${product.cat} Powder`,
   brand: {
     "@type": "Brand",
@@ -64,16 +63,6 @@ const productSchema = {
       addressLocality: "Bavla, Ahmedabad",
       addressRegion: "Gujarat",
       addressCountry: "IN",
-    },
-  },
-  offers: {
-    "@type": "AggregateOffer",
-    priceCurrency: "INR",
-    availability: "https://schema.org/InStock",
-    priceSpecification: {
-      "@type": "PriceSpecification",
-      priceCurrency: "INR",
-      description: "B2B commercial bulk pricing upon specification inquiry",
     },
   },
 };
@@ -222,10 +211,9 @@ const productSchema = {
                 </div>
               ))}
             </dl>
-            <!-- Notice: Spec rows marked [ADD...] are hidden, showing official line below -->
+            <!-- Unconfirmed spec rows are hidden; the line below is shown instead -->
             <div class="mt-3 flex items-center justify-between text-xs text-white/50 font-mono">
               <span>Full specifications on request</span>
-              <span class="text-white/40">Lot-wise COA provided</span>
             </div>
           </div>
 
@@ -386,7 +374,7 @@ const productSchema = {
   function setupDetailPage() {
     // Unconditionally unlock body scroll if set from Studio
     document.body.classList.remove("in-detail");
-    (window as any).lenis?.start();
+    (window as any).renolScroll?.unlock("studio-detail");
 
     const dlg = document.getElementById("dlg") as HTMLDialogElement | null;
     const reqDetail = document.getElementById("reqDetail");

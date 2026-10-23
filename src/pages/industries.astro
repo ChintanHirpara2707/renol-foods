@@ -2,6 +2,7 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import SectionHeading from "../components/SectionHeading.astro";
 import { industries } from "../data/industries";
+import { products } from "../data/products";
 ---
 
 <BaseLayout
@@ -19,6 +20,7 @@ import { industries } from "../data/industries";
 
     <div class="section-container relative z-10">
       <SectionHeading
+        level={1}
         eyebrow="Market Applications"
         title="Formulated for Industrial Segments"
         subtitle="Engineered to integrate cleanly into automated production lines, dry blending, topical dusting, and high-speed packaging."
@@ -26,7 +28,7 @@ import { industries } from "../data/industries";
 
       <!-- Hero Primary Action Button (1 per hero) -->
       <div class="mt-8 flex justify-center">
-        <a href="/contact#sample-quote" class="btn-accent min-h-[44px]">
+        <a href="/request-sample" class="btn-accent min-h-[44px]">
           Request a Sample
         </a>
       </div>
@@ -40,20 +42,20 @@ import { industries } from "../data/industries";
                 <div class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-amber-400 font-display font-bold text-lg mb-4 group-hover:scale-105 transition-transform">
                   &bull;
                 </div>
-                <h3 class="font-display text-xl font-bold text-white mb-2 group-hover:text-amber-300 transition-colors">
-                  {item.title}
-                </h3>
+                <h2 class="font-display text-xl font-bold text-white mb-2 group-hover:text-amber-300 transition-colors">
+                  {item.name}
+                </h2>
                 <p class="text-sm text-white/70 leading-relaxed font-body">
-                  {item.shortDescription || item.description}
+                  {item.description}
                 </p>
 
-                {item.keyProducts && (
+                {item.relevantProductSlugs.length > 0 && (
                   <div class="mt-4 pt-3 border-t border-white/5">
-                    <span class="text-[11px] font-mono uppercase tracking-wider text-white/40 block mb-1.5">
+                    <span class="text-[11px] font-mono uppercase tracking-wider text-white/60 block mb-1.5">
                       Key Powders
                     </span>
                     <p class="text-xs text-white/60 font-body">
-                      {item.keyProducts.slice(0, 3).join(", ")}
+                      {item.relevantProductSlugs.slice(0, 3).map((slug) => products.find((p) => p.slug === slug)?.name).filter(Boolean).join(", ")}
                     </p>
                   </div>
                 )}
@@ -68,7 +70,7 @@ import { industries } from "../data/industries";
                   <span>View details</span>
                   <span aria-hidden="true">&rarr;</span>
                 </a>
-                <span class="text-[11px] text-white/40 font-mono">B2B Supply</span>
+                <span class="text-[11px] text-white/60 font-mono">B2B Supply</span>
               </div>
             </div>
           ))
@@ -80,14 +82,14 @@ import { industries } from "../data/industries";
   <!-- One Closing CTA Section Near the End of the Page -->
   <section class="py-20 bg-[#0e0e12] text-white text-center border-t border-white/10">
     <div class="section-container max-w-3xl">
-      <span class="text-xs uppercase font-bold tracking-widest text-white/40 block mb-3 font-mono">Custom Formulations</span>
+      <span class="text-xs uppercase font-bold tracking-widest text-white/60 block mb-3 font-mono">Custom Formulations</span>
       <h2 class="font-display text-3xl sm:text-4xl font-extrabold mb-4 tracking-tight">
         Need tailored powder specifications for your application?
       </h2>
       <p class="text-white/70 text-sm sm:text-base mb-8 max-w-xl mx-auto leading-relaxed font-body">
         We calibrate mesh sizes, carrier balances, and moisture limits for commercial production runs.
       </p>
-      <a href="/contact#sample-quote" class="btn-accent min-h-[44px]">
+      <a href="/request-sample" class="btn-accent min-h-[44px]">
         Request a Sample
       </a>
     </div>

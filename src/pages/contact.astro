@@ -24,6 +24,7 @@ const isHoursConfirmed = !siteConfig.workingHours.includes("[CONFIRM");
 
     <div class="section-container relative z-10 font-body">
       <SectionHeading
+        level={1}
         eyebrow="Commercial Inquiries"
         title="Request a Sample"
         subtitle="Connect directly with our manufacturing desk in Bavla to discuss product specifications, custom mesh milling, or request evaluation samples for your formulation trials."
@@ -36,9 +37,9 @@ const isHoursConfirmed = !siteConfig.workingHours.includes("[CONFIRM");
           <div>
             <div class="flex items-center gap-2 mb-2">
               <span class="w-2 h-2 rounded-full bg-amber-400"></span>
-              <h3 class="font-display text-2xl font-bold text-white tracking-tight">
+              <h2 class="font-display text-2xl font-bold text-white tracking-tight">
                 Sales & Factory Desk
-              </h3>
+              </h2>
             </div>
             <p class="text-sm text-white/70 leading-relaxed font-body">
               For product sample dispatch, volume pricing, or technical formulation support:
@@ -48,7 +49,7 @@ const isHoursConfirmed = !siteConfig.workingHours.includes("[CONFIRM");
           <div class="space-y-6 text-sm text-white/80">
             <!-- Direct Phone Lines -->
             <div>
-              <p class="text-xs font-bold uppercase tracking-wider text-white/40 mb-2 font-mono">
+              <p class="text-xs font-bold uppercase tracking-wider text-white/60 mb-2 font-mono">
                 Direct Phone Lines
               </p>
               <div class="space-y-2">
@@ -72,7 +73,7 @@ const isHoursConfirmed = !siteConfig.workingHours.includes("[CONFIRM");
             {
               isEmailConfirmed && (
                 <div>
-                  <p class="text-xs font-bold uppercase tracking-wider text-white/40 mb-1.5 font-mono">
+                  <p class="text-xs font-bold uppercase tracking-wider text-white/60 mb-1.5 font-mono">
                     Corporate Email
                   </p>
                   <p class="font-mono text-xs bg-white/5 p-3.5 rounded-xl border border-white/10 text-white/90 break-words">
@@ -84,7 +85,7 @@ const isHoursConfirmed = !siteConfig.workingHours.includes("[CONFIRM");
 
             <!-- Manufacturing Address -->
             <div>
-              <p class="text-xs font-bold uppercase tracking-wider text-white/40 mb-1.5 font-mono">
+              <p class="text-xs font-bold uppercase tracking-wider text-white/60 mb-1.5 font-mono">
                 Manufacturing Location
               </p>
               <div class="text-xs leading-relaxed text-white/70 bg-white/5 p-3.5 rounded-xl border border-white/10 space-y-1">
@@ -95,7 +96,7 @@ const isHoursConfirmed = !siteConfig.workingHours.includes("[CONFIRM");
 
             <!-- Operating Hours -->
             <div>
-              <p class="text-xs font-bold uppercase tracking-wider text-white/40 mb-1 font-mono">
+              <p class="text-xs font-bold uppercase tracking-wider text-white/60 mb-1 font-mono">
                 Plant Hours
               </p>
               <p class="text-xs text-white/70">
@@ -111,9 +112,9 @@ const isHoursConfirmed = !siteConfig.workingHours.includes("[CONFIRM");
             <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-amber-400 text-xs font-bold uppercase tracking-wider mb-2 font-mono">
               B2B Commercial Request
             </span>
-            <h3 class="font-display text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+            <h2 class="font-display text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
               Request a Sample
-            </h3>
+            </h2>
             <p class="text-xs sm:text-sm text-white/60 mt-1 font-body">
               Supplying industrial food processors, bakeries, snack brands, beverage formulators, and exporters.
             </p>
@@ -143,7 +144,7 @@ const isHoursConfirmed = !siteConfig.workingHours.includes("[CONFIRM");
                   required
                   autocomplete="name"
                   placeholder="e.g. Ramesh Shah"
-                  class="w-full px-4 py-3 rounded-xl bg-[#18181c] border border-white/15 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 min-h-[44px]"
+                  class="w-full px-4 py-3 rounded-xl bg-[#18181c] border border-white/15 text-sm text-white placeholder:text-white/60 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 min-h-[44px]"
                 />
               </div>
 
@@ -158,7 +159,7 @@ const isHoursConfirmed = !siteConfig.workingHours.includes("[CONFIRM");
                   required
                   autocomplete="organization"
                   placeholder="e.g. Heritage Foods Ltd."
-                  class="w-full px-4 py-3 rounded-xl bg-[#18181c] border border-white/15 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 min-h-[44px]"
+                  class="w-full px-4 py-3 rounded-xl bg-[#18181c] border border-white/15 text-sm text-white placeholder:text-white/60 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 min-h-[44px]"
                 />
               </div>
             </div>
@@ -175,7 +176,7 @@ const isHoursConfirmed = !siteConfig.workingHours.includes("[CONFIRM");
                   required
                   autocomplete="email"
                   placeholder="purchasing@company.com"
-                  class="w-full px-4 py-3 rounded-xl bg-[#18181c] border border-white/15 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 min-h-[44px]"
+                  class="w-full px-4 py-3 rounded-xl bg-[#18181c] border border-white/15 text-sm text-white placeholder:text-white/60 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 min-h-[44px]"
                 />
               </div>
 
@@ -190,7 +191,7 @@ const isHoursConfirmed = !siteConfig.workingHours.includes("[CONFIRM");
                   required
                   autocomplete="tel"
                   placeholder="+91 98765 43210"
-                  class="w-full px-4 py-3 rounded-xl bg-[#18181c] border border-white/15 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 min-h-[44px]"
+                  class="w-full px-4 py-3 rounded-xl bg-[#18181c] border border-white/15 text-sm text-white placeholder:text-white/60 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 min-h-[44px]"
                 />
               </div>
             </div>
@@ -203,6 +204,7 @@ const isHoursConfirmed = !siteConfig.workingHours.includes("[CONFIRM");
                 <select
                   id="product"
                   name="product"
+                  aria-label="Product of interest"
                   required
                   class="w-full px-4 py-3 rounded-xl bg-[#18181c] border border-white/15 text-sm text-white focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 min-h-[44px]"
                 >
@@ -241,7 +243,7 @@ const isHoursConfirmed = !siteConfig.workingHours.includes("[CONFIRM");
                 name="message"
                 rows="3"
                 placeholder="Specify your application (e.g. snack seasoning, instant beverage, bakery), required volume, target mesh size, or packaging format..."
-                class="w-full px-4 py-3 rounded-xl bg-[#18181c] border border-white/15 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
+                class="w-full px-4 py-3 rounded-xl bg-[#18181c] border border-white/15 text-sm text-white placeholder:text-white/60 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
               ></textarea>
             </div>
 
@@ -252,7 +254,7 @@ const isHoursConfirmed = !siteConfig.workingHours.includes("[CONFIRM");
               Request a Sample
             </button>
 
-            <p class="text-[11px] text-center text-white/40 pt-1 font-body">
+            <p class="text-[11px] text-center text-white/60 pt-1 font-body">
               Strictly B2B commercial supply. Contact details are used exclusively for official sample and quotation correspondence.
             </p>
           </form>

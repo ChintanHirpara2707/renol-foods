@@ -5,158 +5,133 @@ import Footer from "../components/Footer.astro";
 import WhatsAppButton from "../components/WhatsAppButton.astro";
 import MobileBottomBar from "../components/MobileBottomBar.astro";
 import CookieNotice from "../components/CookieNotice.astro";
-import { siteConfig } from "../data/site";
+import { site } from "../data/site";
+import bodyFont from "@fontsource/instrument-sans/files/instrument-sans-latin-400-normal.woff2?url";
+import displayFont from "@fontsource/bricolage-grotesque/files/bricolage-grotesque-latin-800-normal.woff2?url";
 
 interface Props {
   title?: string;
   description?: string;
   ogImage?: string;
+  /** Path or absolute URL. Defaults to the current path on the production origin. */
   canonicalUrl?: string;
   noindex?: boolean;
+  /** Extra JSON-LD objects (Product, FAQPage, BreadcrumbList...). Organization is always added. */
+  jsonLd?: Record<string, unknown>[];
 }
 
 const {
-  title = `${siteConfig.name} | Industrial Food Powder Manufacturer, Bavla, Gujarat`,
-  description = siteConfig.description,
-  ogImage = "/images/Logo.png",
-  canonicalUrl = Astro.url.href,
+  title = `${site.name} | Food Powder Manufacturer, Bavla, Ahmedabad`,
+  description = site.description,
+  ogImage = "/og-default.png",
+  canonicalUrl,
   noindex = false,
+  jsonLd = [],
 } = Astro.props;
 
-const siteTitle = title.includes(siteConfig.name) ? title : `${title} | ${siteConfig.name}`;
-const logoFullUrl = new URL("/images/Logo.png", Astro.site || Astro.url.origin).href;
+const origin = Astro.site ?? new URL(Astro.url.origin);
+const siteTitle = title.includes(site.name) ? title : `${title} | ${site.name}`;
+const canonical = new URL(canonicalUrl ?? Astro.url.pathname, origin).href;
+const ogImageUrl = new URL(ogImage, origin).href;
 
-const orgSchema = {
+const organization = {
   "@context": "https://schema.org",
   "@type": "Organization",
-  name: siteConfig.name,
-  legalName: siteConfig.legalName,
-  url: new URL("/", Astro.site || Astro.url.origin).href,
-  logo: logoFullUrl,
-  description: siteConfig.description,
-  foundingDate: "2021",
+  name: site.name,
+  legalName: site.legalName,
+  url: new URL("/", origin).href,
+  logo: new URL("/images/logo.png", origin).href,
+  description: site.description,
+  foundingDate: String(site.foundedYear),
   address: {
     "@type": "PostalAddress",
-    streetAddress: "Plot No. 616, Kerala GIDC",
-    addressLocality: "Bavla, Ahmedabad",
-    addressRegion: "Gujarat",
-    addressCountry: "IN",
+    streetAddress: site.address.street,
+    addressLocality: site.address.city,
+    addressRegion: site.address.state,
+    addressCountry: site.address.countryCode,
   },
-  contactPoint: {
+  contactPoint: site.phones.map((p) => ({
     "@type": "ContactPoint",
-    telephone: siteConfig.contact.phones[0] || "+919979977396",
+    telephone: p.tel,
     contactType: "sales",
-    areaServed: "Global",
-  },
+  })),
 };
 ---
 
 <!doctype html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    
-    <!-- Favicon & Touch Icons -->
-    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-    
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0b0b0d" />
+    <meta name="color-scheme" content="dark" />
     <meta name="generator" content={Astro.generator} />
 
-    <!-- Primary Meta Tags -->
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <link rel="preload" href={bodyFont} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={displayFont} as="font" type="font/woff2" crossorigin />
+
     <title>{siteTitle}</title>
-    <meta name="title" content={siteTitle} />
     <meta name="description" content={description} />
-    <link rel="canonical" href={canonicalUrl} />
+    <link rel="canonical" href={canonical} />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
 
-    <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
-    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:site_name" content={site.name} />
     <meta property="og:title" content={siteTitle} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content={new URL(ogImage, Astro.site || Astro.url.origin)} />
-    <meta property="og:site_name" content={siteConfig.name} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={siteTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
 
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content={canonicalUrl} />
-    <meta property="twitter:title" content={siteTitle} />
-    <meta property="twitter:description" content={description} />
-    <meta property="twitter:image" content={new URL(ogImage, Astro.site || Astro.url.origin)} />
-
-    <!-- Organization Structured Data -->
-    <script type="application/ld+json" set:html={JSON.stringify(orgSchema)} />
-
-    <!-- Preconnect to static assets -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <script type="application/ld+json" set:html={JSON.stringify(organization)} />
+    {jsonLd.map((schema) => <script type="application/ld+json" set:html={JSON.stringify(schema)} />)}
   </head>
-  <body class="bg-[#0b0b0d] text-white min-h-screen flex flex-col font-body selection:bg-white/20 selection:text-white">
-    <!-- Skip to main content for accessibility -->
-    <a
-      href="#main-content"
-      class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-green-black focus:text-cream focus:rounded-md focus:shadow-lg focus:outline-none"
-    >
-      Skip to main content
-    </a>
+  <body class="flex min-h-dvh flex-col">
+    <a href="#main-content" class="skip-link">Skip to main content</a>
 
-    <!-- Sticky Header -->
     <Header />
 
-    <!-- Main Content Region -->
-    <main id="main-content" class="flex-grow w-full">
+    <main id="main-content" tabindex="-1" class="w-full flex-grow">
       <slot />
     </main>
 
-    <!-- Footer -->
     <Footer />
-
-    <!-- Floating Global Actions -->
     <WhatsAppButton />
     <MobileBottomBar />
     <CookieNotice />
 
-    <!-- Lenis Smooth Scrolling Initialization -->
     <script>
-      import Lenis from "lenis";
-
-      const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-      if (!prefersReducedMotion) {
-        const lenis = new Lenis({
-          duration: 1.1,
-          easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-          orientation: "vertical",
-          gestureOrientation: "vertical",
-          smoothWheel: true,
-          touchMultiplier: 1.5,
-        });
-
-        (window as unknown as { lenis: Lenis }).lenis = lenis;
-
-        function raf(time: number) {
-          lenis.raf(time);
-          requestAnimationFrame(raf);
-        }
-
-        requestAnimationFrame(raf);
-
-        // Intercept anchor hash links for smooth scrolling via Lenis
-        document.addEventListener("click", (e) => {
-          const target = e.target as HTMLElement;
-          const anchor = target.closest("a");
-          if (anchor && anchor.hash && anchor.origin === window.location.origin && anchor.pathname === window.location.pathname) {
-            const targetElement = document.querySelector(anchor.hash);
-            if (targetElement) {
-              e.preventDefault();
-              lenis.scrollTo(targetElement, { offset: -80 });
-            }
-          }
-        });
-      }
+      import "../scripts/scroll";
+      import "../scripts/mobile-menu";
     </script>
   </body>
 </html>
+
+<style>
+  .skip-link {
+    position: absolute;
+    inset-inline-start: var(--s-4);
+    inset-block-start: var(--s-4);
+    z-index: 100;
+    padding: var(--s-3) var(--s-6);
+    border-radius: var(--r-pill);
+    background: var(--accent);
+    color: var(--on-accent);
+    font-weight: 600;
+    transform: translateY(-200%);
+  }
+  .skip-link:focus {
+    transform: none;
+  }
+  main:focus {
+    outline: none;
+  }
+</style>

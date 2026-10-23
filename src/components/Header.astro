@@ -1,405 +1,275 @@
 ---
-import { siteConfig } from "../data/site";
+import CtaButton from "./ui/CtaButton.astro";
+import Logo from "./ui/Logo.astro";
+import { nav } from "../data/nav";
+import { site } from "../data/site";
 
-const currentPath = Astro.url.pathname;
+const path = Astro.url.pathname.replace(/\/$/, "") || "/";
+const isActive = (href: string) => path === href || path.startsWith(`${href}/`);
+const menuLinks = [...nav.primary, ...nav.secondary];
 ---
 
-<!-- Sticky Header (z-index 50 per Rule 7) -->
-<header
-  class="sticky top-0 z-50 w-full bg-[#0b0b0d]/90 backdrop-blur-md border-b border-white/10 text-white transition-all duration-300"
->
-  <div class="section-container">
-    <div class="flex items-center justify-between h-20">
-      <!-- Logo & Brand Identity (Real Logo image, no fake RF box) -->
-      <a
-        href="/"
-        class="flex items-center group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 rounded-lg p-1"
-      >
-        <img
-          src="/images/Logo.png"
-          alt={`${siteConfig.name} home`}
-          width="218"
-          height="100"
-          decoding="async"
-          fetchpriority="high"
-          class="h-12 w-auto max-w-[218px] object-contain transition-transform duration-300 group-hover:scale-105"
-        />
-      </a>
+<header class="site-header" data-site-header>
+  <div class="container site-header__bar">
+    <a class="site-header__brand" href="/" aria-label="Renol Foods, home">
+      <Logo />
+    </a>
 
-      <!-- Desktop Navigation (Visible >= 1024px) -->
-      <nav
-        class="hidden lg:flex items-center gap-8"
-        aria-label="Main Navigation"
-      >
-        <ul class="flex items-center gap-1">
-          {
-            siteConfig.navigation.map((item) => {
-              const isActive =
-                item.href === "/"
-                  ? currentPath === "/"
-                  : currentPath.startsWith(item.href);
-              return (
-                <li>
-                  <a
-                    href={item.href}
-                    class:list={[
-                      "px-3.5 py-2 rounded-full text-sm font-medium transition-colors duration-200 inline-block min-h-[36px]",
-                      isActive
-                        ? "text-white font-semibold bg-white/15"
-                        : "text-white/70 hover:text-white hover:bg-white/10",
-                    ]}
-                    aria-current={isActive ? "page" : undefined}
-                  >
-                    {item.label}
-                  </a>
-                </li>
-              );
-            })
-          }
-        </ul>
-      </nav>
+    <nav class="site-header__nav" aria-label="Primary">
+      <ul>
+        {
+          nav.primary.map((link) => (
+            <li>
+              <a href={link.href} aria-current={isActive(link.href) ? "page" : undefined}>
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
 
-      <!-- Desktop CTA (>= 1024px) -->
-      <div class="hidden lg:flex items-center gap-4">
-        <a
-          href="/contact#sample-quote"
-          class="pill bg-white/10 hover:bg-white/20 text-white text-sm font-semibold !py-2.5 !px-5 min-h-[44px]"
-        >
-          <span>Request a Sample</span>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            aria-hidden="true"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
-          </svg>
-        </a>
+    <div class="site-header__actions">
+      <div class="site-header__cta">
+        <CtaButton placement="header" />
       </div>
-
-      <!-- Mobile Menu Toggle (< 1024px per Rule 1 & Rule 5, min 44px tap target) -->
-      <div class="flex lg:hidden items-center gap-2">
-        <button
-          type="button"
-          id="mobile-menu-toggle"
-          aria-expanded="false"
-          aria-controls="mobile-menu-drawer"
-          aria-label="Open mobile navigation menu"
-          class="min-w-[44px] min-h-[44px] p-2.5 rounded-xl text-white hover:bg-white/10 transition-colors flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
-        >
-          <svg
-            id="hamburger-icon"
-            class="w-6 h-6 block"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            aria-hidden="true"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M4 6h16M4 12h16M4 18h16"></path>
-          </svg>
-          <svg
-            id="close-icon"
-            class="w-6 h-6 hidden"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            aria-hidden="true"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M6 18L18 6M6 6l12 12"></path>
-          </svg>
-        </button>
-      </div>
+      <button
+        type="button"
+        class="menu-toggle"
+        aria-label="Menu"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+        data-menu-toggle
+      >
+        <span class="menu-toggle__bars" aria-hidden="true"><span></span><span></span><span></span></span>
+      </button>
     </div>
   </div>
 </header>
 
-<!-- Mobile Slide-In Backdrop (SIBLING of <header> so backdrop-filter does NOT trap fixed position, z-index 100) -->
-<div
-  id="mobile-menu-backdrop"
-  class="fixed inset-0 bg-black/75 backdrop-blur-sm z-[100] opacity-0 pointer-events-none transition-opacity duration-300 lg:hidden"
-  aria-hidden="true"
->
-</div>
+<!-- Sibling of <header>, never inside it: the header's backdrop-filter would otherwise become the
+     containing block of this fixed panel and clip it. -->
+<div class="menu-root" data-menu-root>
+  <div class="menu-backdrop" data-menu-backdrop aria-hidden="true"></div>
+  <div id="mobile-menu" class="menu-panel" role="dialog" aria-modal="true" aria-label="Site menu" data-lenis-prevent inert>
+    <div class="menu-panel__head">
+      <a href="/" aria-label="Renol Foods, home"><Logo /></a>
+      <button type="button" class="menu-close" aria-label="Close menu" data-menu-close>
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <path d="M4 4l12 12M16 4 4 16" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" />
+        </svg>
+      </button>
+    </div>
 
-<!-- Mobile Slide-In Drawer Panel (SIBLING of <header>, width min(85vw, 24rem), height 100dvh, z-index 100) -->
-<aside
-  id="mobile-menu-drawer"
-  class="fixed top-0 right-0 w-[min(85vw,24rem)] h-[100dvh] bg-[#121214] text-white z-[100] transform translate-x-full transition-transform duration-300 ease-out lg:hidden flex flex-col shadow-2xl border-l border-white/10 overflow-y-auto pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))]"
-  aria-label="Mobile Navigation"
-  aria-hidden="true"
-  data-lenis-prevent
->
-  <!-- Drawer Header with real Logo (no fake RF box) and Close button -->
-  <div
-    class="p-5 flex items-center justify-between border-b border-white/10 bg-[#16161a] shrink-0"
-  >
-    <a
-      href="/"
-      class="flex items-center p-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 rounded-lg"
-    >
-      <img
-        src="/images/Logo.png"
-        alt={`${siteConfig.name}`}
-        width="180"
-        height="82"
-        decoding="async"
-        class="h-10 w-auto max-w-[170px] object-contain"
-      />
-    </a>
-    <button
-      type="button"
-      id="mobile-menu-close"
-      aria-label="Close mobile navigation menu"
-      class="min-w-[44px] min-h-[44px] p-2 rounded-xl text-white/70 hover:text-white hover:bg-white/10 transition-colors flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
-    >
-      <svg
-        class="w-6 h-6"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        aria-hidden="true"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M6 18L18 6M6 6l12 12"></path>
-      </svg>
-    </button>
-  </div>
-
-  <!-- Drawer Navigation Links -->
-  <nav
-    class="flex-grow px-5 py-6 space-y-1 font-body"
-    aria-label="Mobile Menu Links"
-  >
-    <ul class="flex flex-col gap-1.5">
-      {
-        siteConfig.navigation.map((item) => {
-          const isActive =
-            item.href === "/"
-              ? currentPath === "/"
-              : currentPath.startsWith(item.href);
-          return (
+    <nav class="menu-panel__nav" aria-label="Mobile">
+      <ul>
+        {
+          menuLinks.map((link) => (
             <li>
-              <a
-                href={item.href}
-                class:list={[
-                  "mobile-nav-link flex items-center justify-between px-4 py-3 min-h-[44px] rounded-xl text-base font-medium transition-all duration-200",
-                  isActive
-                    ? "text-white font-bold bg-white/15"
-                    : "text-white/70 hover:text-white hover:bg-white/10",
-                ]}
-                aria-current={isActive ? "page" : undefined}
-              >
-                <span>{item.label}</span>
-                <svg
-                  class="w-4 h-4 text-white/40"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M9 5l7 7-7 7"
-                  />
-                </svg>
+              <a href={link.href} aria-current={isActive(link.href) ? "page" : undefined}>
+                {link.label}
               </a>
             </li>
-          );
-        })
-      }
-    </ul>
+          ))
+        }
+      </ul>
+    </nav>
 
-    <!-- One Primary "Request a Sample" CTA Button inside Mobile Drawer -->
-    <div class="mt-8 pt-6 border-t border-white/10 flex flex-col gap-3">
-      <a
-        href="/contact#sample-quote"
-        class="mobile-nav-link btn-accent w-full text-center py-3.5 min-h-[44px] rounded-full flex items-center justify-center gap-2 font-bold shadow-lg"
-      >
-        <span>Request a Sample</span>
-        <svg
-          class="w-4 h-4"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          aria-hidden="true"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
-        </svg>
-      </a>
-
-      <!-- Quick Facility Contact Info -->
-      <div
-        class="mt-4 p-4 rounded-2xl bg-white/5 border border-white/10 text-xs text-white/70 space-y-2 font-body"
-      >
-        <p
-          class="font-semibold text-white uppercase tracking-wider text-[11px] font-mono"
-        >
-          Bavla Manufacturing Plant
-        </p>
-        <p class="flex items-center gap-2">
-          <span class="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0"></span>
-          <span>Plot 616, Kerala GIDC, Bavla, Gujarat</span>
-        </p>
-        <p class="flex items-center gap-2">
-          <span class="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0"></span>
-          <a
-            href={`tel:${siteConfig.contact.phones[0]}`}
-            class="hover:text-white underline"
-          >
-            {siteConfig.contact.displayPhones[0]}
-          </a>
-        </p>
-      </div>
+    <div class="menu-panel__foot">
+      <p>Call sales</p>
+      <ul>
+        {
+          site.phones.map((p) => (
+            <li>
+              <a href={`tel:${p.tel}`}>{p.display}</a>
+            </li>
+          ))
+        }
+      </ul>
     </div>
-  </nav>
-</aside>
+  </div>
+</div>
 
-<script>
-  function setupMobileMenu() {
-    const toggleBtn = document.getElementById("mobile-menu-toggle");
-    const closeBtn = document.getElementById("mobile-menu-close");
-    const drawer = document.getElementById("mobile-menu-drawer");
-    const backdrop = document.getElementById("mobile-menu-backdrop");
-    const hamburgerIcon = document.getElementById("hamburger-icon");
-    const closeIcon = document.getElementById("close-icon");
-    const navLinks = document.querySelectorAll(".mobile-nav-link");
-
-    if (!toggleBtn || !drawer || !backdrop) return;
-
-    // Guard against duplicate binding across Astro transitions
-    if ((toggleBtn as any).__menuBound) {
-      // Ensure scroll lock is cleared if transitioning pages
-      document.documentElement.classList.remove("menu-open");
-      (window as any).lenis?.start();
-      return;
-    }
-    (toggleBtn as any).__menuBound = true;
-
-    let previousActiveElement: HTMLElement | null = null;
-
-    function openMenu() {
-      previousActiveElement = document.activeElement as HTMLElement;
-
-      drawer.classList.remove("translate-x-full");
-      drawer.classList.add("translate-x-0");
-      drawer.setAttribute("aria-hidden", "false");
-
-      backdrop.classList.remove("opacity-0", "pointer-events-none");
-      backdrop.classList.add("opacity-100", "pointer-events-auto");
-      backdrop.setAttribute("aria-hidden", "false");
-
-      toggleBtn.setAttribute("aria-expanded", "true");
-      hamburgerIcon?.classList.add("hidden");
-      closeIcon?.classList.remove("hidden");
-
-      // Lock page scroll and stop Lenis (Rule 5)
-      document.documentElement.classList.add("menu-open");
-      (window as any).lenis?.stop();
-
-      // Move focus into panel (Rule 4)
-      setTimeout(() => {
-        closeBtn?.focus();
-      }, 50);
-    }
-
-    function closeMenu() {
-      drawer.classList.remove("translate-x-0");
-      drawer.classList.add("translate-x-full");
-      drawer.setAttribute("aria-hidden", "true");
-
-      backdrop.classList.remove("opacity-100", "pointer-events-auto");
-      backdrop.classList.add("opacity-0", "pointer-events-none");
-      backdrop.setAttribute("aria-hidden", "true");
-
-      toggleBtn.setAttribute("aria-expanded", "false");
-      hamburgerIcon?.classList.remove("hidden");
-      closeIcon?.classList.add("hidden");
-
-      // Unlock page scroll and resume Lenis (Rule 5)
-      document.documentElement.classList.remove("menu-open");
-      (window as any).lenis?.start();
-
-      // Return focus to toggle button (Rule 4)
-      if (
-        previousActiveElement &&
-        typeof previousActiveElement.focus === "function"
-      ) {
-        previousActiveElement.focus();
-      } else {
-        toggleBtn.focus();
-      }
-    }
-
-    toggleBtn.addEventListener("click", () => {
-      const isOpen = toggleBtn.getAttribute("aria-expanded") === "true";
-      if (isOpen) {
-        closeMenu();
-      } else {
-        openMenu();
-      }
-    });
-
-    closeBtn?.addEventListener("click", closeMenu);
-    backdrop.addEventListener("click", closeMenu);
-
-    // Close on any mobile link click (Rule 3)
-    navLinks.forEach((link) => {
-      link.addEventListener("click", closeMenu);
-    });
-
-    // Close on Escape key (Rule 3)
-    document.addEventListener("keydown", (e: KeyboardEvent) => {
-      if (
-        e.key === "Escape" &&
-        toggleBtn.getAttribute("aria-expanded") === "true"
-      ) {
-        closeMenu();
-      }
-    });
-
-    // Close when viewport grows past 1024px (Rule 3)
-    const mql = window.matchMedia("(min-width: 1024px)");
-    mql.addEventListener("change", (e) => {
-      if (e.matches && toggleBtn.getAttribute("aria-expanded") === "true") {
-        closeMenu();
-      }
-    });
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-header);
+    background: rgba(11, 11, 13, 0.86);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .site-header__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-4);
+    min-height: var(--header-h);
+  }
+  .site-header__brand {
+    display: inline-flex;
+    align-items: center;
+    flex: none;
+    min-height: var(--tap);
+  }
+  .site-header__nav {
+    display: none;
+  }
+  .site-header__nav ul {
+    display: flex;
+    align-items: center;
+    gap: var(--s-1);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .site-header__nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+    padding: 0 var(--s-3);
+    border-radius: var(--r-pill);
+    color: var(--ink-2);
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: color var(--dur-1) var(--ease-out), background-color var(--dur-1) var(--ease-out);
+  }
+  .site-header__nav a:hover {
+    color: var(--ink);
+    background: rgba(255, 255, 255, 0.08);
+  }
+  .site-header__nav a[aria-current="page"] {
+    color: var(--ink);
+    background: rgba(255, 255, 255, 0.12);
+  }
+  .site-header__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+  }
+  .site-header__cta {
+    display: none;
   }
 
-  // Ensure menu is unlocked on page transitions (Rule 5 & 6)
-  function handlePageLoad() {
-    document.documentElement.classList.remove("menu-open");
-    (window as any).lenis?.start();
-    setupMobileMenu();
+  .menu-toggle,
+  .menu-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--tap);
+    block-size: var(--tap);
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  .menu-toggle__bars {
+    display: grid;
+    gap: 5px;
+    inline-size: 1.125rem;
+  }
+  .menu-toggle__bars span {
+    block-size: 2px;
+    border-radius: 2px;
+    background: currentColor;
   }
 
-  document.addEventListener("astro:page-load", handlePageLoad);
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", handlePageLoad);
-  } else {
-    handlePageLoad();
+  @media (min-width: 1024px) {
+    .site-header__nav {
+      display: block;
+    }
+    .site-header__cta {
+      display: block;
+    }
+    .menu-toggle,
+    .menu-root {
+      display: none;
+    }
   }
-</script>
+
+  /* Mobile menu */
+  .menu-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-menu);
+    background: rgba(0, 0, 0, 0.62);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--dur-1) var(--ease-out);
+  }
+  .menu-panel {
+    position: fixed;
+    inset-block: 0;
+    inset-inline-end: 0;
+    z-index: calc(var(--z-menu) + 1);
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-6);
+    inline-size: min(88vw, 22rem);
+    block-size: 100dvh;
+    padding: var(--s-4) var(--s-6) calc(var(--s-6) + env(safe-area-inset-bottom, 0px));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    background: var(--panel);
+    border-inline-start: 1px solid var(--line);
+    visibility: hidden;
+    transform: translate3d(100%, 0, 0);
+    transition:
+      transform var(--dur-2) var(--ease-out),
+      visibility 0s linear var(--dur-2);
+  }
+  .menu-root[data-open="true"] .menu-backdrop {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .menu-root[data-open="true"] .menu-panel {
+    visibility: visible;
+    transform: none;
+    transition:
+      transform var(--dur-2) var(--ease-out),
+      visibility 0s;
+  }
+  .menu-panel__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .menu-panel__nav ul,
+  .menu-panel__foot ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .menu-panel__nav a {
+    display: flex;
+    align-items: center;
+    min-height: 3.25rem;
+    padding-inline: var(--s-2);
+    border-bottom: 1px solid var(--line-soft);
+    font-family: var(--display);
+    font-size: 1.25rem;
+    font-weight: 500;
+  }
+  .menu-panel__nav a[aria-current="page"] {
+    color: var(--accent);
+  }
+  .menu-panel__foot {
+    margin-top: auto;
+  }
+  .menu-panel__foot p {
+    margin-bottom: var(--s-2);
+    color: var(--ink-3);
+    font-size: var(--fs-small);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+  .menu-panel__foot a {
+    display: flex;
+    align-items: center;
+    min-height: var(--tap);
+    padding-inline: var(--s-2);
+    color: var(--ink-2);
+  }
+</style>

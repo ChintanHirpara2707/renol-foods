@@ -15,9 +15,9 @@ export class PowderDetail {
   private isReducedMotion: boolean = false;
   private n: number = products.length;
 
-  private boundKeyDown: (e: KeyboardEvent) => void;
-  private boundPopState: () => void;
-  private boundDlgClick: (e: MouseEvent) => void;
+  private boundKeyDown!: (e: KeyboardEvent) => void;
+  private boundPopState!: () => void;
+  private boundDlgClick!: (e: MouseEvent) => void;
 
   constructor(container: HTMLElement, callbacks: DetailCallbacks) {
     this.container = container;
@@ -143,7 +143,7 @@ export class PowderDetail {
     const p = products[index];
     this.fillDetail(index);
     document.body.classList.add("in-detail");
-    (window as any).lenis?.stop();
+    (window as any).renolScroll?.lock("studio-detail");
     this.detailEl.style.display = "block";
     this.detailEl.inert = false;
     this.detailEl.scrollTop = 0;
@@ -231,7 +231,7 @@ export class PowderDetail {
         this.detailEl.style.display = "none";
         this.detailEl.inert = true;
         document.body.classList.remove("in-detail");
-        (window as any).lenis?.start();
+        (window as any).renolScroll?.unlock("studio-detail");
         onCompleteCallback?.();
       },
     });
@@ -287,7 +287,7 @@ export class PowderDetail {
 
     const unlockScroll = () => {
       document.body.classList.remove("in-detail");
-      (window as any).lenis?.start();
+      (window as any).renolScroll?.unlock("studio-detail");
     };
 
     this.boundPopState = () => {
@@ -384,7 +384,7 @@ export class PowderDetail {
 
   public destroy() {
     document.body.classList.remove("in-detail");
-    (window as any).lenis?.start();
+    (window as any).renolScroll?.unlock("studio-detail");
     window.removeEventListener("keydown", this.boundKeyDown);
     window.removeEventListener("popstate", this.boundPopState);
     const dlg = document.getElementById("dlg") as HTMLDialogElement | null;

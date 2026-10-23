@@ -303,7 +303,7 @@ import { products } from "../../data/products";
   </header>
 
   <!-- Main 3D Carousel Stage -->
-  <main
+  <section
     class="stage"
     id="stage"
     aria-label="Powder carousel. Use arrow keys or horizontal drag to browse, click or press Enter on the fruit to turn it into powder."
@@ -380,7 +380,6 @@ import { products } from "../../data/products";
     <a
       href="#content-start"
       class="scroll-cue hudfade"
-      aria-label="Scroll down to explore facility & products"
     >
       <span>Scroll to explore</span>
       <svg
@@ -395,7 +394,7 @@ import { products } from "../../data/products";
         <path d="M12 5v14M19 12l-7 7-7-7"></path>
       </svg>
     </a>
-  </main>
+  </section>
 
   <!-- Detail View Section (Revealed via circular clipPath) -->
   <section
@@ -880,23 +879,39 @@ import { products } from "../../data/products";
     padding: 6px 12px;
   }
 
+  /* 24px hit area (WCAG 2.5.8); the visible dot is drawn by ::before */
   :global(.dot) {
-    min-width: 8px;
-    min-height: 8px;
-    width: 8px;
-    height: 8px;
+    position: relative;
+    width: 24px;
+    height: 24px;
     padding: 0;
     border: 0;
-    border-radius: 99px;
-    background: rgba(255, 255, 255, 0.3);
+    background: transparent;
     cursor: pointer;
     touch-action: manipulation;
+    transition: width 0.35s;
+  }
+
+  :global(.dot)::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 8px;
+    height: 8px;
+    border-radius: 99px;
+    background: rgba(255, 255, 255, 0.45);
+    transform: translate(-50%, -50%);
     transition:
       width 0.35s,
       background 0.35s;
   }
 
   :global(.dot.on) {
+    width: 36px;
+  }
+
+  :global(.dot.on)::before {
     width: 28px;
     background: var(--accent);
   }

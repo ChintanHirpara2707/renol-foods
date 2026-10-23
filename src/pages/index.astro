@@ -5,8 +5,9 @@ import { siteConfig } from "../data/site";
 import { products } from "../data/products";
 import { industries } from "../data/industries";
 import { manufacturingProcess } from "../data/process";
+import { isPublic } from "../data/public";
 
-const faqs = [
+const allFaqs = [
   {
     q: "What is your standard Minimum Order Quantity (MOQ) for commercial production?",
     a: "Standard commercial production runs start from [ADD: confirm MOQ, e.g. 100 kg to 500 kg] depending on the specific fruit, vegetable, or spice powder and packaging requirements. For custom carrier blending or proprietary mesh sizing, custom batch minimums apply.",
@@ -28,7 +29,10 @@ const faqs = [
     a: "Our manufacturing facility is located in Bavla, Ahmedabad, Gujarat. We welcome technical representatives and procurement managers from commercial food brands for scheduled factory audits and technical formulation reviews.",
   },
 ];
----
+
+
+// Unconfirmed answers stay in the source but never render.
+const faqs = allFaqs.filter((f) => isPublic(f.a));---
 
 <BaseLayout
   title="Renol Foods | B2B Food Powder Manufacturer | Bavla, Ahmedabad"
@@ -47,35 +51,23 @@ const faqs = [
       aria-hidden="true"
     ></div>
 
-    <!-- 2. Trust Bar: Certification & Client Slots (Marked Placeholders Only) -->
-    <section id="trust-bar" class="relative py-12 border-b border-white/10 bg-[#0e0e12]/80 backdrop-blur-sm">
+    <!-- 2. Trust bar: confirmed facts only. Certifications and client logos appear here once the client supplies them. -->
+    <section id="trust-bar" aria-label="At a glance" class="relative py-10 border-b border-white/10 bg-[#0e0e12]/80">
       <div class="max-w-7xl mx-auto px-6 lg:px-8">
-        <div class="flex flex-col md:flex-row items-center justify-between gap-6">
-          <div class="flex-none text-center md:text-left">
-            <span class="text-xs uppercase font-bold tracking-widest text-white/40 block">Quality & Partner Framework</span>
-            <span class="text-sm font-display font-semibold text-white/80">Compliance Placeholders Pending Final Renol Audits</span>
-          </div>
-
-          <!-- Marked Placeholder Badges -->
-          <div class="flex flex-wrap items-center justify-center md:justify-end gap-3">
-            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-dashed border-white/20 bg-white/5 text-xs text-white/60 font-mono" title="FSSAI central license number verification slot">
-              <span class="w-1.5 h-1.5 rounded-full bg-amber-400/80"></span>
-              <span>[FSSAI Central Lic. - Pending Verification]</span>
-            </div>
-            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-dashed border-white/20 bg-white/5 text-xs text-white/60 font-mono" title="ISO 22000 / HACCP certification verification slot">
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400/80"></span>
-              <span>[ISO 22000 / HACCP - Verification Slot]</span>
-            </div>
-            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-dashed border-white/20 bg-white/5 text-xs text-white/60 font-mono" title="Client partnership under NDA slot">
-              <span class="w-1.5 h-1.5 rounded-full bg-blue-400/80"></span>
-              <span>[Tier-1 Snack Brand - NDA Client Slot]</span>
-            </div>
-            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-dashed border-white/20 bg-white/5 text-xs text-white/60 font-mono" title="Export client verification slot">
-              <span class="w-1.5 h-1.5 rounded-full bg-purple-400/80"></span>
-              <span>[Bakery & Premix Exporter - Partner Slot]</span>
-            </div>
-          </div>
-        </div>
+        <ul class="grid grid-cols-1 sm:grid-cols-3 gap-8 text-center">
+          <li>
+            <p class="font-display text-3xl font-extrabold text-white">{siteConfig.foundedYear}</p>
+            <p class="text-sm text-white/70">Founded</p>
+          </li>
+          <li>
+            <p class="font-display text-3xl font-extrabold text-white">{products.length}</p>
+            <p class="text-sm text-white/70">Powders</p>
+          </li>
+          <li>
+            <p class="font-display text-3xl font-extrabold text-white">Bavla</p>
+            <p class="text-sm text-white/70">Ahmedabad, Gujarat</p>
+          </li>
+        </ul>
       </div>
     </section>
 
@@ -83,9 +75,7 @@ const faqs = [
     <section id="process" class="relative py-28 border-b border-white/10">
       <!-- Large Outlined Ghost Watermark -->
       <div class="absolute left-1/2 top-12 -translate-x-1/2 text-center pointer-events-none select-none z-0">
-        <span class="font-display font-black text-[clamp(60px,12vw,180px)] tracking-tighter text-transparent opacity-10" style="-webkit-text-stroke: 1.5px rgba(255,255,255,0.12);">
-          TIMELINE
-        </span>
+        <span class="font-display font-black text-[clamp(60px,12vw,180px)] tracking-tighter text-transparent opacity-10 before:content-[attr(data-word)]" aria-hidden="true" data-word="TIMELINE" style="-webkit-text-stroke: 1.5px rgba(255,255,255,0.12);"></span>
       </div>
 
       <div class="relative z-10 max-w-7xl mx-auto px-6 lg:px-8">
@@ -118,7 +108,7 @@ const faqs = [
                     <span class="inline-block px-3 py-1 rounded-full bg-white/10 text-white/80 text-[11px] font-semibold uppercase tracking-wider">
                       Stage 0{step.stepNumber}
                     </span>
-                    <span class="font-display text-4xl font-black text-white/10 group-hover:text-white/20 transition-colors">
+                    <span class="font-display text-4xl font-black text-white/60 group-hover:text-white/60 transition-colors">
                       0{step.stepNumber}
                     </span>
                   </div>
@@ -230,7 +220,7 @@ const faqs = [
         <div class="mt-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <div class="p-8 rounded-3xl bg-[#121214] border border-white/10 flex flex-col justify-between">
             <div>
-              <span class="font-display text-3xl font-extrabold text-white/20">01</span>
+              <span class="font-display text-3xl font-extrabold text-white/60">01</span>
               <h3 class="font-display text-xl font-bold text-white mt-3 mb-2">Mesh Sizing</h3>
               <p class="text-sm text-white/70 leading-relaxed font-body">
                 Calibrated from 40 mesh for electrostatic topical snack dusting to 120 mesh for instant beverage dispersion.
@@ -243,7 +233,7 @@ const faqs = [
 
           <div class="p-8 rounded-3xl bg-[#121214] border border-white/10 flex flex-col justify-between">
             <div>
-              <span class="font-display text-3xl font-extrabold text-white/20">02</span>
+              <span class="font-display text-3xl font-extrabold text-white/60">02</span>
               <h3 class="font-display text-xl font-bold text-white mt-3 mb-2">Moisture Target</h3>
               <p class="text-sm text-white/70 leading-relaxed font-body">
                 Controlled drying parameters ensuring target moisture content typically ≤ 5.0% to prevent hygroscopic caking.
@@ -256,7 +246,7 @@ const faqs = [
 
           <div class="p-8 rounded-3xl bg-[#121214] border border-white/10 flex flex-col justify-between">
             <div>
-              <span class="font-display text-3xl font-extrabold text-white/20">03</span>
+              <span class="font-display text-3xl font-extrabold text-white/60">03</span>
               <h3 class="font-display text-xl font-bold text-white mt-3 mb-2">Carrier Blending</h3>
               <p class="text-sm text-white/70 leading-relaxed font-body">
                 Formulated as pure dehydrated botanical solids or buffered with food-grade maltodextrin/anti-caking matrices.
@@ -269,7 +259,7 @@ const faqs = [
 
           <div class="p-8 rounded-3xl bg-[#121214] border border-white/10 flex flex-col justify-between">
             <div>
-              <span class="font-display text-3xl font-extrabold text-white/20">04</span>
+              <span class="font-display text-3xl font-extrabold text-white/60">04</span>
               <h3 class="font-display text-xl font-bold text-white mt-3 mb-2">Bulk Packaging</h3>
               <p class="text-sm text-white/70 leading-relaxed font-body">
                 Supplied in 20 kg / 25 kg LDPE poly-lined kraft barrier bags or airtight fiber drums for export containment.
@@ -293,7 +283,7 @@ const faqs = [
     <section id="numbers" class="relative py-24 border-b border-white/10 bg-[#0e0e12]">
       <div class="max-w-7xl mx-auto px-6 lg:px-8">
         <div class="max-w-3xl mx-auto text-center reveal">
-          <span class="text-xs uppercase font-bold tracking-widest text-white/40 block mb-2">Manufacturing History</span>
+          <span class="text-xs uppercase font-bold tracking-widest text-white/60 block mb-2">Manufacturing History</span>
           
           <!-- Only Verified Number: Founded 2021 -->
           <div class="my-6">
@@ -416,9 +406,7 @@ const faqs = [
     <section id="enquiry-form" class="relative py-28 bg-[#121214]">
       <!-- Outlined Ghost Background -->
       <div class="absolute left-1/2 top-10 -translate-x-1/2 text-center pointer-events-none select-none z-0">
-        <span class="font-display font-black text-[clamp(50px,10vw,160px)] tracking-tighter text-transparent opacity-10 whitespace-nowrap" style="-webkit-text-stroke: 1.5px rgba(255,255,255,0.12);">
-          REQUEST SAMPLE
-        </span>
+        <span class="font-display font-black text-[clamp(50px,10vw,160px)] tracking-tighter text-transparent opacity-10 whitespace-nowrap before:content-[attr(data-word)]" aria-hidden="true" data-word="REQUEST SAMPLE" style="-webkit-text-stroke: 1.5px rgba(255,255,255,0.12);"></span>
       </div>
 
       <div class="relative z-10 max-w-4xl mx-auto px-6 lg:px-8">
@@ -504,6 +492,7 @@ const faqs = [
                 </label>
                 <select
                   name="product"
+                  aria-label="Product of interest"
                   required
                   class="w-full px-4 py-3 rounded-xl border border-white/15 bg-[#1b1b1f] text-white text-sm focus:outline-none focus:border-white/40 transition-colors"
                 >
@@ -522,6 +511,7 @@ const faqs = [
                 </label>
                 <select
                   name="industry"
+                  aria-label="Application segment"
                   class="w-full px-4 py-3 rounded-xl border border-white/15 bg-[#1b1b1f] text-white text-sm focus:outline-none focus:border-white/40 transition-colors"
                 >
                   <option value="">Select your application...</option>
@@ -563,7 +553,7 @@ const faqs = [
             </div>
 
             <div class="pt-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-              <p class="text-xs text-white/40 font-body">
+              <p class="text-xs text-white/60 font-body">
                 Fast response from our technical team in Bavla.
               </p>
               <button

@@ -2,6 +2,7 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import SectionHeading from "../components/SectionHeading.astro";
 import { products } from "../data/products";
+import { isPublic } from "../data/public";
 ---
 
 <BaseLayout
@@ -19,6 +20,7 @@ import { products } from "../data/products";
 
     <div class="section-container relative z-10">
       <SectionHeading
+        level={1}
         eyebrow="Commercial Product Portfolio"
         title="Industrial Food Powders"
         subtitle="Precision dehydrated and spray-dried fruit, vegetable, and culinary powders produced in Bavla for industrial food processing, seasoning blends, and export."
@@ -26,7 +28,7 @@ import { products } from "../data/products";
 
       <!-- Hero Primary Action Button (1 per hero) -->
       <div class="mt-8 flex justify-center">
-        <a href="/contact#sample-quote" class="btn-accent min-h-[44px]">
+        <a href="/request-sample" class="btn-accent min-h-[44px]">
           Request a Sample
         </a>
       </div>
@@ -53,12 +55,12 @@ import { products } from "../data/products";
 
                 <div>
                   <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
-                    <h3 class="font-display text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+                    <h2 class="font-display text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
                       {product.name}
-                    </h3>
+                    </h2>
                     <span
                       class="px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider border border-white/15"
-                      style={{ color: product.accentColor, backgroundColor: "rgba(255,255,255,0.05)" }}
+                      style={{ color: `color-mix(in srgb, ${product.accentColor} 65%, white)`, backgroundColor: "rgba(255,255,255,0.05)" }}
                     >
                       {product.cat} powder
                     </span>
@@ -82,20 +84,19 @@ import { products } from "../data/products";
                     </div>
                   </div>
 
-                  <!-- Technical Specifications snippet (Hides [ADD] placeholders) -->
+                  <!-- Technical Specifications snippet (unconfirmed rows hidden) -->
                   <div class="mt-6 p-4 rounded-2xl bg-[#18181c] border border-white/10 text-xs font-mono">
                     {validSpecs.length > 0 ? (
                       <div class="grid grid-cols-2 gap-2 text-white/80">
                         {validSpecs.slice(0, 4).map(([key, val]) => (
                           <div class="truncate">
-                            <span class="text-white/40 capitalize">{key}:</span> {val}
+                            <span class="text-white/60 capitalize">{key}:</span> {val}
                           </div>
                         ))}
                       </div>
                     ) : (
                       <div class="flex items-center justify-between text-white/60">
                         <span>Full specifications on request</span>
-                        <span class="text-white/40">COA provided</span>
                       </div>
                     )}
                   </div>
@@ -110,7 +111,7 @@ import { products } from "../data/products";
                     <span>View details</span>
                     <span aria-hidden="true">&rarr;</span>
                   </a>
-                  <span class="text-xs text-white/40 font-mono">Standard Pack: {product.packagingSizes || "20 kg / 25 kg"}</span>
+                  {isPublic(product.packagingSizes) && <span class="text-xs text-white/70 font-mono">Pack: {product.packagingSizes}</span>}
                 </div>
               </div>
             );
@@ -123,14 +124,14 @@ import { products } from "../data/products";
   <!-- One Closing CTA Section Near the End of the Page -->
   <section class="py-20 bg-[#0e0e12] text-white text-center border-t border-white/10">
     <div class="section-container max-w-3xl">
-      <span class="text-xs uppercase font-bold tracking-widest text-white/40 block mb-3 font-mono">Formulation Inquiries</span>
+      <span class="text-xs uppercase font-bold tracking-widest text-white/60 block mb-3 font-mono">Formulation Inquiries</span>
       <h2 class="font-display text-3xl sm:text-4xl font-extrabold mb-4 tracking-tight">
         Need custom mesh sizing or evaluation trial samples?
       </h2>
       <p class="text-white/70 text-sm sm:text-base mb-8 max-w-xl mx-auto leading-relaxed font-body">
         Tell us about your production application and target mesh requirements. We dispatch evaluation samples for qualified food processors.
       </p>
-      <a href="/contact#sample-quote" class="btn-accent min-h-[44px]">
+      <a href="/request-sample" class="btn-accent min-h-[44px]">
         Request a Sample
       </a>
     </div>
