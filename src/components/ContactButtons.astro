@@ -1,0 +1,67 @@
+---
+import { site, whatsappLink, callLink } from "../data/site";
+import { CTA } from "../data/cta";
+
+interface Props {
+  /** WhatsApp text; defaults to the general message. */
+  message?: string;
+}
+const { message } = Astro.props;
+---
+
+<div class="contact-buttons">
+  <a class="big big--whatsapp" href={whatsappLink(message)} target="_blank" rel="noopener noreferrer">
+    <span class="big__title">{CTA.chat.label}</span>
+    <span class="big__sub">{site.whatsappNumber}</span>
+  </a>
+  <a class="big big--call" href={callLink}>
+    <span class="big__title">Call us</span>
+    <span class="big__sub">{site.phones[0].display}</span>
+  </a>
+  <a class="big big--map" href={site.mapUrl} target="_blank" rel="noopener noreferrer">
+    <span class="big__title">Open in Google Maps</span>
+    <span class="big__sub">Bavla, Ahmedabad</span>
+  </a>
+</div>
+
+<style>
+  .contact-buttons {
+    display: grid;
+    gap: var(--s-4);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  }
+  .big {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.125rem;
+    min-height: 5rem;
+    padding: var(--s-4) var(--s-6);
+    border-radius: var(--r-card);
+    color: #fff;
+    text-align: left;
+    transition: transform var(--dur-1) var(--ease-out), filter var(--dur-1) var(--ease-out);
+  }
+  .big:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+  }
+  .big--whatsapp {
+    background: #0f7a40;
+  }
+  .big--map {
+    background: #2456d4;
+  }
+  .big--call {
+    background: var(--accent);
+    color: var(--on-accent);
+  }
+  .big__title {
+    font-family: var(--display);
+    font-size: 1.25rem;
+    font-weight: 800;
+  }
+  .big__sub {
+    font-size: var(--fs-small);
+  }
+</style>

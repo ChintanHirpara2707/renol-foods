@@ -158,3 +158,5 @@ All of the following are drafted general copy or placeholders. Nothing below has
 - **Privacy Policy and Cookie Notice** were rewritten for a site with no forms and no analytics. Client / legal review needed.
 - **Contact buttons**: WhatsApp uses +919979977396 `[CONFIRM it is WhatsApp-enabled]`. Product pages pre-fill the WhatsApp message with the product name and "20 kg corrugated box".
 - **Embedded Google Map** on the Contact page is built from the address text (spelling `[CONFIRM]`); it needs `frame-src https://www.google.com` in the security headers (already set).
+
+- **Industries page**: the product list on each industry card is derived (product `uses` matched to industry keywords in `src/data/industries.ts`; Nutraceuticals uses fruit and vegetable categories). The client should confirm which products belong to which industry.
