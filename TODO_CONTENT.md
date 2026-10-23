@@ -66,7 +66,7 @@ Each product page will detail physical, chemical, and microbiological properties
 | Metric | Status / Placeholder | Placement |
 | :--- | :--- | :--- |
 | **Monthly / Annual Production Capacity** | `[ADD: Metric tonnes per month / year]` | About Page, Facility Overview |
-| **Drying Technology Type** | Spray-Drying vs. Dehydration vs. Vacuum Belt drying verification | Process & About Page |
+| **Drying Technology Type** | Spray-Drying vs. Vacuum Belt drying verification | Process & About Page |
 
 ---
 
@@ -160,3 +160,5 @@ All of the following are drafted general copy or placeholders. Nothing below has
 - **Embedded Google Map** on the Contact page is built from the address text (spelling `[CONFIRM]`); it needs `frame-src https://www.google.com` in the security headers (already set).
 
 - **Industries page**: the product list on each industry card is derived (product `uses` matched to industry keywords in `src/data/industries.ts`; Nutraceuticals uses fruit and vegetable categories). The client should confirm which products belong to which industry.
+
+- **Factory photos** (`src/data/factory.ts`, shown on /industries): the alt text and captions only describe what is visible. Confirm them (and which machines they are) with the client. The original JPGs are in `public/images/industries/*.jpg`; `npm run factory-images` writes the web versions to `public/images/factory/`. Move the originals out of `public/` before launch so the large files are not deployed.

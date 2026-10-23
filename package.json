@@ -13,7 +13,9 @@
     "check": "astro check",
     "serve": "node scripts/serve-dist.mjs",
     "qa": "npm run build && node scripts/qa.mjs",
-    "qa:studio": "node scripts/qa-studio.mjs"
+    "qa:studio": "node scripts/qa-studio.mjs",
+    "placeholders": "node scripts/make-placeholders.mjs",
+    "factory-images": "node scripts/optimize-factory.mjs"
   },
   "dependencies": {
     "@astrojs/check": "0.9.12",
