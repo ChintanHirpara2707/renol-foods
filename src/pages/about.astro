@@ -3,6 +3,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import ChatLink from "../components/ChatLink.astro";
 import SectionHeading from "../components/SectionHeading.astro";
 import { siteConfig } from "../data/site";
+import { factoryPhotos } from "../data/factory";
 
 // Clean address for display without internal verification tags
 const displayAddress = siteConfig.location.fullAddress.replace(/\[.*?\]/g, "").trim();
@@ -69,7 +70,29 @@ const displayAddress = siteConfig.location.fullAddress.replace(/\[.*?\]/g, "").t
       </div>
     </div>
   </section>
-
+<section class="factory" aria-label="Factory and machinery">
+    <div class="container">
+      <br>
+      <SectionHeading
+        eyebrow="Inside the plant"
+        title="Our factory and machinery"
+        subtitle="The factory and the machinery used in manufacturing."
+        align="left"
+      />
+      <ul class="gallery">
+        {
+          factoryPhotos.map((photo) => (
+            <li>
+              <figure>
+                <img src={photo.image} alt={photo.alt} width="1200" height="800" loading="lazy" decoding="async" />
+                <figcaption>{photo.caption}</figcaption>
+              </figure>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
   <!-- One Closing CTA Section Near the End of the Page -->
   <section class="py-20 bg-[#0e0e12] text-white text-center border-t border-white/10">
     <div class="section-container max-w-3xl">
@@ -84,3 +107,57 @@ const displayAddress = siteConfig.location.fullAddress.replace(/\[.*?\]/g, "").t
     </div>
   </section>
 </BaseLayout>
+<style>
+.factory {
+    padding-block: 0 var(--section-y);
+  }
+  .gallery {
+    display: grid;
+    gap: var(--s-4);
+    margin: var(--s-8) 0 0;
+    padding: 0;
+    list-style: none;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 560px) {
+    .gallery {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1000px) {
+    .gallery {
+      gap: var(--s-6);
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  .gallery li {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 18rem;
+  }
+  .gallery figure {
+    margin: 0;
+    overflow: hidden;
+    border: 1px solid var(--line-soft);
+    border-radius: var(--r-card);
+    background: var(--surface);
+  }
+  .gallery img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+    transition: transform var(--dur-3) var(--ease-out);
+  }
+  .gallery figure:hover img {
+    transform: scale(1.03);
+  }
+  .gallery figure {
+    overflow: hidden;
+  }
+  .gallery figcaption {
+    padding: var(--s-3) var(--s-4);
+    color: var(--ink-2);
+    font-size: var(--fs-small);
+  }
+</style>

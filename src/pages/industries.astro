@@ -4,7 +4,7 @@ import SectionHeading from "../components/SectionHeading.astro";
 import LicenceBadges from "../components/LicenceBadges.astro";
 import ContactButtons from "../components/ContactButtons.astro";
 import { industries, industryProducts } from "../data/industries";
-import { factoryPhotos } from "../data/factory";
+// import { factoryPhotos } from "../data/factory";
 
 const MAX_PRODUCTS = 6;
 const cards = industries.map((industry) => {
@@ -69,7 +69,7 @@ const cards = industries.map((industry) => {
     </div>
   </section>
 
-  <section class="factory" aria-label="Factory and machinery">
+  <!-- <section class="factory" aria-label="Factory and machinery">
     <div class="container">
       <SectionHeading
         eyebrow="Inside the plant"
@@ -90,7 +90,7 @@ const cards = industries.map((industry) => {
         }
       </ul>
     </div>
-  </section>
+  </section> -->
 
   <section class="licences-strip" aria-labelledby="licences-title">
     <div class="container">
@@ -232,7 +232,7 @@ const cards = industries.map((industry) => {
     font-weight: 600;
   }
 
-  .factory {
+  /* .factory {
     padding-block: 0 var(--section-y);
   }
   .gallery {
@@ -283,7 +283,7 @@ const cards = industries.map((industry) => {
     padding: var(--s-3) var(--s-4);
     color: var(--ink-2);
     font-size: var(--fs-small);
-  }
+  } */
 
   .licences-strip {
     padding-block: var(--s-12);

@@ -86,7 +86,7 @@ Everything below must be removed, rewritten as neutral fact, or moved to `TODO_C
 - "Lot-wise COA provided" / "COA provided" on product cards and pages (`[slug].astro:228`, `products.astro:98`), and a "Sample COA Technical Template" download (`downloads.astro`).
 - Product JSON-LD `AggregateOffer` / `PriceSpecification` with "B2B commercial bulk pricing upon specification inquiry" (`[slug].astro:76`). Contradicts "no prices".
 - "nitrogen-flushed foil pouches" (`private-label.astro:78`).
-- "Engineered with modern stainless steel processing and drying systems" (`about.astro:66`); "operates specialized dehydration and spray drying production lines" (`about.astro:40`).
+- "Engineered with modern stainless steel processing and drying systems" (`about.astro:66`); "operates specialized and spray drying production lines" (`about.astro:40`).
 - Export page: dispatch via Mundra and Pipavav ports, ISPM-15 pallets, 20 ft = "10 to 12 Metric Tonnes", 40 ft = "22 to 24 Metric Tonnes", "Estimated Capacity" column (`export.astro`).
 - Particle-size options "40–60 mesh … 80–120 mesh" as offered services (FAQ, quality, private-label, request form dropdown).
 - "Plant Hours: Monday – Saturday 9:00 AM – 6:00 PM (IST)" hard-coded as fallback (`contact.astro:102`).
