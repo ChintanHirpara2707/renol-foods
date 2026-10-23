@@ -159,7 +159,7 @@ export function createProductDetail(host: DetailHost): ProductDetail {
     ov.style.setProperty("--powder", p.powder);
     bgs.forEach((b, k) => b.classList.toggle("on", k === i));
 
-    q(".sd-name").textContent = `${p.name} Powder`;
+    q(".sd-name").textContent = p.fullName;
     q(".sd-blurb").textContent = p.blurb;
     q(".sd-chip").textContent = `${p.cat} powder`;
 
@@ -208,7 +208,7 @@ export function createProductDetail(host: DetailHost): ProductDetail {
       const state = { psStudio: data[i].slug };
       if (push) history.pushState(state, "", productUrl(i));
       else history.replaceState(state, "", productUrl(i));
-      document.title = `${data[i].name} Powder | ${previousTitle.split("|")[0].trim()}`;
+      document.title = `${data[i].fullName} | ${previousTitle.split("|")[0].trim()}`;
     } catch {
       /* history unavailable: the overlay still works */
     }
@@ -253,7 +253,7 @@ export function createProductDetail(host: DetailHost): ProductDetail {
     timeline.to(fruit, { scale: 0.82, opacity: 0, filter: "blur(8px)", duration: 0.9, ease: "power2.in" }, 0.42);
     timeline.to([host.nameEl, host.subEl], { opacity: 0, duration: 0.2 }, 1.5);
     timeline.add(() => {
-      host.nameEl.textContent = `${p.name} Powder`;
+      host.nameEl.textContent = p.fullName;
       host.subEl.textContent = "Ready to use";
     }, 1.7);
     timeline.to([host.nameEl, host.subEl], { opacity: 1, duration: 0.3 }, 1.7);
@@ -395,7 +395,7 @@ export function createProductDetail(host: DetailHost): ProductDetail {
         else if (mode === "detail" && host.active() !== i) {
           host.select(i);
           fill(i);
-          document.title = `${data[i].name} Powder | ${previousTitle.split("|")[0].trim()}`;
+          document.title = `${data[i].fullName} | ${previousTitle.split("|")[0].trim()}`;
         }
       } else if (mode === "detail") {
         closeNow();

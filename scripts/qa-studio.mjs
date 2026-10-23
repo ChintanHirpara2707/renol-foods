@@ -13,6 +13,11 @@ const browser = await chromium.launch({ args: ["--use-angle=swiftshader", "--ena
 
 const active = (page) => page.evaluate(() => document.querySelector("[data-name]").textContent);
 const settle = (page) => page.waitForTimeout(2000); // software WebGL (SwiftShader) is slow, so animations run late
+// Poll for a product change instead of sleeping: software WebGL can delay the tweens by seconds.
+const untilChanged = async (page, from) => {
+  for (let i = 0; i < 24 && (await active(page)) === from; i++) await page.waitForTimeout(250);
+  await page.waitForTimeout(700);
+};
 // Lenis keeps its own target; reset it too or it scrolls back down after an instant scrollTo.
 const toTop = (page) => page.evaluate(() => { window.renolLenis?.scrollTo(0, { immediate: true }); scrollTo({ top: 0, behavior: "instant" }); });
 
@@ -113,13 +118,13 @@ for (const vp of [
   await page.waitForTimeout(300);
   check(where, (await active(page)) === before, "a mostly-vertical wheel gesture stepped the carousel");
   await page.mouse.wheel(60, 4);
-  await settle(page);
+  await untilChanged(page, before);
   const afterWheel = await active(page);
   check(where, afterWheel !== before, "horizontal wheel did not step the carousel");
 
   // keys and drag
   await page.keyboard.press("ArrowRight");
-  await settle(page);
+  await untilChanged(page, afterWheel);
   const afterKey = await active(page);
   check(where, afterKey !== afterWheel, "ArrowRight did not step the carousel");
   const y = Math.round(vp.height * 0.25);
@@ -127,7 +132,7 @@ for (const vp of [
   await page.mouse.down();
   await page.mouse.move(vp.width * 0.5, y + 4, { steps: 8 });
   await page.mouse.up();
-  await settle(page);
+  await untilChanged(page, afterKey);
   check(where, (await active(page)) !== afterKey, "horizontal drag did not move the carousel");
 
   // off-screen pause: scroll the studio away, drawImage calls must stop

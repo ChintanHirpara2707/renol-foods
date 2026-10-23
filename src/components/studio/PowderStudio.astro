@@ -453,7 +453,7 @@ const initial = items[Math.min(2, items.length - 1)];
       const c = document.createElement("button");
       c.type = "button";
       c.className = "ps-card";
-      c.setAttribute("aria-label", `${p.name} powder, ${i + 1} of ${n}`);
+      c.setAttribute("aria-label", `${p.fullName}, ${i + 1} of ${n}`);
       let canvas: HTMLCanvasElement | null = null;
       if (p.frames) {
         canvas = document.createElement("canvas");
