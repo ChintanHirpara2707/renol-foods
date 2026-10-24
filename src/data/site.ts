@@ -2,12 +2,15 @@ import { CONFIRM } from "./public";
 import { products, productTheme, type Product } from "./products";
 import { nav } from "./nav";
 
-const phones = [
+// Phone lines and the email address, as supplied by the client.
+const contacts: ({ tel: string; display: string } | { mail: string; display: string })[] = [
   { tel: "+919979977396", display: "+91 9979977396" },
   { tel: "+919979977395", display: "+91 9979977395" },
   { tel: "+919979977392", display: "+91 9979977392" },
-  { mail: "Info@renolfoods.com", display: "Info@renolfoods.com" }
+  { mail: "Info@renolfoods.com", display: "Info@renolfoods.com" },
 ];
+const phones = contacts.filter((c): c is { tel: string; display: string } => "tel" in c);
+const emailEntry = contacts.find((c): c is { mail: string; display: string } => "mail" in c);
 
 /** Spelling not confirmed by the client yet (see `confirm.addressSpelling`). */
 const ADDRESS_LINE = "Plot No. 616, GIDC, Kerala, Bavla, Gujarat 382220";
@@ -32,8 +35,8 @@ export const site = {
   /** The client's Google Maps share link: every "location" button opens this. */
   mapUrl: "https://maps.app.goo.gl/AvTviu73BBb27tRG7",
   phones,
-  /** Not confirmed by the client: hidden until replaced with a real value. */
-  email: CONFIRM("primary sales email"),
+  /** From the client's contact list; stays hidden if it is ever removed or a placeholder. */
+  email: emailEntry?.mail ?? CONFIRM("primary sales email"),
   /** The primary phone line, used for WhatsApp until the client confirms it is WhatsApp-enabled. */
   whatsappNumber: WHATSAPP_NUMBER,
   /** Digits only, for wa.me links. */
