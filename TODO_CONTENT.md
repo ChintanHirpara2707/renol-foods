@@ -142,9 +142,8 @@ All of the following are drafted general copy or placeholders. Nothing below has
 - 6 industry images at `/public/images/industries/<slug>.webp`.
 
 ### Powder Studio
-- Products flagged `studio: true`: Apple, Orange, Pomegranate, Strawberry, White Guava, Blueberry, Beetroot. Their accent and glow colours are draft choices.
-- Only **Apple** has a renderer today. Orange, Pomegranate, Strawberry, White Guava, Blueberry and Beetroot need a shader scene (or at least a poster in `/public/images/fruit/<slug>.webp`) before they appear in the carousel. Until then the studio shows Apple only.
-- The previous studio fruits (tomato, mango, spinach, ginger, tamarind, caramel, lemon) are no longer flagged for the studio. Their shader scenes and posters still exist.
+- The seven studio fruits use the transparent photos from the client's prototype (`public/images/fruit/*.webp`). Replace a photo by overwriting the file with the same name.
+- Studio colours (accent, glow, powder, particles) come from the same prototype and are set in `src/scripts/studio/data.ts`.
 
 ### Pages still on the old schema
 - Home, `/products`, product pages, `/downloads`, `/request-sample`, `/industries` read the catalogue through `src/data/legacy.ts` until they are rebuilt. Delete that file with them.

@@ -4,7 +4,7 @@
  * -aligned canvas is created on start and removed on stop.
  */
 
-import { TIER_CONFIG, getTier } from "./quality";
+import { TIER_PARTICLES, getTier } from "./quality";
 
 export interface PowderProduct {
   powder: string;
@@ -27,7 +27,7 @@ export interface FxInfo {
 
 /** Grain count follows the quality tier: 1500 HIGH, 900 MID, 500 LOW, 0 STATIC. */
 export function grainCount(): number {
-  return TIER_CONFIG[getTier()].particles;
+  return TIER_PARTICLES[getTier()];
 }
 
 interface SampleOptions {
@@ -49,7 +49,15 @@ export function sampleSource(source: CanvasImageSource, options: SampleOptions =
   const ctx = canvas.getContext("2d", { willReadFrequently: true });
   if (!ctx) return null;
   try {
-    ctx.drawImage(source, 0, 0, W, H);
+    if (source instanceof HTMLImageElement && source.naturalWidth) {
+      // fit the whole photo inside the box (the card shows it with object-fit: contain)
+      const k = Math.min(W / source.naturalWidth, H / source.naturalHeight);
+      const dw = source.naturalWidth * k;
+      const dh = source.naturalHeight * k;
+      ctx.drawImage(source, (W - dw) / 2, (H - dh) / 2, dw, dh);
+    } else {
+      ctx.drawImage(source, 0, 0, W, H);
+    }
   } catch {
     return null;
   }

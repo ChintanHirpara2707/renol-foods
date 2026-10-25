@@ -41,7 +41,7 @@ const pageUrl = new URL(`/products/${product.slug}/`, origin).href;
 
 // Studio products show the fruit as rendered in the Powder Studio (still); others use the product image.
 const art = product.slug.replace(/-powder$/, "");
-const posterFile = `/images/fruit/${art}-powder.webp`;
+const posterFile = `/images/fruit/${art}.webp`;
 const poster = product.studio && existsSync(join(process.cwd(), "public", posterFile)) ? posterFile : null;
 
 // Carton label: product name wrapped to short lines

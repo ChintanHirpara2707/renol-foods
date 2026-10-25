@@ -4,17 +4,16 @@ import { CTA } from "../../data/cta";
 import { scrollLock } from "../scroll";
 import { PowderFx, sampleSource } from "./powder-fx";
 import { getTier } from "./quality";
-import type { FruitRenderer } from "./fruit-gl";
 import type { StudioProduct } from "./data";
 
 /**
  * Fruit -> powder -> product detail, and back. Timings follow the prototype:
- * shake 0.43s, dissolve from 0.42s, name swap 1.5-1.7s, circular reveal at 2.5s (1.0s),
+ * squash 0.32s, dissolve from 0.42s, name swap 1.5-1.7s, circular reveal at 2.5s (1.0s),
  * reverse reveal 0.8s.
  */
 
 const LOCK = "studio-detail";
-const SNAPSHOT_ANGLE = 0.55;
+const hexRgb = (h: string): [number, number, number] => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16)) as [number, number, number];
 const mod = (a: number, b: number) => ((a % b) + b) % b;
 const SKIP_TAGS = new Set(["SCRIPT", "STYLE", "LINK", "TEMPLATE", "NOSCRIPT"]);
 
@@ -29,13 +28,9 @@ export interface DetailHost {
   hud: HTMLElement[];
   nameEl: HTMLElement;
   subEl: HTMLElement;
-  renderer: FruitRenderer | null;
-  glOK: () => boolean;
   reducedMotion: boolean;
-  /** The fruit element (canvas or poster image) of card i. */
+  /** The fruit image of card i. */
   fruit: (i: number) => HTMLElement | null;
-  /** Stop the card's idle spin on a whole frame and redraw it. */
-  freeze: (i: number) => void;
   /** Re-render the carousel after the detail closes (position, theme, active fruit). */
   restore: () => void;
   /** Make i the carousel's active product (used when paging inside the detail). */
@@ -142,15 +137,7 @@ export function createProductDetail(host: DetailHost): ProductDetail {
 
   const productUrl = (i: number) => `/products/${data[i].slug}/`;
 
-  function art(i: number): string {
-    const p = data[i];
-    if (host.renderer && host.glOK() && p.kind !== null && !p.frames) {
-      const url = host.renderer.snapshot(p.kind, SNAPSHOT_ANGLE);
-      if (url) return url;
-    }
-    if (p.poster) return p.poster;
-    return p.frames ? `${p.frames.folder}${String(p.frames.idle).padStart(2, "0")}.webp` : "";
-  }
+  const art = (i: number): string => data[i].photo;
 
   function fill(i: number): void {
     const p = data[i];
@@ -221,7 +208,6 @@ export function createProductDetail(host: DetailHost): ProductDetail {
     mode = "transform";
     opener = cards[i];
     scrollLock.lock(LOCK);
-    host.freeze(i);
 
     const fruit = host.fruit(i);
     const r = fruit?.getBoundingClientRect() ?? cards[i].getBoundingClientRect();
@@ -245,23 +231,21 @@ export function createProductDetail(host: DetailHost): ProductDetail {
     }
 
     const p = data[i];
-    const frames = Boolean(p.frames);
     let info: ReturnType<PowderFx["start"]> | undefined;
     timeline = gsap.timeline();
+    // the fruit is pressed down and squashed, then crumbles into powder
     timeline
-      .to(fruit, { rotation: -5, scale: 1.05, duration: 0.09, transformOrigin: "50% 62%" })
-      .to(fruit, { rotation: 5, duration: 0.12 })
-      .to(fruit, { rotation: -4, duration: 0.12 })
-      .to(fruit, { rotation: 0, duration: 0.1 });
+      .to(fruit, { scale: 1.08, duration: 0.18, ease: "power2.out", transformOrigin: "50% 100%" })
+      .to(fruit, { scaleY: 0.72, scaleX: 1.14, duration: 0.14, ease: "power3.in" });
     timeline.add(() => {
-      const samples = sampleSource(fruit as CanvasImageSource, frames ? { tone: [248, 236, 170], lo: 0.3, span: 0.3 } : {});
+      const samples = sampleSource(fruit as HTMLImageElement, { tone: hexRgb(p.powder), lo: 0.25, span: 0.3 });
       info = fx.start(r, p, samples, host.root.getBoundingClientRect());
     }, 0.42);
     timeline.to(fruit, { scale: 0.82, opacity: 0, filter: "blur(8px)", duration: 0.9, ease: "power2.in" }, 0.42);
     timeline.to([host.nameEl, host.subEl], { opacity: 0, duration: 0.2 }, 1.5);
     timeline.add(() => {
       host.nameEl.textContent = p.fullName;
-      host.subEl.textContent = "Ready to use";
+      host.subEl.textContent = "Crushed and ready to use";
     }, 1.7);
     timeline.to([host.nameEl, host.subEl], { opacity: 1, duration: 0.3 }, 1.7);
     timeline.add(() => {

@@ -1,5 +1,6 @@
 // Focused checks for the Powder Studio on the built site (npm run build first).
-// WebGL render, layout at 3 viewports, wheel/drag/key behaviour, no-WebGL poster fallback, off-screen pause.
+// Fruit photos, layout at 4 viewports, wheel/drag/key behaviour, the crush -> detail -> back flow,
+// reduced motion.
 import { chromium } from "playwright";
 import { startServer } from "./serve-dist.mjs";
 
@@ -9,45 +10,32 @@ const check = (where, ok, what) => {
 };
 
 const { server, url } = await startServer({ port: 4174 });
-const browser = await chromium.launch({ args: ["--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--ignore-gpu-blocklist"] });
+const browser = await chromium.launch();
 
 const active = (page) => page.evaluate(() => document.querySelector("[data-name]").textContent);
-const settle = (page) => page.waitForTimeout(2000); // software WebGL (SwiftShader) is slow, so animations run late
-// Poll for a product change instead of sleeping: software WebGL can delay the tweens by seconds.
+// Lenis keeps its own target; reset it too or it scrolls back down after an instant scrollTo.
+const toTop = (page) => page.evaluate(() => { window.renolLenis?.scrollTo(0, { immediate: true }); scrollTo({ top: 0, behavior: "instant" }); });
 const untilChanged = async (page, from) => {
   for (let i = 0; i < 24 && (await active(page)) === from; i++) await page.waitForTimeout(250);
   await page.waitForTimeout(1500);
 };
-// Lenis keeps its own target; reset it too or it scrolls back down after an instant scrollTo.
-const toTop = (page) => page.evaluate(() => { window.renolLenis?.scrollTo(0, { immediate: true }); scrollTo({ top: 0, behavior: "instant" }); });
+const centre = (page) =>
+  page.evaluate(() => {
+    const r = document.querySelector('.ps-card[aria-current="true"]').getBoundingClientRect();
+    return [r.left + r.width / 2, r.top + r.height / 2];
+  });
 
-async function open(viewport, { noWebGL = false } = {}) {
-  const context = await browser.newContext({ viewport });
+async function open(viewport, options = {}) {
+  const context = await browser.newContext({ viewport, ...options });
   const page = await context.newPage();
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
   page.on("console", (m) => m.type() === "error" && errors.push(m.text()));
   page.on("response", (r) => r.status() >= 400 && errors.push(`HTTP ${r.status()} ${r.url()}`));
-  await page.addInitScript(
-    ({ noWebGL }) => {
-      window.__draws = 0;
-      const draw = CanvasRenderingContext2D.prototype.drawImage;
-      CanvasRenderingContext2D.prototype.drawImage = function (...args) {
-        window.__draws++;
-        return draw.apply(this, args);
-      };
-      if (noWebGL) {
-        const get = HTMLCanvasElement.prototype.getContext;
-        HTMLCanvasElement.prototype.getContext = function (type, ...rest) {
-          return /webgl/i.test(type) ? null : get.call(this, type, ...rest);
-        };
-      }
-    },
-    { noWebGL },
-  );
   await page.goto(`${url}/`, { waitUntil: "load" });
-  await page.waitForSelector(".ps-card");
-  await settle(page);
+  await page.waitForSelector(".ps-card img");
+  await page.waitForFunction(() => [...document.querySelectorAll(".ps-card img")].every((i) => i.complete && i.naturalWidth > 0));
+  await page.waitForTimeout(1200);
   return { context, page, errors };
 }
 
@@ -62,43 +50,30 @@ for (const vp of [
 
   const info = await page.evaluate(() => {
     const ps = document.querySelector(".ps").getBoundingClientRect();
-    const header = document.querySelector("[data-site-header]").getBoundingClientRect();
-    const cardRect = (el) => el.getBoundingClientRect();
     const cards = [...document.querySelectorAll(".ps-card")];
     const current = cards.find((c) => c.getAttribute("aria-current") === "true");
     const name = document.querySelector(".ps-nameblock").getBoundingClientRect();
     const cue = document.querySelector(".ps-cue").getBoundingClientRect();
-    const cta = document.querySelector(".ps-cta").getBoundingClientRect();
-    const canvases = [...document.querySelectorAll("canvas.ps-fruit")];
-    const pixels = (cv) => {
-      const d = cv.getContext("2d").getImageData(0, 0, cv.width, cv.height).data;
-      let n = 0;
-      for (let i = 3; i < d.length; i += 64) if (d[i] > 200) n++;
-      return n;
-    };
     return {
       cards: cards.length,
-      canvases: canvases.length,
-      drawn: canvases.filter((cv) => pixels(cv) > 20).length,
+      fitted: cards.filter((c) => c.style.getPropertyValue("--fs")).length,
       studioBottom: ps.bottom,
-      headerBottom: header.bottom,
-      barHeight: 0, // no bottom bar any more
       vh: innerHeight,
-      activeBottom: current ? cardRect(current).bottom : 0,
+      activeBottom: current ? current.getBoundingClientRect().bottom : 0,
       nameTop: name.top,
       nameBottom: name.bottom,
       cueTop: cue.top,
-      ctaBottom: cta.bottom,
       overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
       touchAction: getComputedStyle(document.querySelector(".ps-stage")).touchAction,
+      canvases: document.querySelectorAll(".ps-card canvas").length,
     };
   });
   check(where, info.cards === 7, `expected 7 cards, got ${info.cards}`);
-  check(where, info.drawn >= 3, `only ${info.drawn}/${info.canvases} canvases have pixels`);
+  check(where, info.fitted === 7, `only ${info.fitted}/7 fruit photos were size-fitted`);
+  check(where, info.canvases === 0, "WebGL canvases are still present");
   check(where, !info.overflow, "horizontal overflow");
   check(where, info.touchAction === "pan-y", `touch-action ${info.touchAction}`);
-  const firstScreen = info.studioBottom + info.barHeight;
-  check(where, Math.abs(firstScreen - info.vh) < 24 || info.studioBottom > info.vh, `studio + header + bar = ${Math.round(firstScreen)} vs viewport ${info.vh}`);
+  check(where, Math.abs(info.studioBottom - info.vh) < 24 || info.studioBottom > info.vh, `studio + header = ${Math.round(info.studioBottom)} vs viewport ${info.vh}`);
   check(where, info.nameTop >= info.activeBottom - 4, `name block (top ${Math.round(info.nameTop)}) overlaps the centre fruit (bottom ${Math.round(info.activeBottom)})`);
   check(where, info.nameBottom <= info.cueTop + 2, `name block overlaps the scroll cue (${Math.round(info.nameBottom)} > ${Math.round(info.cueTop)})`);
   check(where, errors.length === 0, `errors: ${errors.slice(0, 3).join(" | ")}`);
@@ -111,7 +86,7 @@ for (const vp of [
   await toTop(page);
   await page.waitForTimeout(600);
 
-  // horizontal wheel steps, vertical-dominant diagonal does not
+  // horizontal wheel steps, a mostly-vertical gesture does not
   const before = await active(page);
   await page.mouse.wheel(10, 60);
   await page.waitForTimeout(300);
@@ -121,11 +96,11 @@ for (const vp of [
   const afterWheel = await active(page);
   check(where, afterWheel !== before, "horizontal wheel did not step the carousel");
 
-  // keys and drag
   await page.keyboard.press("ArrowRight");
   await untilChanged(page, afterWheel);
   const afterKey = await active(page);
   check(where, afterKey !== afterWheel, "ArrowRight did not step the carousel");
+
   const y = Math.round(vp.height * 0.25);
   await page.mouse.move(vp.width * 0.8, y);
   await page.mouse.down();
@@ -133,27 +108,63 @@ for (const vp of [
   await page.mouse.up();
   await untilChanged(page, afterKey);
   check(where, (await active(page)) !== afterKey, "horizontal drag did not move the carousel");
-
-  // off-screen pause: scroll the studio away, drawImage calls must stop
-  await page.evaluate(() => scrollTo({ top: document.querySelector(".ps").offsetHeight + 400, behavior: "instant" }));
-  await page.waitForTimeout(600);
-  const d1 = await page.evaluate(() => window.__draws);
-  await page.waitForTimeout(700);
-  const d2 = await page.evaluate(() => window.__draws);
-  check(where, d2 - d1 < 3, `render loop still running off-screen (${d2 - d1} draws in 700ms)`);
   await context.close();
 }
 
-// no WebGL: posters, still 7 cards, no errors
+// crush -> detail -> back
 {
-  const { context, page, errors } = await open({ width: 1366, height: 636 }, { noWebGL: true });
-  const info = await page.evaluate(() => ({
-    cards: document.querySelectorAll(".ps-card").length,
-    posters: [...document.querySelectorAll("img.ps-fruit")].filter((i) => i.complete && i.naturalWidth > 0).length,
+  const where = "crush flow @ 1366x636";
+  const { context, page, errors } = await open({ width: 1366, height: 636 });
+  const name = await active(page);
+  const [x, yy] = await centre(page);
+  await page.mouse.click(x, yy);
+  await page.waitForTimeout(1200);
+  check(where, await page.evaluate(() => document.body.querySelectorAll(":scope > canvas").length === 1), "no powder canvas during the crush");
+  check(where, await page.evaluate(() => document.documentElement.classList.contains("is-scroll-locked")), "scroll not locked during the crush");
+  await page.waitForTimeout(3600);
+  const s = await page.evaluate(() => {
+    const o = document.getElementById("studio-detail");
+    return {
+      display: o ? getComputedStyle(o).display : "none",
+      path: location.pathname,
+      pouch: o?.querySelector(".sd-pouch-fruit")?.getAttribute("href") ?? "",
+      big: o?.querySelector(".sd-big")?.getAttribute("src") ?? "",
+      canvases: document.body.querySelectorAll(":scope > canvas").length,
+    };
+  });
+  check(where, s.display === "block", "detail did not open");
+  check(where, /^\/products\/[a-z-]+-powder\/$/.test(s.path), `URL ${s.path}`);
+  check(where, s.pouch.startsWith("/images/fruit/") && s.big.startsWith("/images/fruit/"), `detail art is not the fruit photo (${s.pouch})`);
+  check(where, s.canvases === 0, "powder canvas left behind");
+  await page.keyboard.press("Escape");
+  await page.waitForTimeout(2200);
+  const after = await page.evaluate(() => ({
+    display: getComputedStyle(document.getElementById("studio-detail") ?? document.body).display,
+    path: location.pathname,
+    locked: document.documentElement.classList.contains("is-scroll-locked"),
+    name: document.querySelector("[data-name]").textContent,
   }));
-  check("no-webgl", info.cards === 7, `expected 7 cards, got ${info.cards}`);
-  check("no-webgl", info.posters >= 7, `only ${info.posters} posters loaded`);
-  check("no-webgl", errors.length === 0, `errors: ${errors.slice(0, 3).join(" | ")}`);
+  check(where, after.path === "/" && !after.locked && after.name === name, `close left state (${after.path}, locked=${after.locked}, ${after.name} vs ${name})`);
+  check(where, errors.length === 0, `errors: ${errors.slice(0, 3).join(" | ")}`);
+  await context.close();
+}
+
+// reduced motion: straight to the detail with a fade, no powder
+{
+  const where = "reduced motion";
+  const { context, page, errors } = await open({ width: 1366, height: 636 }, { reducedMotion: "reduce" });
+  const [x, yy] = await centre(page);
+  await page.mouse.click(x, yy);
+  await page.waitForTimeout(1500);
+  const s = await page.evaluate(() => ({
+    display: getComputedStyle(document.getElementById("studio-detail") ?? document.body).display,
+    canvases: document.body.querySelectorAll(":scope > canvas").length,
+  }));
+  check(where, s.display === "block" && s.canvases === 0, `should open straight away without powder (${s.display}, canvases ${s.canvases})`);
+  await page.keyboard.press("Escape");
+  await page.waitForTimeout(1200);
+  check(where, !(await page.evaluate(() => document.documentElement.classList.contains("is-scroll-locked"))), "scroll lock left behind");
+  check(where, errors.length === 0, `errors: ${errors.slice(0, 3).join(" | ")}`);
   await context.close();
 }
 

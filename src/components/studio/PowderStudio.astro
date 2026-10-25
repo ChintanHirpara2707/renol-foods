@@ -43,7 +43,7 @@ const initial = items[Math.min(2, items.length - 1)];
 
     <p class="ps-hint" data-hint>
       <i aria-hidden="true"></i>
-      <span data-hint-text>Drag the fruit to turn it. Click it to open the product</span>
+      <span data-hint-text>{initial ? `Click or tap the ${initial.name.toLowerCase()} to crush it into powder` : ""}</span>
     </p>
 
     <a class="ps-cue ps-ui" href="#content-start">
@@ -159,6 +159,9 @@ const initial = items[Math.min(2, items.length - 1)];
     padding: 0;
     border: 0;
     background: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     color: inherit;
     cursor: inherit;
     will-change: transform, opacity;
@@ -172,11 +175,13 @@ const initial = items[Math.min(2, items.length - 1)];
   }
   .ps-fruit {
     display: block;
-    width: 100%;
-    height: 100%;
+    width: calc(var(--fs, 1) * 100%);
+    height: calc(var(--fs, 1) * 100%);
     object-fit: contain;
     transform-origin: 50% 62%;
     pointer-events: none;
+    -webkit-user-drag: none;
+    user-select: none;
   }
 
   .ps-cta {
@@ -376,15 +381,30 @@ const initial = items[Math.min(2, items.length - 1)];
 
 <script>
   import { gsap } from "gsap";
-  import { createFruitRenderer } from "../../scripts/studio/fruit-gl";
   import type { StudioProduct } from "../../scripts/studio/data";
   import { onPageLoad } from "../../scripts/lifecycle";
   import { createProductDetail, type ProductDetail } from "../../scripts/studio/detail";
 
-  const FN = 36; // lemon frames, and the unit the idle rotation is expressed in
   const mod = (a: number, b: number) => ((a % b) + b) % b;
 
   let teardown: (() => void) | null = null;
+
+  /** Scale for a fruit photo so every fruit takes up about the same area (from the prototype). */
+  function fruitFit(el: HTMLImageElement): number {
+    const W = 100;
+    const H = 120;
+    const canvas = document.createElement("canvas");
+    canvas.width = W;
+    canvas.height = H;
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
+    if (!ctx) return 1;
+    const k = Math.min(W / el.naturalWidth, H / el.naturalHeight);
+    ctx.drawImage(el, (W - el.naturalWidth * k) / 2, (H - el.naturalHeight * k) / 2, el.naturalWidth * k, el.naturalHeight * k);
+    const d = ctx.getImageData(0, 0, W, H).data;
+    let m = 0;
+    for (let i = 3; i < d.length; i += 4) m += d[i] / 255;
+    return Math.min(1, Math.sqrt(0.227 / Math.max(0.05, m / (W * H))));
+  }
 
   function init(): void {
     teardown?.();
@@ -411,37 +431,9 @@ const initial = items[Math.min(2, items.length - 1)];
     const controller = new AbortController();
     const { signal } = controller;
 
-    /* ---------- renderer and what can be drawn ---------- */
-    const all: StudioProduct[] = JSON.parse(dataEl.textContent || "[]");
-    let glOK = false;
-    const renderer = all.some((p) => p.kind !== null)
-      ? createFruitRenderer(() => {
-          // Context lost: swap shader canvases for posters (or drop the card) so nothing breaks.
-          glOK = false;
-          cards.forEach((card, i) => {
-            if (data[i].kind === null || data[i].frames) return;
-            const poster = data[i].poster;
-            if (poster) card.replaceChildren(makePoster(poster));
-            else card.hidden = true;
-          });
-        })
-      : null;
-    glOK = Boolean(renderer?.ok);
-
-    const data = all.filter((p) => p.frames || (p.kind !== null && glOK) || p.poster);
+    const data: StudioProduct[] = JSON.parse(dataEl.textContent || "[]");
     const n = data.length;
     if (!n) return;
-
-    function makePoster(src: string): HTMLImageElement {
-      const img = new Image();
-      img.className = "ps-fruit";
-      img.src = src;
-      img.alt = "";
-      img.width = 400;
-      img.height = 480;
-      img.decoding = "async";
-      return img;
-    }
 
     const bgs = data.map((p) => {
       const d = document.createElement("div");
@@ -452,28 +444,23 @@ const initial = items[Math.min(2, items.length - 1)];
       return d;
     });
 
-    const canvases: (HTMLCanvasElement | null)[] = [];
     const cards = data.map((p, i) => {
       const c = document.createElement("button");
       c.type = "button";
       c.className = "ps-card";
       c.setAttribute("aria-label", `${p.fullName}, ${i + 1} of ${n}`);
-      let canvas: HTMLCanvasElement | null = null;
-      if (p.frames) {
-        canvas = document.createElement("canvas");
-        canvas.width = 400;
-        canvas.height = 480;
-      } else if (p.kind !== null && glOK) {
-        canvas = document.createElement("canvas");
-      }
-      if (canvas) {
-        canvas.className = "ps-fruit";
-        canvas.setAttribute("aria-hidden", "true");
-        c.appendChild(canvas);
-      } else if (p.poster) {
-        c.appendChild(makePoster(p.poster));
-      }
-      canvases.push(canvas);
+      const img = new Image();
+      img.className = "ps-fruit";
+      img.alt = "";
+      img.draggable = false;
+      img.decoding = "async";
+      img.width = 400;
+      img.height = 480;
+      const fit = () => c.style.setProperty("--fs", String(fruitFit(img)));
+      img.addEventListener("load", fit, { signal });
+      img.src = p.photo;
+      c.appendChild(img);
+      if (img.complete && img.naturalWidth) fit();
       c.addEventListener("click", (e) => {
         if (e.detail === 0) activateCard(i); // keyboard activation; pointer clicks are handled on the stage
       }, { signal });
@@ -481,111 +468,21 @@ const initial = items[Math.min(2, items.length - 1)];
       return c;
     });
 
-    /* ---------- lemon: 36-frame 360 spin ---------- */
-    const lemonIdx = data.findIndex((p) => p.frames);
-    const lemon = lemonIdx >= 0 ? data[lemonIdx] : null;
-    const lemonCanvas = lemonIdx >= 0 ? canvases[lemonIdx] : null;
-    const lemonCtx = lemonCanvas ? lemonCanvas.getContext("2d") : null;
-    if (lemonCtx) lemonCtx.imageSmoothingQuality = "high";
-    const IDLE = lemon?.frames?.idle ?? 10;
-    const sp = { f: IDLE };
-    const frames: HTMLImageElement[] = [];
-    let framesLeft = 0;
-
-    function loadFrame(index: number): void {
-      if (!lemon?.frames || frames[index]) return;
-      const im = new Image();
-      im.decoding = "async";
-      im.onload = () => {
-        framesLeft--;
-        if (index === IDLE || Math.round(sp.f) === index) drawLemon();
-      };
-      im.src = `${lemon.frames.folder}${String(index).padStart(2, "0")}.webp`;
-      frames[index] = im;
-    }
-    if (lemon?.frames) {
-      framesLeft = lemon.frames.count;
-      loadFrame(IDLE); // first paint needs one frame; the rest load once the page is idle
-      const loadRest = () => {
-        for (let k = 0; k < lemon.frames!.count; k++) loadFrame(k);
-      };
-      if ("requestIdleCallback" in window) requestIdleCallback(loadRest, { timeout: 2500 });
-      else setTimeout(loadRest, 1200);
-    }
-    const nearestFrame = (i: number): HTMLImageElement | null => {
-      for (let d = 0; d < FN / 2; d++) {
-        for (const k of [i + d, i - d]) {
-          const im = frames[mod(k, FN)];
-          if (im?.complete && im.naturalWidth) return im;
-        }
-      }
-      return null;
-    };
-    function drawLemon(): void {
-      if (!lemonCtx) return;
-      const f = sp.f;
-      const i0 = Math.floor(f);
-      const t = f - i0;
-      const a = nearestFrame(i0);
-      const b = frames[mod(i0 + 1, FN)];
-      lemonCtx.clearRect(0, 0, 400, 480);
-      if (a) lemonCtx.drawImage(a, 0, 0, 400, 480);
-      if (t > 0.03 && b?.complete && b.naturalWidth) {
-        lemonCtx.globalAlpha = t;
-        lemonCtx.drawImage(b, 0, 0, 400, 480);
-        lemonCtx.globalAlpha = 1;
-      }
-    }
-    let introDone = false;
-    function introSpin(): void {
-      if (introDone || RM || !data[active].frames || framesLeft > 0) return;
-      introDone = true;
-      gsap.to(sp, { f: "+=36", duration: 2.8, ease: "power2.inOut", overwrite: true, onUpdate: drawLemon });
-    }
-
-    /* ---------- shader fruits ---------- */
-    const spins = data.map((p) => (p.frames ? sp : { f: 0 }));
-    let dirty = true;
-
-    function drawFruit(i: number): void {
-      const p = data[i];
-      const cv = canvases[i];
-      if (!renderer || !glOK || p.frames || p.kind === null || !cv) return;
-      renderer.draw(p.kind, (spins[i].f * Math.PI * 2) / FN, cv);
-    }
-    function sizeGL(): void {
-      if (!renderer || !glOK) return;
-      const { width, height } = renderer.resize(cards[0].offsetWidth || 400, window.devicePixelRatio || 1);
-      canvases.forEach((cv, i) => {
-        if (cv && !data[i].frames) {
-          cv.width = width;
-          cv.height = height;
-        }
-        drawFruit(i);
-      });
-    }
-    const drawActive = () => {
-      if (data[active].frames) drawLemon();
-      else drawFruit(active);
-    };
-
     /* ---------- state ---------- */
     const st = { pos: Math.min(2, n - 1) };
     let active = st.pos;
-    let drag: null | {
-      x: number; y: number; p: number; moved: boolean; lp: number; lt: number; v: number;
-      spin: boolean; lx: number; sv: number;
-    } = null;
+    let detail: ProductDetail | undefined;
+    // The carousel is only interactive while no crush effect / detail view is running.
+    const browsing = () => !detail || detail.mode === "browse";
     const offset = (i: number) => mod(i - st.pos + n / 2, n) - n / 2;
     const spacing = () => cards[0].offsetWidth * (stage.offsetWidth < 700 ? 0.8 : 0.92);
 
     function render(): void {
-      dirty = true;
       const S = spacing();
       cards.forEach((c, i) => {
         const o = offset(i);
         const a = Math.abs(o);
-        const s = Math.max(0.3, 1.1 - a * 0.3);
+        const s = Math.max(0.34, 1 - a * 0.24);
         const op = a < 1 ? 1 - a * 0.45 : a < 2 ? 0.55 - (a - 1) * 0.33 : Math.max(0, 0.22 - (a - 2) * 0.22);
         const y = Math.pow(a, 1.6) * 20;
         c.style.transform = `translate(-50%,-50%) translate3d(${o * S}px,${y}px,0) rotateY(${-o * 16}deg) rotate(${o * 5}deg) scale(${s})`;
@@ -622,8 +519,7 @@ const initial = items[Math.min(2, items.length - 1)];
       ghost.textContent = p.name.toUpperCase();
       nameEl.textContent = p.name;
       subEl.textContent = `${p.cat} powder`;
-      hintText.textContent = `Drag the ${p.name.toLowerCase()} to turn it. Click it to open the product`;
-      if (p.frames) setTimeout(introSpin, 800);
+      hintText.textContent = `Click or tap the ${p.name.toLowerCase()} to crush it into powder`;
       if (!firstTheme && !RM) {
         gsap.fromTo([nameEl, subEl], { yPercent: 40, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.6, ease: "power3.out", stagger: 0.05, overwrite: true });
         gsap.fromTo(ghost, { opacity: 0, scale: 0.96 }, { opacity: 1, scale: 1, duration: 0.8, ease: "power3.out", overwrite: true });
@@ -641,9 +537,6 @@ const initial = items[Math.min(2, items.length - 1)];
     function goTo(target: number): void {
       gsap.to(st, { pos: target, duration: T(0.9), ease: "power3.out", overwrite: true, onUpdate() { render(); sync(); } });
     }
-    // The carousel is only interactive while no powder effect / detail view is running.
-    let detail: ProductDetail | undefined;
-    const browsing = () => !detail || detail.mode === "browse";
     const step = (d: number) => {
       if (browsing()) goTo(Math.round(st.pos) + d);
     };
@@ -659,14 +552,13 @@ const initial = items[Math.min(2, items.length - 1)];
     }
 
     /* ---------- pointer: only horizontal drags are taken over ---------- */
+    let drag: null | { x: number; y: number; p: number; moved: boolean; lp: number; lt: number; v: number } = null;
+
     stage.addEventListener("pointerdown", (e) => {
       if (!browsing() || (e.target as HTMLElement).closest(".ps-ui")) return;
       if (e.pointerType === "mouse" && e.button !== 0) return;
       gsap.killTweensOf(st);
-      gsap.killTweensOf(spins[active]);
-      const r = cards[active].getBoundingClientRect();
-      const spin = e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
-      drag = { x: e.clientX, y: e.clientY, p: st.pos, moved: false, lp: st.pos, lt: performance.now(), v: 0, spin, lx: e.clientX, sv: 0 };
+      drag = { x: e.clientX, y: e.clientY, p: st.pos, moved: false, lp: st.pos, lt: performance.now(), v: 0 };
       stage.setPointerCapture(e.pointerId);
     }, { signal });
 
@@ -681,18 +573,6 @@ const initial = items[Math.min(2, items.length - 1)];
         }
         drag.moved = true;
       }
-      if (drag.spin) {
-        const now = performance.now();
-        const dt = Math.max(1, now - drag.lt);
-        const df = (e.clientX - drag.lx) / 11;
-        spins[active].f += df;
-        drag.sv = 0.8 * drag.sv + 0.2 * ((df / dt) * 1000);
-        drag.lx = e.clientX;
-        drag.lt = now;
-        dirty = true;
-        drawActive();
-        return;
-      }
       st.pos = drag.p - dx / spacing();
       const now = performance.now();
       const dt = now - drag.lt;
@@ -705,19 +585,12 @@ const initial = items[Math.min(2, items.length - 1)];
       sync();
     }, { signal });
 
-    const settle = (d: NonNullable<typeof drag>) => {
-      if (d.spin) {
-        const S = spins[active];
-        gsap.to(S, { f: S.f + Math.max(-14, Math.min(14, d.sv * 0.35)), duration: T(1.1), ease: "power3.out", overwrite: true, onUpdate: drawActive });
-      } else {
-        goTo(Math.round(st.pos + Math.max(-1.5, Math.min(1.5, d.v * 0.18))));
-      }
-    };
+    const settle = (v: number) => goTo(Math.round(st.pos + Math.max(-1.5, Math.min(1.5, v * 0.18))));
     stage.addEventListener("pointerup", (e) => {
       if (!drag) return;
       const d = drag;
       drag = null;
-      if (d.moved) return settle(d);
+      if (d.moved) return settle(d.v);
       const el = document.elementFromPoint(e.clientX, e.clientY);
       const card = el?.closest<HTMLElement>(".ps-card");
       if (card) activateCard(cards.indexOf(card as HTMLButtonElement));
@@ -727,7 +600,7 @@ const initial = items[Math.min(2, items.length - 1)];
       if (!drag) return;
       const d = drag;
       drag = null;
-      if (d.moved) settle(d);
+      if (d.moved) settle(d.v);
     }, { signal });
 
     // Horizontal-dominant wheel/trackpad gestures only; vertical wheel is never touched or prevented.
@@ -741,6 +614,10 @@ const initial = items[Math.min(2, items.length - 1)];
     }, { passive: true, signal });
 
     let visible = true;
+    const io = new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+    });
+    io.observe(root);
     window.addEventListener("keydown", (e) => {
       if (!browsing() || e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
       if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
@@ -750,53 +627,11 @@ const initial = items[Math.min(2, items.length - 1)];
       step(e.key === "ArrowRight" ? 1 : -1);
     }, { signal });
 
-    /* ---------- render loop: only while the studio is on screen and the tab is visible ---------- */
-    let raf = 0;
-    let lastTime = 0;
-    let frame = 0;
-    function loop(now: number): void {
-      raf = requestAnimationFrame(loop);
-      const dt = Math.min(0.05, (now - lastTime) / 1000);
-      lastTime = now;
-      frame++;
-      if (!glOK || detail?.mode === "detail") return;
-      if (!RM && !drag && browsing() && !data[active].frames && !gsap.isTweening(spins[active])) {
-        spins[active].f += dt * 0.9;
-        dirty = true;
-      }
-      if (RM && !dirty) return;
-      for (let i = 0; i < n; i++) {
-        if (data[i].frames || Math.abs(offset(i)) > 2.6) continue;
-        if (i === active || (frame + i) % 4 === 0) drawFruit(i);
-      }
-      if (RM) dirty = false;
-    }
-    const running = () => visible && !document.hidden;
-    function syncLoop(): void {
-      if (running() && !raf) {
-        lastTime = performance.now();
-        raf = requestAnimationFrame(loop);
-      } else if (!running() && raf) {
-        cancelAnimationFrame(raf);
-        raf = 0;
-      }
-    }
-    const io = new IntersectionObserver(([entry]) => {
-      visible = entry.isIntersecting;
-      syncLoop();
-    });
-    io.observe(root);
-    document.addEventListener("visibilitychange", syncLoop, { signal });
-
-    const ro = new ResizeObserver(() => {
-      sizeGL();
-      render();
-    });
+    const ro = new ResizeObserver(() => render());
     ro.observe(stage);
 
     /* ---------- start ---------- */
     applyTheme();
-    sizeGL();
     render();
     detail = createProductDetail({
       root,
@@ -806,20 +641,11 @@ const initial = items[Math.min(2, items.length - 1)];
       hud: Array.from(root.querySelectorAll<HTMLElement>(".ps-arrow, .ps-dots, .ps-hint, .ps-cue, .ps-cta")),
       nameEl,
       subEl,
-      renderer,
-      glOK: () => glOK,
       reducedMotion: RM,
       fruit: (i) => cards[i].querySelector<HTMLElement>(".ps-fruit"),
-      freeze: (i) => {
-        const S = spins[i];
-        gsap.killTweensOf(S);
-        S.f = Math.round(S.f);
-        drawActive();
-      },
       restore: () => {
         render();
         applyTheme();
-        drawActive();
       },
       select: (j) => {
         active = j;
@@ -829,16 +655,13 @@ const initial = items[Math.min(2, items.length - 1)];
       },
       active: () => active,
     });
-    syncLoop();
 
     teardown = () => {
       detail?.destroy();
       controller.abort();
-      cancelAnimationFrame(raf);
       io.disconnect();
       ro.disconnect();
-      gsap.killTweensOf([st, sp, nameEl, subEl, ghost, ...spins]);
-      renderer?.dispose();
+      gsap.killTweensOf([st, nameEl, subEl, ghost]);
       ring.replaceChildren();
       bgsEl.replaceChildren();
       dotsEl.replaceChildren();
