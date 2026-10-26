@@ -10,13 +10,16 @@ import { siteConfig } from "../data/site";
   description="Commercial supply terms, order standards, and dispatch information for Renol Foods products."
 >
   <!-- Hero Section -->
-  <section class="relative py-20 lg:py-28 border-b border-white/10 overflow-hidden font-body">
+  <section
+    class="relative py-20 lg:py-28 border-b border-white/10 overflow-hidden font-body"
+  >
     <!-- Ambient Radial Glow -->
     <div
       class="pointer-events-none absolute left-1/2 top-10 -translate-x-1/2 w-[700px] h-[350px] rounded-full blur-[140px] opacity-20"
       style="background: radial-gradient(circle, #f59e0b 0%, transparent 70%);"
       aria-hidden="true"
-    ></div>
+    >
+    </div>
 
     <div class="section-container max-w-4xl relative z-10">
       <SectionHeading
@@ -29,56 +32,90 @@ import { siteConfig } from "../data/site";
 
       <!-- Hero Primary Action Button (1 per hero) -->
       <div class="mt-8 flex justify-start">
-        <ChatLink class="btn-accent min-h-[44px]" />
+        <!-- <ChatLink class="btn-accent min-h-[44px]" /> -->
       </div>
 
-      <div class="mt-12 bg-[#121214] p-8 sm:p-10 rounded-3xl border border-white/10 text-white/70 space-y-6 text-sm sm:text-base leading-relaxed">
+      <div
+        class="mt-12 bg-[#121214] p-8 sm:p-10 rounded-3xl border border-white/10 text-white/70 space-y-6 text-sm sm:text-base leading-relaxed"
+      >
         <div class="space-y-1">
-          <h2 class="font-display font-bold text-white text-base sm:text-lg">1. Business-to-Business Supply</h2>
+          <h2 class="font-display font-bold text-white text-base sm:text-lg">
+            1. Business-to-Business Supply
+          </h2>
           <p>
-            Renol Foods supplies products exclusively on a B2B basis to commercial entities including food processors, ingredient blenders, industrial bakeries, beverage companies, and merchant export buyers. Retail consumer sales are not supported.
+            Renol Foods supplies products exclusively on a B2B basis to
+            commercial entities including food processors, ingredient blenders,
+            industrial bakeries, beverage companies, and merchant export buyers.
+            Retail consumer sales are not supported.
           </p>
         </div>
 
         <div class="space-y-1">
-          <h2 class="font-display font-bold text-white text-base sm:text-lg">2. Technical Specifications & COA</h2>
+          <h2 class="font-display font-bold text-white text-base sm:text-lg">
+            2. Technical Specifications & COA
+          </h2>
           <p>
-            Technical Data Sheets (TDS), Certificate of Analysis (COA), and batch parameter sheets are provided with commercial orders. Verification against target product parameters occurs prior to dispatch from Bavla.
+            Technical Data Sheets (TDS), Certificate of Analysis (COA), and
+            batch parameter sheets are provided with commercial orders.
+            Verification against target product parameters occurs prior to
+            dispatch from Bavla.
           </p>
         </div>
 
         <div class="space-y-1">
-          <h2 class="font-display font-bold text-white text-base sm:text-lg">3. Minimum Order Quantities & Custom Batches</h2>
+          <h2 class="font-display font-bold text-white text-base sm:text-lg">
+            3. Minimum Order Quantities & Custom Batches
+          </h2>
           <p>
-            Commercial orders and custom formulation runs are subject to minimum order thresholds determined by specific fruit, vegetable, or culinary powder profiles, carrier balancing, and packaging specifications.
+            Commercial orders and custom formulation runs are subject to minimum
+            order thresholds determined by specific fruit, vegetable, or
+            culinary powder profiles, carrier balancing, and packaging
+            specifications.
           </p>
         </div>
 
         <div class="space-y-1">
-          <h2 class="font-display font-bold text-white text-base sm:text-lg">4. Packaging & Storage Responsibility</h2>
+          <h2 class="font-display font-bold text-white text-base sm:text-lg">
+            4. Packaging & Storage Responsibility
+          </h2>
           <p>
-            Powders are delivered in protective multi-wall bags or airtight containers. The purchaser is responsible for maintaining recommended cool, dry storage conditions below 25°C to safeguard flowability and shelf longevity.
+            Powders are delivered in protective multi-wall bags or airtight
+            containers. The purchaser is responsible for maintaining recommended
+            cool, dry storage conditions below 25°C to safeguard flowability and
+            shelf longevity.
           </p>
         </div>
 
         <div class="pt-4 border-t border-white/10 text-xs text-white/50">
-          <p>Questions regarding commercial supply arrangements? Contact our sales desk at {siteConfig.contact.displayPhones[0]}.</p>
+          <p>
+            Questions regarding commercial supply arrangements? Contact our
+            sales desk at {siteConfig.contact.displayPhones[0]}.
+          </p>
         </div>
       </div>
     </div>
   </section>
 
   <!-- One Closing CTA Section Near the End of the Page -->
-  <section class="py-20 bg-[#0e0e12] text-white text-center border-t border-white/10">
+  <section
+    class="py-20 bg-[#0e0e12] text-white text-center border-t border-white/10"
+  >
     <div class="section-container max-w-3xl">
-      <span class="text-xs uppercase font-bold tracking-widest text-white/60 block mb-3 font-mono">B2B Manufacturing</span>
-      <h2 class="font-display text-3xl sm:text-4xl font-extrabold mb-4 tracking-tight">
+      <span
+        class="text-xs uppercase font-bold tracking-widest text-white/60 block mb-3 font-mono"
+        >B2B Manufacturing</span
+      >
+      <h2
+        class="font-display text-3xl sm:text-4xl font-extrabold mb-4 tracking-tight"
+      >
         Ready to discuss a commercial production run?
       </h2>
-      <p class="text-white/70 text-sm sm:text-base mb-8 max-w-xl mx-auto leading-relaxed font-body">
+      <p
+        class="text-white/70 text-sm sm:text-base mb-8 max-w-xl mx-auto leading-relaxed font-body"
+      >
         Connect directly with our manufacturing desk in Bavla, Gujarat.
       </p>
-      <ChatLink class="btn-accent min-h-[44px]" />
+      <!-- <ChatLink class="btn-accent min-h-[44px]" /> -->
     </div>
   </section>
 </BaseLayout>
