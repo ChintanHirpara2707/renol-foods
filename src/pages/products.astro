@@ -53,8 +53,8 @@ const searchText = (p: (typeof products)[number]) =>
                   <img
                     src={p.image}
                     alt=""
-                    width="800"
-                    height="800"
+                    width="500"
+                    height="304"
                     loading={i < 4 ? "eager" : "lazy"}
                     decoding="async"
                   />
@@ -188,15 +188,19 @@ const searchText = (p: (typeof products)[number]) =>
     display: none;
   }
   .pcard__media {
-    display: block;
-    aspect-ratio: 1;
-    background: var(--panel);
+    display: grid;
+    place-items: center;
+    aspect-ratio: 5 / 3;
+    overflow: hidden;
+    border-radius: var(--r-card) var(--r-card) 0 0;
+    background: #f1efea;
   }
   .pcard__media img {
     display: block;
     width: 100%;
+    max-width: 500px;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
   }
   .pcard__body {
     display: flex;

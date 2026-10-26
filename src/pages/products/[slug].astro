@@ -1,6 +1,4 @@
 ---
-import { existsSync } from "node:fs";
-import { join } from "node:path";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import Breadcrumb from "../../components/ui/Breadcrumb.astro";
 import Button from "../../components/ui/Button.astro";
@@ -39,10 +37,6 @@ const chatMessage = productChatMessage(product);
 const origin = Astro.site ?? new URL(Astro.url.origin);
 const pageUrl = new URL(`/products/${product.slug}/`, origin).href;
 
-// Studio products show the fruit as rendered in the Powder Studio (still); others use the product image.
-const art = product.slug.replace(/-powder$/, "");
-const posterFile = `/images/fruit/${art}.webp`;
-const poster = product.studio && existsSync(join(process.cwd(), "public", posterFile)) ? posterFile : null;
 
 // Carton label: product name wrapped to short lines
 const labelLines: string[] = [];
@@ -59,7 +53,7 @@ const productSchema = {
   "@type": "Product",
   name: product.name,
   description: product.description,
-  image: new URL(poster ?? product.image, origin).href,
+  image: new URL(product.image, origin).href,
   category: category.name,
   url: pageUrl,
   brand: { "@type": "Brand", name: site.name },
@@ -89,7 +83,7 @@ const breadcrumbSchema = {
 <BaseLayout
   title={`${product.name} | ${category.name} | ${site.name}`}
   description={`${product.summary} ${product.packaging}.`}
-  ogImage={poster ?? product.image}
+  ogImage={product.image}
   jsonLd={[productSchema, breadcrumbSchema]}
   chatMessage={chatMessage}
 >
@@ -104,14 +98,8 @@ const breadcrumbSchema = {
       />
 
       <div class="product__grid">
-        <div class:list={["product__media", { "product__media--studio": Boolean(poster) }]}>
-          {
-            poster ? (
-              <img src={poster} alt={product.name} width="400" height="480" decoding="async" fetchpriority="high" />
-            ) : (
-              <img src={product.image} alt={product.name} width="800" height="800" decoding="async" fetchpriority="high" />
-            )
-          }
+        <div class="product__media">
+          <img src={product.image} alt={product.name} width="500" height="304" decoding="async" fetchpriority="high" />
         </div>
 
         <div class="product__body">
@@ -198,7 +186,9 @@ const breadcrumbSchema = {
               {related.map((p) => (
                 <li>
                   <a href={`/products/${p.slug}`}>
-                    <img src={p.image} alt="" width="800" height="800" loading="lazy" decoding="async" />
+                    <span class="thumb">
+                      <img src={p.image} alt="" width="500" height="304" loading="lazy" decoding="async" />
+                    </span>
                     <span>{p.name}</span>
                   </a>
                 </li>
@@ -234,24 +224,23 @@ const breadcrumbSchema = {
       gap: var(--s-16);
     }
   }
+  .product__media {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    max-width: 500px;
+    aspect-ratio: 5 / 3;
+    margin-inline: auto;
+    overflow: hidden;
+    border-radius: var(--r-panel);
+    background: #f1efea;
+  }
   .product__media img {
     display: block;
     width: 100%;
-    max-width: 34rem;
-    height: auto;
-    margin-inline: auto;
-    border: 1px solid var(--line-soft);
-    border-radius: var(--r-panel);
-    aspect-ratio: 1;
-    object-fit: cover;
-  }
-  /* Studio products: the rendered fruit on the product's glow */
-  .product__media--studio img {
-    padding: var(--s-6);
-    border-color: transparent;
-    background: radial-gradient(62% 58% at 50% 44%, color-mix(in srgb, var(--glow) 80%, transparent), transparent), var(--panel);
+    max-width: 500px;
+    height: 100%;
     object-fit: contain;
-    filter: drop-shadow(0 28px 36px rgba(0, 0, 0, 0.45));
   }
   .product__body h1 {
     margin-top: var(--s-4);
@@ -366,12 +355,19 @@ const breadcrumbSchema = {
   .related a:hover {
     border-color: var(--accent);
   }
+  .related .thumb {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 5 / 3;
+    overflow: hidden;
+    background: #f1efea;
+  }
   .related img {
     display: block;
     width: 100%;
-    height: auto;
-    aspect-ratio: 1;
-    object-fit: cover;
+    max-width: 500px;
+    height: 100%;
+    object-fit: contain;
   }
   .related span {
     display: block;

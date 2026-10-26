@@ -29,7 +29,7 @@ const categories = [
         a: "Commercial shelf life typically ranges from 12 to 24 months from manufacture date when stored in unopened original packaging under cool, dry warehouse conditions away from direct sunlight.",
       },
       {
-        q: "What storage conditions are recommended for dehydrated powders?",
+        q: "What storage conditions are recommended for Spray Dryied powders?",
         a: "Powders should be stored in a cool, dry area below 22°C–25°C with controlled relative humidity. Bags should be securely re-sealed immediately after opening to prevent moisture uptake and ambient caking.",
       },
     ],
@@ -59,13 +59,16 @@ const categories = [
   description="Answers to common commercial questions regarding MOQ, technical specifications, custom mesh grading, and export packaging at Renol Foods."
 >
   <!-- Hero Section -->
-  <section class="relative py-20 lg:py-28 border-b border-white/10 overflow-hidden">
+  <section
+    class="relative py-20 lg:py-28 border-b border-white/10 overflow-hidden"
+  >
     <!-- Ambient Radial Glow -->
     <div
       class="pointer-events-none absolute left-1/2 top-10 -translate-x-1/2 w-[700px] h-[350px] rounded-full blur-[140px] opacity-20"
       style="background: radial-gradient(circle, #38bdf8 0%, transparent 70%);"
       aria-hidden="true"
-    ></div>
+    >
+    </div>
 
     <div class="section-container relative z-10">
       <SectionHeading
@@ -86,7 +89,7 @@ const categories = [
           categories.map((cat) => (
             <div class="space-y-4">
               <div class="flex items-center gap-3 pb-2 border-b border-white/10">
-                <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+                <span class="w-2 h-2 rounded-full bg-amber-400" />
                 <h2 class="font-display text-xl sm:text-2xl font-bold text-white tracking-tight">
                   {cat.name}
                 </h2>
@@ -98,8 +101,18 @@ const categories = [
                     <summary class="flex items-center justify-between gap-4 font-display text-base sm:text-lg font-bold text-white cursor-pointer list-none min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 rounded-lg">
                       <span>{item.q}</span>
                       <span class="w-7 h-7 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shrink-0 text-white/70 group-open:rotate-180 group-open:text-amber-400 transition-transform duration-200">
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        <svg
+                          class="w-4 h-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M19 9l-7 7-7-7"
+                          />
                         </svg>
                       </span>
                     </summary>
@@ -113,19 +126,28 @@ const categories = [
           ))
         }
       </div>
-
     </div>
   </section>
 
   <!-- One Closing CTA Section Near the End of the Page -->
-  <section class="py-20 bg-[#0e0e12] text-white text-center border-t border-white/10">
+  <section
+    class="py-20 bg-[#0e0e12] text-white text-center border-t border-white/10"
+  >
     <div class="section-container max-w-3xl">
-      <span class="text-xs uppercase font-bold tracking-widest text-white/60 block mb-3 font-mono">Still have questions?</span>
-      <h2 class="font-display text-3xl sm:text-4xl font-extrabold mb-4 tracking-tight">
+      <span
+        class="text-xs uppercase font-bold tracking-widest text-white/60 block mb-3 font-mono"
+        >Still have questions?</span
+      >
+      <h2
+        class="font-display text-3xl sm:text-4xl font-extrabold mb-4 tracking-tight"
+      >
         Speak directly with our technical sales team
       </h2>
-      <p class="text-white/70 text-sm sm:text-base mb-8 max-w-xl mx-auto leading-relaxed font-body">
-        We are happy to answer formulation questions, share batch specifications, or arrange evaluation trial quantities.
+      <p
+        class="text-white/70 text-sm sm:text-base mb-8 max-w-xl mx-auto leading-relaxed font-body"
+      >
+        We are happy to answer formulation questions, share batch
+        specifications, or arrange evaluation trial quantities.
       </p>
       <ChatLink class="btn-accent min-h-[44px]" />
     </div>

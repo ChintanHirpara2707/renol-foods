@@ -58,7 +58,7 @@ Removed or redirected: `/quote`, `/request-quote` → `/request-sample` (301 via
 1. **Powder Studio** (100svh first screen, `min-height` removed, short-viewport layout for 1366×636): ring carousel of 8 fruits, ghost product name, accent glow, circular reveal into a product summary. **No wheel hijack**: vertical scroll always scrolls the page; only horizontal drag/swipe, arrow buttons, arrow keys and horizontal trackpad gestures move the ring. One hero button: **Request a Sample**. Scroll cue below.
 2. **Trust bar** — confirmed facts only: Founded 2021 · Bavla, Ahmedabad · 8 powders · Made for food manufacturers. Certification and client-logo slots are rendered only when data exists.
 3. **What we make** — 8 product tiles (link to product pages, no Request buttons on cards).
-4. **Manufacturing timeline** — animated, scroll-driven steps. *Shown only after you confirm the steps* (decision 7). Until then the section is replaced by a visual of the fruit-to-powder transformation (the studio animation, replayed on scroll) with no process claims. The brief confirms only "dehydrated and spray-dried".
+4. **Manufacturing timeline** — animated, scroll-driven steps. *Shown only after you confirm the steps* (decision 7). Until then the section is replaced by a visual of the fruit-to-powder transformation (the studio animation, replayed on scroll) with no process claims. The brief confirms only "spray-dried".
 5. **Industries** — bakeries, beverage, snack, seasoning, exporters (names from the brief; descriptions neutral).
 6. **Private label** — short block linking to `/private-label`.
 7. **Numbers** — only **2021 (founded)**, **8 powders**, **1 plant in Bavla**. No capacity, client or certificate counts.

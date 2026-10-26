@@ -21,9 +21,9 @@ export const site = {
   name: "Renol Foods",
   legalName: "Renol Foods",
   foundedYear: 2021,
-  tagline: "Dehydrated and spray-dried food powders, made in Bavla, Ahmedabad",
+  tagline: "spray-dried food powders, made in Bavla, Ahmedabad",
   description:
-    "Renol Foods is a B2B manufacturer of dehydrated and spray-dried food powders for food processors, industrial bakeries, snack brands, beverage formulators and exporters, based in Bavla, Ahmedabad.",
+    "Renol Foods is a B2B manufacturer of spray-dried food powders for food processors, industrial bakeries, snack brands, beverage formulators and exporters, based in Bavla, Ahmedabad.",
   address: {
     line: ADDRESS_LINE,
     street: "Plot No. 616, Kerala GIDC",

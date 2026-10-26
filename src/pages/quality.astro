@@ -10,20 +10,23 @@ import SectionHeading from "../components/SectionHeading.astro";
   description="Overview of standard quality evaluation parameters, mesh calibration, and technical testing for food powders manufactured by Renol Foods in Bavla, Ahmedabad."
 >
   <!-- Hero Section -->
-  <section class="relative py-20 lg:py-28 border-b border-white/10 overflow-hidden">
+  <section
+    class="relative py-20 lg:py-28 border-b border-white/10 overflow-hidden"
+  >
     <!-- Ambient Radial Glow -->
     <div
       class="pointer-events-none absolute left-1/2 top-10 -translate-x-1/2 w-[700px] h-[350px] rounded-full blur-[140px] opacity-20"
       style="background: radial-gradient(circle, #38bdf8 0%, transparent 70%);"
       aria-hidden="true"
-    ></div>
+    >
+    </div>
 
     <div class="section-container relative z-10">
       <SectionHeading
         level={1}
         eyebrow="Evaluation Standards"
         title="Quality & Testing Overview"
-        subtitle="Standard physical, chemical, and organoleptic testing parameters assessed across our dehydrated and spray-dried food powder lines."
+        subtitle="Standard physical, chemical, and organoleptic testing parameters assessed across our spray-dried food powder lines."
       />
 
       <!-- Hero Primary Action Button (1 per hero) -->
@@ -37,76 +40,127 @@ import SectionHeading from "../components/SectionHeading.astro";
 
       <div class="mt-14 max-w-5xl mx-auto space-y-10">
         <!-- Testing Framework Card -->
-        <div class="p-8 sm:p-12 rounded-3xl bg-[#121214] border border-white/10 space-y-8">
+        <div
+          class="p-8 sm:p-12 rounded-3xl bg-[#121214] border border-white/10 space-y-8"
+        >
           <div>
-            <h2 class="font-display text-2xl sm:text-3xl font-extrabold text-white">
+            <h2
+              class="font-display text-2xl sm:text-3xl font-extrabold text-white"
+            >
               Standard Batch Evaluation Parameters
             </h2>
-            <p class="text-white/70 leading-relaxed text-sm sm:text-base mt-2 font-body">
-              Every production batch in Bavla is evaluated against pre-defined physical and analytical benchmarks to guarantee consistency across commercial manufacturing lines:
+            <p
+              class="text-white/70 leading-relaxed text-sm sm:text-base mt-2 font-body"
+            >
+              Every production batch in Bavla is evaluated against pre-defined
+              physical and analytical benchmarks to guarantee consistency across
+              commercial manufacturing lines:
             </p>
           </div>
 
           <!-- 4 Testing Parameters: 2 cols on tablet/desktop, 1 on mobile -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-2">
-            <div class="p-6 rounded-2xl bg-[#18181c] border border-white/5 space-y-2">
+            <div
+              class="p-6 rounded-2xl bg-[#18181c] border border-white/5 space-y-2"
+            >
               <div class="flex items-center gap-2">
                 <span class="w-2 h-2 rounded-full bg-amber-400"></span>
-                <h3 class="font-display text-lg font-bold text-white">Moisture Control</h3>
+                <h3 class="font-display text-lg font-bold text-white">
+                  Moisture Control
+                </h3>
               </div>
-              <p class="text-xs sm:text-sm text-white/70 leading-relaxed font-body">
-                Monitored with moisture analyzers to safeguard powder flowability, avoid caking, and preserve microbiological stability during shelf storage.
+              <p
+                class="text-xs sm:text-sm text-white/70 leading-relaxed font-body"
+              >
+                Monitored with moisture analyzers to safeguard powder
+                flowability, avoid caking, and preserve microbiological
+                stability during shelf storage.
               </p>
             </div>
 
-            <div class="p-6 rounded-2xl bg-[#18181c] border border-white/5 space-y-2">
+            <div
+              class="p-6 rounded-2xl bg-[#18181c] border border-white/5 space-y-2"
+            >
               <div class="flex items-center gap-2">
                 <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-                <h3 class="font-display text-lg font-bold text-white">Particle Size & Mesh</h3>
+                <h3 class="font-display text-lg font-bold text-white">
+                  Particle Size & Mesh
+                </h3>
               </div>
-              <p class="text-xs sm:text-sm text-white/70 leading-relaxed font-body">
-                Sieved and calibrated from coarse seasoning mesh (40–60 mesh) to fine instant beverage dispersion (80–120 mesh) based on client line specs.
+              <p
+                class="text-xs sm:text-sm text-white/70 leading-relaxed font-body"
+              >
+                Sieved and calibrated from coarse seasoning mesh (40–60 mesh) to
+                fine instant beverage dispersion (80–120 mesh) based on client
+                line specs.
               </p>
             </div>
 
-            <div class="p-6 rounded-2xl bg-[#18181c] border border-white/5 space-y-2">
+            <div
+              class="p-6 rounded-2xl bg-[#18181c] border border-white/5 space-y-2"
+            >
               <div class="flex items-center gap-2">
                 <span class="w-2 h-2 rounded-full bg-blue-400"></span>
-                <h3 class="font-display text-lg font-bold text-white">Solubility & Reconstitution</h3>
+                <h3 class="font-display text-lg font-bold text-white">
+                  Solubility & Reconstitution
+                </h3>
               </div>
-              <p class="text-xs sm:text-sm text-white/70 leading-relaxed font-body">
-                Assessed for rapid rehydration without unwanted sedimentation, clumping, or lumping in automated food and beverage blending processes.
+              <p
+                class="text-xs sm:text-sm text-white/70 leading-relaxed font-body"
+              >
+                Assessed for rapid rehydration without unwanted sedimentation,
+                clumping, or lumping in automated food and beverage blending
+                processes.
               </p>
             </div>
 
-            <div class="p-6 rounded-2xl bg-[#18181c] border border-white/5 space-y-2">
+            <div
+              class="p-6 rounded-2xl bg-[#18181c] border border-white/5 space-y-2"
+            >
               <div class="flex items-center gap-2">
                 <span class="w-2 h-2 rounded-full bg-purple-400"></span>
-                <h3 class="font-display text-lg font-bold text-white">Color & Aroma Consistency</h3>
+                <h3 class="font-display text-lg font-bold text-white">
+                  Color & Aroma Consistency
+                </h3>
               </div>
-              <p class="text-xs sm:text-sm text-white/70 leading-relaxed font-body">
-                Sensory evaluation compared against reference baselines to ensure natural fruit and vegetable acidity, vibrancy, and profile fidelity.
+              <p
+                class="text-xs sm:text-sm text-white/70 leading-relaxed font-body"
+              >
+                Sensory evaluation compared against reference baselines to
+                ensure natural fruit and vegetable acidity, vibrancy, and
+                profile fidelity.
               </p>
             </div>
           </div>
         </div>
 
         <!-- Documentation & Traceability Box -->
-        <div class="p-8 sm:p-10 rounded-3xl bg-[#121214] border border-white/10 space-y-4">
+        <div
+          class="p-8 sm:p-10 rounded-3xl bg-[#121214] border border-white/10 space-y-4"
+        >
           <h3 class="font-display text-xl font-bold text-white">
             Batch Documentation & Certificates
           </h3>
           <p class="text-sm text-white/70 leading-relaxed font-body">
-            Each commercial dispatch is accompanied by standard commercial documentation. Certificate of Analysis (COA) specifying measured moisture, bulk density, particle size, and organoleptic parameters is generated and verified before dispatch.
+            Each commercial dispatch is accompanied by standard commercial
+            documentation. Certificate of Analysis (COA) specifying measured
+            moisture, bulk density, particle size, and organoleptic parameters
+            is generated and verified before dispatch.
           </p>
           <div class="pt-2 flex flex-wrap gap-3">
-            <span class="px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs text-white/80 font-mono">
+            <span
+              class="px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs text-white/80 font-mono"
+            >
               Certificate of Analysis (COA)
             </span>
-            <span class="px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs text-white/80 font-mono">
+            <span
+              class="px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs text-white/80 font-mono"
+            >
               Batch Traceability Coding
             </span>
-            <span class="px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs text-white/80 font-mono">
+            <span
+              class="px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs text-white/80 font-mono"
+            >
               Full Specs on Request
             </span>
           </div>
@@ -116,14 +170,24 @@ import SectionHeading from "../components/SectionHeading.astro";
   </section>
 
   <!-- One Closing CTA Section Near the End of the Page -->
-  <section class="py-20 bg-[#0e0e12] text-white text-center border-t border-white/10">
+  <section
+    class="py-20 bg-[#0e0e12] text-white text-center border-t border-white/10"
+  >
     <div class="section-container max-w-3xl">
-      <span class="text-xs uppercase font-bold tracking-widest text-white/60 block mb-3 font-mono">Specification Inquiries</span>
-      <h2 class="font-display text-3xl sm:text-4xl font-extrabold mb-4 tracking-tight">
+      <span
+        class="text-xs uppercase font-bold tracking-widest text-white/60 block mb-3 font-mono"
+        >Specification Inquiries</span
+      >
+      <h2
+        class="font-display text-3xl sm:text-4xl font-extrabold mb-4 tracking-tight"
+      >
         Need detailed product specification sheets?
       </h2>
-      <p class="text-white/70 text-sm sm:text-base mb-8 max-w-xl mx-auto leading-relaxed font-body">
-        Contact our technical sales desk for product specification sheets and parameter details.
+      <p
+        class="text-white/70 text-sm sm:text-base mb-8 max-w-xl mx-auto leading-relaxed font-body"
+      >
+        Contact our technical sales desk for product specification sheets and
+        parameter details.
       </p>
       <ChatLink class="btn-accent min-h-[44px]" />
     </div>

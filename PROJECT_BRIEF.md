@@ -4,7 +4,7 @@
 - **Client**: Renol Foods
 - **Founded**: 2021
 - **Location**: Plot No. 616, Kerala GIDC, Bavla, Ahmedabad, Gujarat, India
-- **Core Business**: B2B manufacturer of dehydrated and spray-dried food powders for food processors, industrial bakeries, snack brands, beverage formulators, and exporters.
+- **Core Business**: B2B manufacturer of spray-dried food powders for food processors, industrial bakeries, snack brands, beverage formulators, and exporters.
 - **Product Portfolio (8 Powders)**: Tomato, Tamarind, Caramel, Lemon, Mango, Spinach, Ginger, Apple.
 - **Primary Goal**: **Pure B2B Lead Generation by direct contact**. No e-commerce, no retail cart, no visible consumer pricing, no checkout and no forms. Every page offers three contact actions: Chat on WhatsApp, Call, and Open in Google Maps.
 
