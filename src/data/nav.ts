@@ -16,8 +16,8 @@ export const nav = {
   /** Mobile menu (below primary) and footer. */
   secondary: [
     { label: "Private Label", href: "/private-label" },
-    { label: "Export & Logistics", href: "/export" },
-    { label: "Resources", href: "/downloads" },
+    // { label: "Export & Logistics", href: "/export" },
+    // { label: "Resources", href: "/downloads" },
     { label: "FAQ", href: "/faq" },
   ] satisfies NavLink[],
   legal: [
