@@ -2,7 +2,7 @@
 import Logo from "./ui/Logo.astro";
 import LicenceBadges from "./LicenceBadges.astro";
 import { nav } from "../data/nav";
-import { site } from "../data/site";
+import { site, DEMO } from "../data/site";
 import { categories } from "../data/categories";
 import { isPublic } from "../data/public";
 
@@ -48,6 +48,9 @@ const companyLinks = [...nav.primary.filter((l) => l.href !== "/products"), ...n
     <div>
       <h2>Contact</h2>
       <ul>
+        <li>
+          <a href={DEMO.href}>{DEMO.label}</a>
+        </li>
         {
           site.phones.map((p) => (
             <li>

@@ -2,7 +2,7 @@
 import Button from "./ui/Button.astro";
 import Logo from "./ui/Logo.astro";
 import { nav } from "../data/nav";
-import { site, whatsappLink } from "../data/site";
+import { site, whatsappLink, DEMO } from "../data/site";
 import { CTA } from "../data/cta";
 
 const path = Astro.url.pathname.replace(/\/$/, "") || "/";
@@ -32,7 +32,7 @@ const menuLinks = [...nav.primary, ...nav.secondary];
 
     <div class="site-header__actions">
       <div class="site-header__cta">
-        <Button href={whatsappLink()} target="_blank" rel="noopener noreferrer">{CTA.chat.label}</Button>
+        <Button href={DEMO.href}>{DEMO.label}</Button>
       </div>
       <button
         type="button"
@@ -79,6 +79,9 @@ const menuLinks = [...nav.primary, ...nav.secondary];
     <div class="menu-panel__foot">
       <p>Contact</p>
       <ul>
+        <li>
+          <a href={DEMO.href}>{DEMO.label}</a>
+        </li>
         <li>
           <a href={whatsappLink()} target="_blank" rel="noopener noreferrer">{CTA.chat.label}</a>
         </li>

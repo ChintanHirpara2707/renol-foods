@@ -49,6 +49,7 @@ Work on branch `redesign-v2`. Commit after each phase. After each phase run `npm
 
 ## Goal (updated)
 Lead generation by direct contact. NO forms anywhere. No "Request a Sample" label. Contact actions are three buttons: WhatsApp chat, Google Maps location, tap-to-call.
+The only form is /request-demo (WhatsApp-based, no backend, no data stored).
 
 ## Contact buttons (site-wide, floating stack bottom-right, all pages, all devices)
 1. WhatsApp: https://wa.me/<digits>?text=<encoded message>. On product pages the message names the product.

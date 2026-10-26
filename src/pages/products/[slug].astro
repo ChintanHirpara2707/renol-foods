@@ -9,7 +9,7 @@ import ChatLink from "../../components/ChatLink.astro";
 import LicenceBadges from "../../components/LicenceBadges.astro";
 import { products, publicSpecs, productTheme, type Product } from "../../data/products";
 import { categoryById } from "../../data/categories";
-import { productChatMessage, site } from "../../data/site";
+import { productChatMessage, site, DEMO, demoLink } from "../../data/site";
 import { CTA } from "../../data/cta";
 
 export async function getStaticPaths() {
@@ -121,6 +121,7 @@ const breadcrumbSchema = {
           <p class="product__description">{product.description}</p>
 
           <div class="product__actions">
+            <Button href={demoLink(product.slug)}>{DEMO.label}</Button>
             <ChatLink class="btn-wa" message={chatMessage} />
             <Button href={CTA.products.href} variant="ghost">{CTA.products.label}</Button>
           </div>

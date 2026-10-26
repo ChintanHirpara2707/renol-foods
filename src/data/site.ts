@@ -63,6 +63,12 @@ export const callLink = `tel:${site.phones[0].tel}`;
 export const productChatMessage = (p: Product): string =>
   `Hello Renol Foods, I would like to ask about ${p.name} (${p.packaging}).`;
 
+/** The one form on the site: /request-demo (opens WhatsApp, no backend, nothing stored). */
+export const DEMO = { label: "Request for Sample", href: "/request-demo" } as const;
+
+/** Link to the demo form; with a slug the form opens with that powder already ticked. */
+export const demoLink = (slug?: string): string => (slug ? `${DEMO.href}?product=${encodeURIComponent(slug)}` : DEMO.href);
+
 /** Compatibility shape for pages that predate the redesign. Prefer `site`. */
 export const siteConfig = {
   name: site.name,
