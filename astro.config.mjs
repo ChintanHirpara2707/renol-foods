@@ -4,7 +4,7 @@ import tailwindcss from '@tailwindcss/vite';
 import sitemap from '@astrojs/sitemap';
 
 // Production domain is not confirmed yet (see TODO_CONTENT.md). Set SITE_URL at build time.
-const site = process.env.SITE_URL ?? 'https://renol-foods.example';
+const site = process.env.SITE_URL ?? 'https://renolfoods.com';
 
 // https://astro.build/config
 export default defineConfig({

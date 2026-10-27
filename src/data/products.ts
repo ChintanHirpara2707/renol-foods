@@ -225,7 +225,13 @@ export const products: Product[] = [
     description: `Raspberry Powder is a berry ingredient in powder form for industrial food production. It adds raspberry taste and colour to dry bases, toppings and the products made from them. ${CONTACT}`,
     uses: ["Bakery products", "Dessert and ice cream mixes", "Beverage premixes", "Confectionery"],
   }),
-
+  build({
+    name: "Seabuckthorn Powder",
+    category: "fruit",
+    summary: "Sea buckthorn powder for beverage premixes, functional foods and health supplements.",
+    description: `Sea Buckthorn Powder is a nutrient-dense superfruit ingredient in powder form for industrial food and supplement production. It delivers vibrant tart flavor and rich nutritional value to health drinks, confectionery, and functional formulations. ${CONTACT}`,
+    uses: ["Health drinks and beverage premixes", "Functional foods", "Confectionery", "Nutritional supplements"],
+  }),
   /* ---------- Vegetable ---------- */
   build({
     name: "Beetroot Powder",

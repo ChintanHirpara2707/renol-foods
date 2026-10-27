@@ -4,5 +4,5 @@
  */
 export const CTA = {
   chat: { label: "Chat on WhatsApp" },
-  products: { label: "View Products", href: "/products" },
+  products: { label: "View More Products", href: "/products" },
 } as const;

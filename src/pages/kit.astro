@@ -21,43 +21,80 @@ const swatches = [
 ];
 ---
 
-<BaseLayout title="Component kit" description="Internal component kit for the Renol Foods site." noindex>
-  <h1 class="container" style="font-size: var(--fs-h1); padding-top: var(--s-12);">Component kit</h1>
-  <Section id="kit-intro" eyebrow="Internal" title="Overview" lede="Every shared component in one place. Not linked from the site.">
+<BaseLayout
+  title="Component kit"
+  description="Internal component kit for the Renol Foods site."
+  noindex
+>
+  <h1
+    class="container"
+    style="font-size: var(--fs-h1); padding-top: var(--s-12);"
+  >
+    Component kit
+  </h1>
+  <Section
+    id="kit-intro"
+    eyebrow="Internal"
+    title="Overview"
+    lede="Every shared component in one place. Not linked from the site."
+  >
     <Breadcrumb items={[{ label: "Home", href: "/" }, { label: "Kit" }]} />
   </Section>
 
   <Section id="kit-colour" title="Colour and type" tone="panel">
     <ul class="swatches">
-      {swatches.map(([name, value]) => (
-        <li><span class="swatch" style={`background:${value}`}></span>{name}</li>
-      ))}
+      {
+        swatches.map(([name, value]) => (
+          <li>
+            <span class="swatch" style={`background:${value}`} />
+            {name}
+          </li>
+        ))
+      }
     </ul>
-    <p style="font-size: var(--fs-display); font-family: var(--display); font-weight: 800; line-height: 1;">Display</p>
+    <p
+      style="font-size: var(--fs-display); font-family: var(--display); font-weight: 800; line-height: 1;"
+    >
+      Display
+    </p>
     <h3>Heading three</h3>
-    <p>Body copy in Instrument Sans at the fluid body size. The secondary tone is used for supporting text.</p>
+    <p>
+      Body copy in Instrument Sans at the fluid body size. The secondary tone is
+      used for supporting text.
+    </p>
     <p style="color: var(--ink-3)">Tertiary text, the lowest allowed tone.</p>
   </Section>
 
   <Section id="kit-buttons" title="Buttons and tags">
     <div class="row">
-      <Button href="/products" size="lg">View Products</Button>
-      <Button variant="ghost" href="/products">View products</Button>
+      <Button href="/products" size="lg">View More Products</Button>
+      <Button variant="ghost" href="/products">View More Products</Button>
       <Button variant="link" href="/contact">Contact</Button>
       <Button type="button" variant="ghost">Button element</Button>
     </div>
     <div class="row">
-      {products.slice(0, 8).map((p) => <Tag accent={productTheme(p).accent}>{p.name}</Tag>)}
+      {
+        products
+          .slice(0, 8)
+          .map((p) => <Tag accent={productTheme(p).accent}>{p.name}</Tag>)
+      }
     </div>
   </Section>
 
   <Section id="kit-cards" title="Cards and stats" tone="panel">
     <div class="grid">
-      {products.slice(0, 3).map((p) => (
-        <Card title={p.name} eyebrow={categoryById(p.category).name} accent={productTheme(p).accent} href={`/products/${p.slug}`}>
-          <p>{p.summary}</p>
-        </Card>
-      ))}
+      {
+        products.slice(0, 3).map((p) => (
+          <Card
+            title={p.name}
+            eyebrow={categoryById(p.category).name}
+            accent={productTheme(p).accent}
+            href={`/products/${p.slug}`}
+          >
+            <p>{p.summary}</p>
+          </Card>
+        ))
+      }
     </div>
     <div class="row stats">
       <Stat value={String(site.foundedYear)} label="Founded" />
@@ -69,8 +106,18 @@ const swatches = [
     <Accordion
       name="kit"
       items={[
-        { question: "Where are you based?", answer: `${site.address.street}, ${site.address.city}, ${site.address.state}.` },
-        { question: "Which powders do you make?", answer: products.slice(0, 8).map((p) => p.name).join(", ") + " and more." },
+        {
+          question: "Where are you based?",
+          answer: `${site.address.street}, ${site.address.city}, ${site.address.state}.`,
+        },
+        {
+          question: "Which powders do you make?",
+          answer:
+            products
+              .slice(0, 8)
+              .map((p) => p.name)
+              .join(", ") + " and more.",
+        },
       ]}
     />
   </Section>

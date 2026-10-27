@@ -66,7 +66,7 @@ Removed or redirected: `/quote`, `/request-quote` → `/request-sample` (301 via
 9. **FAQ teaser** — 4 questions with confirmed answers only; unanswered ones hidden.
 10. **Closing CTA band** with the short form (name, company, email/phone, product, message). This is the one closing CTA.
 
-CTA budget (rule): header button (≥1024 px), one hero button, one closing band, mobile bottom bar (<768 px: Call / WhatsApp / Request a Sample), WhatsApp float on desktop only. Nothing else says "Request a Sample"; secondary links read "View product", "Learn more", "Contact".
+CTA budget (rule): header button (≥1024 px), one hero button, one closing band, mobile bottom bar (<768 px: Call / WhatsApp / Request a Sample), WhatsApp float on desktop only. Nothing else says "Request a Sample"; secondary links read "View more Products", "Learn more", "Contact".
 
 ---
 

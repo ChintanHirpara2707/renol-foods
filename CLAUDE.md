@@ -24,7 +24,7 @@ Follows the client's reference: dark base (#0b0b0d), white text, Bricolage Grote
 - Strict CSP (`public/_headers`): no inline scripts, no CDN scripts. Every script lives in `src/scripts/` or a component `<script>` (bundled, never inlined: `assetsInlineLimit: 0`).
 
 ## Call-to-action rules (do not regress)
-No "Request a Sample" / quote buttons and no forms anywhere. Wording: "Chat on WhatsApp" and "View Products" (constants in `src/data/cta.ts`). Contact links come from `src/data/site.ts` (`whatsappLink()`, `callLink`, `site.mapUrl`) and are rendered by `ContactStack` (fixed, all pages) and `ChatLink`.
+No "Request a Sample" / quote buttons and no forms anywhere. Wording: "Chat on WhatsApp" and "View More Products" (constants in `src/data/cta.ts`). Contact links come from `src/data/site.ts` (`whatsappLink()`, `callLink`, `site.mapUrl`) and are rendered by `ContactStack` (fixed, all pages) and `ChatLink`.
 
 ## Content architecture
 All content lives in `/src/data/*.ts` (site, products, industries, process, faq, cta, nav). Components never hardcode copy. Contact: +91 9979977396, +91 9979977395, +91 9979977392. Email and address spelling are "[CONFIRM]" until the client confirms.
