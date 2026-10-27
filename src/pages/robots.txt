@@ -1,0 +1,26 @@
+# Renol Foods - https://renolfoods.com
+# Production robots.txt
+
+User-agent: *
+Allow: /
+Disallow: /thank-you
+Disallow: /request-demo/success
+Disallow: /api/
+Disallow: /*?utm_
+Disallow: /*?fbclid=
+Disallow: /*?gclid=
+
+# AI / search crawlers (allowed so the company appears in AI answers)
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+Sitemap: https://renolfoods.com/sitemap.xml
