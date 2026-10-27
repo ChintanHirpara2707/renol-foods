@@ -1,0 +1,292 @@
+---
+const photos = [
+  {
+    src: "/images/factory/factory-building.webp",
+    alt: "Outside view of the factory building",
+    caption: "The factory building",
+  },
+  {
+    src: "/images/factory/production-hall.webp",
+    alt: "Production hall with stainless steel vessels and a conveyor",
+    caption: "Production hall with a conveyor and stainless steel vessels",
+  },
+  {
+    src: "/images/factory/processing-vessels.webp",
+    alt: "Stainless steel processing vessels and pipework on a platform",
+    caption: "Stainless steel processing vessels",
+  },
+  {
+    src: "/images/factory/hopper-equipment.webp",
+    alt: "Stainless steel hopper and equipment on the factory floor",
+    caption: "Stainless steel hopper and equipment",
+  },
+  {
+    src: "/images/factory/sifting-machine.webp",
+    alt: "Stainless steel machine on the production floor",
+    caption: "Machine on the production floor",
+  },
+  {
+    src: "/images/factory/warehouse.webp",
+    alt: "Warehouse with cartons stacked on pallets",
+    caption: "Warehouse with cartons on pallets",
+  },
+];
+---
+
+<div class="factory-strip" data-factory-strip>
+  <div class="factory-strip__header">
+    <div class="factory-strip__title-group">
+      <span class="factory-strip__eyebrow">Inside the plant</span>
+      <h3 class="factory-strip__title">Our factory and machinery</h3>
+    </div>
+    <div class="factory-strip__actions">
+      <a href="/about#factory" class="factory-strip__link">
+        See more on the About page &rarr;
+      </a>
+      <div class="factory-strip__arrows">
+        <button
+          type="button"
+          class="factory-strip__arrow"
+          data-strip-prev
+          aria-label="Previous photo"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M15 18l-6-6 6-6"></path>
+          </svg>
+        </button>
+        <button
+          type="button"
+          class="factory-strip__arrow"
+          data-strip-next
+          aria-label="Next photo"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M9 18l6-6-6-6"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="factory-strip__scroller"
+    data-strip-scroller
+    role="region"
+    aria-label="Factory and machinery photos"
+    tabindex="0"
+  >
+    {
+      photos.map((photo) => (
+        <figure class="factory-strip__card" data-strip-card>
+          <img
+            src={photo.src}
+            alt={photo.alt}
+            width="800"
+            height="600"
+            loading="lazy"
+            decoding="async"
+            class="factory-strip__img"
+          />
+          <figcaption class="factory-strip__caption">{photo.caption}</figcaption>
+        </figure>
+      ))
+    }
+  </div>
+</div>
+
+<script>
+  function initFactoryStrip() {
+    const strips = document.querySelectorAll<HTMLElement>("[data-factory-strip]");
+    strips.forEach((strip) => {
+      if (strip.dataset.bound === "true") return;
+      strip.dataset.bound = "true";
+
+      const scroller = strip.querySelector<HTMLElement>("[data-strip-scroller]");
+      const prevBtn = strip.querySelector<HTMLButtonElement>("[data-strip-prev]");
+      const nextBtn = strip.querySelector<HTMLButtonElement>("[data-strip-next]");
+      if (!scroller || !prevBtn || !nextBtn) return;
+
+      const getStep = () => {
+        const card = scroller.querySelector<HTMLElement>("[data-strip-card]");
+        return card ? card.getBoundingClientRect().width + 16 : scroller.clientWidth / 3;
+      };
+
+      prevBtn.addEventListener("click", () => {
+        const isReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        scroller.scrollBy({ left: -getStep(), behavior: isReduced ? "instant" : "smooth" });
+      });
+
+      nextBtn.addEventListener("click", () => {
+        const isReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        scroller.scrollBy({ left: getStep(), behavior: isReduced ? "instant" : "smooth" });
+      });
+    });
+  }
+
+  initFactoryStrip();
+  document.addEventListener("astro:page-load", initFactoryStrip);
+</script>
+
+<style>
+  .factory-strip {
+    margin-top: 48px;
+    width: 100%;
+  }
+
+  .factory-strip__header {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  @media (min-width: 640px) {
+    .factory-strip__header {
+      flex-direction: row;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 20px;
+    }
+  }
+
+  .factory-strip__title-group {
+    text-align: left;
+  }
+
+  .factory-strip__eyebrow {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 4px;
+  }
+
+  .factory-strip__title {
+    margin: 0;
+    font-family: var(--display);
+    font-size: clamp(1.25rem, 1.1rem + 0.5vw, 1.5rem);
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: -0.01em;
+    line-height: 1.25;
+  }
+
+  .factory-strip__actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-shrink: 0;
+  }
+
+  .factory-strip__link {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 150ms ease;
+    white-space: nowrap;
+  }
+  .factory-strip__link:hover {
+    color: #ffffff;
+  }
+  .factory-strip__link:focus-visible {
+    outline: 2px solid #ffffff;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  .factory-strip__arrows {
+    display: none;
+    align-items: center;
+    gap: 8px;
+  }
+  @media (min-width: 1024px) {
+    .factory-strip__arrows {
+      display: flex;
+    }
+  }
+
+  .factory-strip__arrow {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.05);
+    color: #ffffff;
+    cursor: pointer;
+    transition: background-color 150ms ease, border-color 150ms ease, transform 150ms ease;
+  }
+  .factory-strip__arrow:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+  .factory-strip__arrow:focus-visible {
+    outline: 2px solid #ffffff;
+    outline-offset: 2px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .factory-strip__arrow {
+      transition: none;
+    }
+  }
+
+  .factory-strip__scroller {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding-bottom: 8px;
+    box-sizing: border-box;
+  }
+  .factory-strip__scroller::-webkit-scrollbar {
+    display: none;
+  }
+  .factory-strip__scroller:focus-visible {
+    outline: 2px solid #ffffff;
+    outline-offset: 2px;
+    border-radius: 8px;
+  }
+
+  .factory-strip__card {
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+    width: min(80vw, 320px);
+    margin: 0;
+    box-sizing: border-box;
+    text-align: left;
+  }
+  @media (min-width: 640px) {
+    .factory-strip__card {
+      width: 45%;
+    }
+  }
+  @media (min-width: 1024px) {
+    .factory-strip__card {
+      width: calc((100% - 32px) / 3);
+    }
+  }
+
+  .factory-strip__img {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: block;
+    background: rgba(255, 255, 255, 0.03);
+    pointer-events: none;
+  }
+
+  .factory-strip__caption {
+    margin-top: 10px;
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    color: rgba(255, 255, 255, 0.65);
+  }
+</style>

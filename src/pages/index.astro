@@ -2,6 +2,7 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import ChatLink from "../components/ChatLink.astro";
 import LicenceBadges from "../components/LicenceBadges.astro";
+import FactoryStrip from "../components/FactoryStrip.astro";
 import { CTA } from "../data/cta";
 import PowderStudio from "../components/studio/PowderStudio.astro";
 import { siteConfig } from "../data/site";
@@ -298,6 +299,8 @@ const faqs = allFaqs.filter((f) => isPublic(f.a));---
             <span>&bull; Bulk Food Manufacturing</span>
           </div>
         </div>
+
+        <FactoryStrip />
       </div>
     </section>
 
