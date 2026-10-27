@@ -394,21 +394,23 @@ const faqs = allFaqs.filter((f) => isPublic(f.a));---
       </div>
     </section>
 
-    <!-- 9. Closing contact band -->
-    <section id="contact-cta" class="relative py-28 bg-[#121214]">
-      <div class="max-w-3xl mx-auto px-6 lg:px-8 text-center">
-        <h2 class="font-display text-3xl sm:text-5xl font-extrabold tracking-tight text-white leading-[1.1]">
-          Talk to Renol Foods
-        </h2>
-        <p class="mt-4 text-base sm:text-lg text-white/70 font-body">
-          Message us on WhatsApp or call the plant in Bavla, Ahmedabad.
-        </p>
-        <div class="mt-8 flex flex-wrap justify-center gap-3">
-          <ChatLink class="btn-accent min-h-[44px]" />
-          <a href={CTA.products.href} class="btn-secondary min-h-[44px]">{CTA.products.label}</a>
-        </div>
-      </div>
-    </section>
+    <!-- THIS BELOWS SECTION IS COMMENTED OUT DUE TO REQUIREMENT CHANGE AND REPETATION OF WHATSAPP AND PRODUCT-->
+    <!-- 9. Closing contact band
+    // <section id="contact-cta" class="relative py-28 bg-[#121214]">
+    //   <div class="max-w-3xl mx-auto px-6 lg:px-8 text-center">
+    //     <h2 class="font-display text-3xl sm:text-5xl font-extrabold tracking-tight text-white leading-[1.1]">
+    //       Talk to Renol Foods
+    //     </h2>
+    //     <p class="mt-4 text-base sm:text-lg text-white/70 font-body">
+    //       Message us on WhatsApp or call the plant in Bavla, Ahmedabad.
+    //     </p>
+    //     <div class="mt-8 flex flex-wrap justify-center gap-3">
+    //       <ChatLink class="btn-accent min-h-[44px]" />
+    //       <a href={CTA.products.href} class="btn-secondary min-h-[44px]">{CTA.products.label}</a>
+    //     </div>
+    //   </div>
+    // </section> 
+    -->
   </div>
 </BaseLayout>
 
