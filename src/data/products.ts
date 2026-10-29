@@ -306,13 +306,13 @@ export const products: Product[] = [
   }),
 
   /* ---------- Food colour ---------- */
-  build({
-    name: "Caramel Colour Powder Type-3",
-    category: "food-colour",
-    summary: "Caramel colour in powder form for food and beverage use.",
-    description: `Caramel Colour Powder Type-3 is a caramel food colour supplied in powder form for industrial use. It gives manufacturers a brown colouring ingredient for dry mixes and for products made from them. ${CONTACT}`,
-    uses: ["Beverages", "Bakery products", "Sauces and gravies", "Confectionery", "Seasoning blends"],
-  }),
+  // build({
+  //   name: "Caramel Colour Powder Type-3",
+  //   category: "food-colour",
+  //   summary: "Caramel colour in powder form for food and beverage use.",
+  //   description: `Caramel Colour Powder Type-3 is a caramel food colour supplied in powder form for industrial use. It gives manufacturers a brown colouring ingredient for dry mixes and for products made from them. ${CONTACT}`,
+  //   uses: ["Beverages", "Bakery products", "Sauces and gravies", "Confectionery", "Seasoning blends"],
+  // }),
   build({
     name: "Caramel Colour Powder Type-4",
     category: "food-colour",
